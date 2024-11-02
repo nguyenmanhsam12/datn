@@ -7,33 +7,68 @@
         .size-option {
             display: inline-block;
             width: 100px;
-            /* Tăng chiều rộng của ô */
             height: 60px;
-            /* Tăng chiều cao của ô */
             line-height: 60px;
-            /* Căn giữa text theo chiều dọc */
             text-align: center;
-            /* Căn giữa text theo chiều ngang */
             border: 2px solid #ddd;
-            /* Viền của ô */
-
-            /* Giảm khoảng cách giữa các ô */
             cursor: pointer;
-            /* Con trỏ khi hover */
             transition: background-color 0.3s, color 0.3s;
-            /* Hiệu ứng chuyển đổi */
         }
 
         .size-option:hover {
             background-color: #f0f0f0;
+            color:#E03550 !important; 
             /* Màu nền khi hover */
         }
 
         .size-option.active {
-            background-color: #ff7f00;
+            background-color: #E03550;
             /* Màu nền khi ô được chọn */
             color: white !important;
             /* Màu chữ khi ô được chọn */
+        }
+        .size-option.active:hover {
+            background-color: #f0f0f0;
+            /* Màu nền khi ô được chọn */
+            color: #E03550 !important;
+            /* Màu chữ khi ô được chọn */
+        }
+        .btn__1{
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        /* Đặt các style chung cho button */
+        .btn__addCart {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 40px;
+            border: 1px solid #6c757d;
+            background-color: transparent;
+            color: #6c757d;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .icon-group__icon {
+            font-size: 20px;
+        
+        }
+
+        .btn__addCart:hover {
+            color: ##fff;
+            border-color: ##fff; 
+        }
+
+        .btn__addCart:hover .icon-group__icon {
+            color: ##fff; 
+        
+        }
+        .cart__plus-minus{
+            border: 1px solid #999;
+            border-radius: 5px;
+            width: 25%;
         }
     </style>
 @endpush
@@ -97,10 +132,10 @@
                             <!-- Size start -->
                             <div class="size-filter single-pro-size mb-35 clearfix">
                                 <ul>
-                                    <li><span class="color-title text-capitalize">size</span></li>
+                                    <li><span class="color-title text-capitalize p-1">size</span></li>
                                     @foreach ($productDetail->variants as $variant)
                                         <li>
-                                            <a href="#" class="size-option" data-size="{{ $variant->size->name }}"
+                                            <a href="#" class="size-option p-1" data-size="{{ $variant->size->name }}"
                                                 data-price="{{ $variant->price }}" data-variant-id="{{ $variant->id }}">
                                                 {{ $variant->size->name }}
                                             </a>
@@ -109,20 +144,14 @@
                                 </ul>
                             </div>
                             <!-- Size end -->
-                            <div class="clearfix">
-                                <div class="cart-plus-minus">
-                                    <input type="text" value="02" name="qtybutton" class="cart-plus-minus-box">
+                            <div class="clearfix btn__1">
+                                <div class="cart-plus-minus cart__plus-minus">
+                                    <input type="text" value="1" name="qtybutton" class="cart-plus-minus-box">
                                 </div>
-                                <div class="product-action clearfix">
-                                    <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist"><i
-                                            class="zmdi zmdi-favorite-outline"></i></a>
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#productModal"
-                                        title="Quick View"><i class="zmdi zmdi-zoom-in"></i></a>
-                                    <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Compare"><i
-                                            class="zmdi zmdi-refresh"></i></a>
-                                    <a href="#" data-bs-toggle="tooltip" data-bs-placement="top"
-                                        title="Add To Cart"><i class="zmdi zmdi-shopping-cart-plus"></i></a>
-                                </div>
+                                <button class="btn btn-outline-secondary btn__addCart icon-group">
+                                    <i class="zmdi zmdi-shopping-cart-plus icon-group__icon"></i>
+                                    <span class="btn__title">ADD TO CART</span>
+                                </button>
                             </div>
                             <!-- Single-pro-slider Small-photo start -->
                             <div class="single-pro-slider single-sml-photo slider-nav">

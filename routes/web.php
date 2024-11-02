@@ -3,11 +3,14 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\VariantController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MyAccountController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +32,9 @@ Route::post('/postlogin',[AuthController::class,'postlogin'])->name('postlogin')
 Route::post('/postRegister',[AuthController::class,'postRegister'])->name('postRegister');
 
 Route::get('/logout',[AuthController::class,'logout'])->name('logout');
+Route::get('/cart',[CartController::class,'cart'])->name('cart');
+Route::get('/my-account',[MyAccountController::class,'myAccount'])->name('myAccount');
+Route::get('/checkout',[CheckoutController::class,'checkout'])->name('checkout');
 
 // lấy sản phẩm theo danh mục
 Route::get('/getProductsByCategory/{category_id}', [HomeController::class, 'getProductsByCategory'])->name('getProductsByCategory');
