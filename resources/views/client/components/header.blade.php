@@ -35,7 +35,7 @@
                                     <ul>
                                         <li><a href="my-account.html">Tài khoản của tôi</a></li>
                                         <li><a href="wishlist.html">Yêu thích</a></li>
-                                        <li><a href="cart.html">Giỏ hàng</a></li>
+                                        <li><a href="{{route('cart')}}">Giỏ hàng</a></li>
                                         <li><a href="checkout.html">Thanh toán</a></li>
                                         <li><a href="order.html">Đơn hàng của tôi</a></li>
                                         <li><a href="{{ route('login') }}">Đăng nhập</a></li>
@@ -152,7 +152,7 @@
                     <div class="mini-cart text-right">
                         <ul>
                             <li>
-                                <a class="cart-icon" href="#">
+                                <a class="cart-icon" href="{{route('cart')}}">
                                     <i class="zmdi zmdi-shopping-cart"></i>
                                     <span>3</span>
                                 </a>
@@ -188,8 +188,8 @@
                                         <h5 class="mb-0">Total <span class="floatright">$500.00</span></h5>
                                     </div>
                                     <div class="cart-bottom  clearfix">
-                                        <a href="#" class="button-one floatleft text-uppercase" data-text="View cart">View cart</a>
-                                        <a href="#" class="button-one floatright text-uppercase" data-text="Check out">Check out</a>
+                                        <a href="{{route('cart')}}" class="button-one floatleft text-uppercase" data-text="View cart">View cart</a>
+                                        <a href="{{route('checkout')}}" class="button-one floatright text-uppercase" data-text="Check out">Check out</a>
                                     </div>
                                 </div>
                             </li>
