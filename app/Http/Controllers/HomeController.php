@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Models\CartItems;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -14,6 +16,7 @@ class HomeController extends Controller
             ->limit(8)
             ->get();
         $list_category = Category::orderBy('id','asc')->limit(4)->get();
+       
         return view('client.pages.home',compact('list_product','list_category'));
     }
 

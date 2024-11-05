@@ -1,7 +1,9 @@
 @extends('client.components.default')
 
 @push('styles')
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
 
     <style>
         .size-option {
@@ -17,7 +19,7 @@
 
         .size-option:hover {
             background-color: #f0f0f0;
-            color:#E03550 !important; 
+            color: #E03550 !important;
             /* Màu nền khi hover */
         }
 
@@ -27,17 +29,20 @@
             color: white !important;
             /* Màu chữ khi ô được chọn */
         }
+
         .size-option.active:hover {
             background-color: #f0f0f0;
             /* Màu nền khi ô được chọn */
             color: #E03550 !important;
             /* Màu chữ khi ô được chọn */
         }
-        .btn__1{
+
+        .btn__1 {
             display: flex;
             gap: 20px;
             align-items: center;
         }
+
         /* Đặt các style chung cho button */
         .btn__addCart {
             display: flex;
@@ -53,19 +58,20 @@
 
         .icon-group__icon {
             font-size: 20px;
-        
+
         }
 
         .btn__addCart:hover {
             color: ##fff;
-            border-color: ##fff; 
+            border-color: ##fff;
         }
 
         .btn__addCart:hover .icon-group__icon {
-            color: ##fff; 
-        
+            color: ##fff;
+
         }
-        .cart__plus-minus{
+
+        .cart__plus-minus {
             border: 1px solid #999;
             border-radius: 5px;
             width: 25%;
@@ -146,7 +152,8 @@
                             <!-- Size end -->
                             <div class="clearfix btn__1">
                                 <div class="cart-plus-minus cart__plus-minus">
-                                    <input type="text" value="1" name="qtybutton" class="cart-plus-minus-box">
+                                    <input type="text" value="1" min="1" name="qtybutton"
+                                        class="cart-plus-minus-box">
                                 </div>
                                 <button class="btn btn-outline-secondary btn__addCart icon-group">
                                     <i class="zmdi zmdi-shopping-cart-plus icon-group__icon"></i>
@@ -330,8 +337,8 @@
             </div>
             <!-- single-product-tab end -->
             <!-- Related Products Start -->
-           
-            
+
+
         </div>
     </div>
 @endsection
@@ -382,6 +389,77 @@
                 const initialPrice = firstSize.getAttribute('data-price');
                 updatePrice(initialPrice);
             }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const addToCartButton = document.querySelector('.btn__addCart');
+            const quantityInput = document.querySelector('input[name="qtybutton"]');
+            const cartCountElement = document.querySelector('.cart-count'); // Phần tử hiển thị số lượng sản phẩm
+
+
+            addToCartButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                const selectedOption = document.querySelector('.size-option.active');
+                const variantId = selectedOption.getAttribute('data-variant-id');
+                const size = selectedOption.getAttribute('data-size');
+                const price = selectedOption.getAttribute('data-price');
+                const quantity = quantityInput.value;
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+
+
+                if (!variantId) {
+                    alert('Vui lòng chọn size sản phẩm.');
+                    return;
+                }
+
+                fetch("{{ route('addToCart') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": csrfToken
+                        },
+                        body: JSON.stringify({
+                            variant_id: variantId,
+                            size: size,
+                            price: price,
+                            quantity: quantity
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) {
+                            Swal.fire({
+                                title: 'Thêm vào giỏ hàng thành công!',
+                                text: data.message,
+                                icon: 'success',
+                                showCancelButton: true,
+                                confirmButtonText: 'Đi đến giỏ hàng',
+                                cancelButtonText: 'Xem tiếp sản phẩm'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Điều hướng đến giỏ hàng
+                                    window.location.href =
+                                    "{{ route('cart') }}"; // Đường dẫn đến giỏ hàng
+                                } else {
+                                    // Người dùng chọn xem tiếp sản phẩm
+                                    console.log('Người dùng chọn xem tiếp sản phẩm');
+                                }
+                            });
+                            // Cập nhật số lượng sản phẩm trên thanh header
+                            // Cập nhật số lượng sản phẩm trên thanh header bằng dữ liệu từ server
+                            if (data.cartItemCount !== undefined) {
+                                cartCountElement.textContent = data.cartItemCount;
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Lỗi:', error);
+                        alert('Có lỗi xảy ra, vui lòng thử lại.');
+                    });
+            });
         });
     </script>
 @endpush

@@ -32,7 +32,18 @@ Route::post('/postlogin',[AuthController::class,'postlogin'])->name('postlogin')
 Route::post('/postRegister',[AuthController::class,'postRegister'])->name('postRegister');
 
 Route::get('/logout',[AuthController::class,'logout'])->name('logout');
+
 Route::get('/cart',[CartController::class,'cart'])->name('cart');
+Route::post('/addToCart',[CartController::class,'addToCart'])->name('addToCart');
+// Tổng số lượng giỏ hàng
+Route::get('/getCartItemCount',[CartController::class,'getCartItemCount'])->name('getCartItemCount');
+// update số lượng giỏ hàng
+Route::put('updateCartQuantity', [CartController::class, 'updateCartQuantity'])->name('updateCartQuantity');
+// xóa giỏ hàng 
+Route::delete('removeFromCart', [CartController::class, 'removeFromCart'])->name('removeFromCart');
+
+
+
 Route::get('/my-account',[MyAccountController::class,'myAccount'])->name('myAccount');
 Route::get('/checkout',[CheckoutController::class,'checkout'])->name('checkout');
 
