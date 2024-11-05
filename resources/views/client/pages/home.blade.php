@@ -1,5 +1,16 @@
 @extends('client.components.default')
 
+@push('styles')
+    <style>
+        .post-title a{
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
+    </style>
+@endpush
+
 @section('content')
     @include('client.components.slider')
 
@@ -38,7 +49,7 @@
                                     </div>
                                     <div class="product-info clearfix">
                                         <div class="fix">
-                                            <h4 class="post-title floatleft"><a href="#">{{ $pr->name }}</a></h4>
+                                            <h4 class="post-title floatleft"><a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}">{{ $pr->name }}</a></h4>
                                         </div>
                                         <div class="fix">
                                             <span class="pro-price floatleft">{{ number_format($pr->mainVariant->price,0,',','.').' '.'VNĐ' }}</span>
@@ -227,7 +238,7 @@
                             <div class="single-product col-xl-3 col-md-4 col-12">
                                 <div class="product-img">
                                     <span class="pro-label new-label">new</span>
-                                    <a href="single-product.html">
+                                    <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}">
                                         <img src="${product.image}" alt="" />
                                     </a>
                                     <div class="product-action clearfix">
@@ -248,7 +259,7 @@
                                 <div class="product-info clearfix">
                                     <div class="fix">
                                         <h4 class="post-title floatleft">
-                                            <a href="#">${product.name}</a>
+                                            <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}">${product.name}</a>
                                         </h4>
                                     </div>
                                     <div class="fix">

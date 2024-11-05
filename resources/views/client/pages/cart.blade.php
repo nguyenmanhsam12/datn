@@ -23,11 +23,12 @@
         }
 
 
-
-
-
-
-
+        .text-light-black{
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
 
         .coupon-section,
         .payment-details {
@@ -174,7 +175,7 @@
 
                                         @foreach ($cart->cartItem as $item)
                                             <tr>
-                                                <td class="product-thumbnail  text-start">
+                                                <td class="product-thumbnail product-cart text-start">
                                                     <!-- Single-product start -->
                                                     <div class="single-product">
                                                         <div class="product-img">
@@ -295,7 +296,7 @@
                     if (quantity > 1) {
                         quantity--;
                     } else {
-                        alert('Số lượng không được giảm dưới 1');
+                        alert('Số lượng không được nhỏ hơn 1');
                         return;
                     }
                 }

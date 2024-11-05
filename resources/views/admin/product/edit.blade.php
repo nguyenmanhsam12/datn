@@ -57,7 +57,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Mô tả</label>
-                                    <textarea name="description" id="" cols="10" rows="5" class="form-control">
+                                    <textarea name="description" id="summernote" cols="10" rows="5" class="form-control">
                                         {{$product->description}}
                                     </textarea>
 
@@ -132,6 +132,15 @@
         </section>
     </div>
 @endsection
+@push('script')
+<script>
+    $(function () {
+         // Summernote
+         $('#summernote').summernote()
 
+     
+     })
+ </script>
+@endpush
 
 

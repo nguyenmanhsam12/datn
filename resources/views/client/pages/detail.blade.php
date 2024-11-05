@@ -130,9 +130,7 @@
                                 <span class="pro-price"></span>
                             </div>
                             <div class="product-description">
-                                <p>There are many variations of passages of Lorem Ipsum available, but the majority have be
-                                    suffered alteration in some form, by injected humou or randomised words which donot look
-                                    even slightly believable. If you are going to use a passage of Lorem Ipsum.</p>
+                                <p>{!!$productDetail->description!!}</p>
                             </div>
 
                             <!-- Size start -->
