@@ -24,7 +24,7 @@
                                         
                                         
 
-                                        <li><a href="checkout.html">Thanh toán</a></li>
+                                        <li><a href="{{ route('checkout') }}">Thanh toán</a></li>
                                         <li><a href="order.html">Đơn hàng của tôi</a></li>
                                         <li><a href="{{ route('logout') }}">Đăng Xuất</a></li>
 
@@ -35,7 +35,7 @@
                                     <ul>
                                         <li><a href="my-account.html">Tài khoản của tôi</a></li>
                                         <li><a href="wishlist.html">Yêu thích</a></li>
-                                        <li><a href="checkout.html">Thanh toán</a></li>
+                                        <li><a href="{{ route('checkout') }}">Thanh toán</a></li>
                                         <li><a href="order.html">Đơn hàng của tôi</a></li>
                                         <li><a href="{{ route('login') }}">Đăng nhập</a></li>
                                         <li><a href="{{ route('register') }}">Đăng Ký</a></li>

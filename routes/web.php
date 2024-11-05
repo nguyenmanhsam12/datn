@@ -42,10 +42,16 @@ Route::put('updateCartQuantity', [CartController::class, 'updateCartQuantity'])-
 // xóa giỏ hàng 
 Route::delete('removeFromCart', [CartController::class, 'removeFromCart'])->name('removeFromCart');
 
+// xử lí đơn vị hành chính
+Route::post('/selectProvince',[CheckoutController::class,'selectProvince'])->name('selectProvince');
+Route::post('/selectCity',[CheckoutController::class,'selectCity'])->name('selectCity');
 
 
 Route::get('/my-account',[MyAccountController::class,'myAccount'])->name('myAccount');
 Route::get('/checkout',[CheckoutController::class,'checkout'])->name('checkout');
+
+// đặt hàng
+Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('placeOrder');
 
 // lấy sản phẩm theo danh mục
 Route::get('/getProductsByCategory/{category_id}', [HomeController::class, 'getProductsByCategory'])->name('getProductsByCategory');
