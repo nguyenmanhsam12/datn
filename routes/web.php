@@ -11,6 +11,7 @@ use App\Http\Controllers\SizeController;
 use App\Http\Controllers\VariantController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MyAccountController;
+use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -49,6 +50,8 @@ Route::post('/selectCity',[CheckoutController::class,'selectCity'])->name('selec
 
 Route::get('/my-account',[MyAccountController::class,'myAccount'])->name('myAccount');
 Route::get('/checkout',[CheckoutController::class,'checkout'])->name('checkout');
+
+Route::get('/shop',[ShopController::class,'shop'])->name('shop');
 
 // đặt hàng
 Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('placeOrder');

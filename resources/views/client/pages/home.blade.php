@@ -1,5 +1,16 @@
 @extends('client.components.default')
 
+@push('styles')
+    <style>
+        .post-title a{
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
+    </style>
+@endpush
+
 @section('content')
     @include('client.components.slider')
 
@@ -32,13 +43,11 @@
                                                 title="Quick View"><i class="zmdi zmdi-zoom-in"></i></a>
                                             <a href="#" data-bs-toggle="tooltip" data-bs-placement="top"
                                                 title="Compare"><i class="zmdi zmdi-refresh"></i></a>
-                                            <a href="#" data-bs-toggle="tooltip" data-bs-placement="top"
-                                                title="Add To Cart"><i class="zmdi zmdi-shopping-cart-plus"></i></a>
                                         </div>
                                     </div>
                                     <div class="product-info clearfix">
                                         <div class="fix">
-                                            <h4 class="post-title floatleft"><a href="#">{{ $pr->name }}</a></h4>
+                                            <h4 class="post-title floatleft"><a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}">{{ $pr->name }}</a></h4>
                                         </div>
                                         <div class="fix">
                                             <span class="pro-price floatleft">{{ number_format($pr->mainVariant->price,0,',','.').' '.'VNĐ' }}</span>
@@ -245,15 +254,12 @@
                                         <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Compare">
                                             <i class="zmdi zmdi-refresh"></i>
                                         </a>
-                                        <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Add To Cart">
-                                            <i class="zmdi zmdi-shopping-cart-plus"></i>
-                                        </a>
                                     </div>
                                 </div>
                                 <div class="product-info clearfix">
                                     <div class="fix">
                                         <h4 class="post-title floatleft">
-                                            <a href="#">${product.name}</a>
+                                            <a href="${productUrl}">${product.name}</a>
                                         </h4>
                                     </div>
                                     <div class="fix">

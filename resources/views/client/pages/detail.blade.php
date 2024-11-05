@@ -133,6 +133,7 @@
                                 <p>{!!$productDetail->description!!}</p>
                             </div>
 
+
                             <!-- Size start -->
                             <div class="size-filter single-pro-size mb-35 clearfix">
                                 <ul>
