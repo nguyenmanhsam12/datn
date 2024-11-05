@@ -35,7 +35,6 @@
                                     <ul>
                                         <li><a href="my-account.html">Tài khoản của tôi</a></li>
                                         <li><a href="wishlist.html">Yêu thích</a></li>
-                                        <li><a href="{{route('cart')}}">Giỏ hàng</a></li>
                                         <li><a href="checkout.html">Thanh toán</a></li>
                                         <li><a href="order.html">Đơn hàng của tôi</a></li>
                                         <li><a href="{{ route('login') }}">Đăng nhập</a></li>
@@ -71,7 +70,7 @@
                 <!-- logo start -->
                 <div class="col-md col-6">
                     <div class="top-logo">
-                        <a href="index.html"><img src="{{asset('img/logo/logo.webp')}}" alt="" /></a>
+                        <a href="{{route('home')}}"><img src="{{asset('img/logo/logo.webp')}}" alt="" /></a>
                     </div>
                 </div>
                 <!-- logo end -->
@@ -154,7 +153,7 @@
                             <li>
                                 <a class="cart-icon" href="{{route('cart')}}">
                                     <i class="zmdi zmdi-shopping-cart"></i>
-                                    <span>3</span>
+                                    <span class="cart-count"></span>
                                 </a>
                                 <div class="mini-cart-brief text-left">
                                     <div class="cart-items">
@@ -172,17 +171,7 @@
                                                 <span class="cart-delete"><a href="#"><i class="zmdi zmdi-close"></i></a></span>
                                             </div>
                                         </div>
-                                        <div class="single-cart clearfix">
-                                            <div class="cart-photo">
-                                                <a href="#"><img src="{{asset('img/cart/2.webp')}}" alt="" /></a>
-                                            </div>
-                                            <div class="cart-info">
-                                                <h5><a href="#">dummy product name</a></h5>
-                                                <p class="mb-0">Price : $ 300.00</p>
-                                                <p class="mb-0">Qty : 01 </p>
-                                                <span class="cart-delete"><a href="#"><i class="zmdi zmdi-close"></i></a></span>
-                                            </div>
-                                        </div>
+                                        
                                     </div>
                                     <div class="cart-totals">
                                         <h5 class="mb-0">Total <span class="floatright">$500.00</span></h5>
