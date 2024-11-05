@@ -53,7 +53,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Mô tả</label>
-                                    <textarea name="description" id="" cols="10" rows="5" class="form-control"></textarea>
+                                    <textarea name="description" id="summernote" cols="10" rows="5" class="form-control"></textarea>
 
                                     @error('description')
                                         <div class="text-danger mt-3">{{ $message }}</div>
@@ -116,8 +116,8 @@
                                             <h3 class="card-title">Thêm thuộc tính</h3>
 
                                             <div class="card-tools">
-                                                <button type="button" class="btn btn-tool" data-card-widget="collapse"
-                                                    title="Collapse">
+                                                <button type="button" class="btn btn-tool"
+                                                    data-card-widget="collapse" title="Collapse">
                                                     <i class="fas fa-minus"></i>
                                                 </button>
                                             </div>
@@ -274,5 +274,13 @@
                 });
             });
         });
+    </script>
+    <script>
+       $(function () {
+            // Summernote
+            $('#summernote').summernote()
+
+        
+        })
     </script>
 @endpush

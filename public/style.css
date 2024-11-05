@@ -2259,7 +2259,7 @@ input.cart-plus-minus-box {
 /* product-thumbnail */
 .table-content table td.product-thumbnail {
   padding-left: 0;
-  width: 330px;
+  /* width: 330px; */
 }
 
 .product-thumbnail .product-img {

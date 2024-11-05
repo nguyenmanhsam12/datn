@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="{{asset('backend/plugins/daterangepicker/daterangepicker.css')}}">
     <!-- summernote -->
     <link rel="stylesheet" href="{{asset('backend/plugins/summernote/summernote-bs4.min.css')}}">
+    
 
     @stack('styles')
 </head>
@@ -99,7 +100,7 @@
     {{-- <script src="{{asset('backend/dist/js/demo.js')}}"></script> --}}
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="{{asset('backend/dist/js/pages/dashboard.js')}}"></script>
-
+    
     @stack('script')
 </body>
 
