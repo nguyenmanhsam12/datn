@@ -73,16 +73,14 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Vai trò</label>
-                                    <div class="select2-purple ">
-                                        <select class="select2 form-control" multiple="multiple" data-placeholder="Select a State" data-dropdown-css-class="select2-purple" style="width: 100%;"
-                                        name="role_id[]"
-                                        >
-                                            <option>---Chọn vai trò---</option>
-                                            @foreach ($roles as $role)
-                                                <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                            @endforeach
-                                        </select>
-                                      </div>
+                                    <div class="checkbox-list">
+                                        @foreach ($roles as $role)
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="role-{{ $role->id }}" name="role_id[]" value="{{ $role->id }}">
+                                                <label class="form-check-label" for="role-{{ $role->id }}">{{ $role->name }}</label>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
 
                             </div>

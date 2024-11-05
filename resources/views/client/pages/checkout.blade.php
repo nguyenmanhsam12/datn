@@ -419,7 +419,7 @@
         });
     </script>
 
-
+    {{-- đặt hàng --}}
     <script>
         document.getElementById('orderForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Ngăn chặn việc gửi form mặc định
@@ -462,9 +462,12 @@
                             text: 'Đơn hàng của bạn đã được tạo thành công.',
                             icon: 'success',
                             confirmButtonText: 'OK'
+                        }).then( () => {
+                            setTimeout(() => {
                             window.location.href = '{{ route('home') }}';
+                        }, 5000); // Thay đổi 2000 thành số milliseconds mà bạn muốn
                         });
-                    }
+                    };
                     // Xử lý dữ liệu trả về
                 })
                 .catch(error => {

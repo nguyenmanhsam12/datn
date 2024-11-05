@@ -1,16 +1,5 @@
 @extends('client.components.default')
 
-@push('styles')
-    <style>
-        .post-title a{
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;  
-            overflow: hidden;
-        }
-    </style>
-@endpush
-
 @section('content')
     @include('client.components.slider')
 
@@ -49,7 +38,7 @@
                                     </div>
                                     <div class="product-info clearfix">
                                         <div class="fix">
-                                            <h4 class="post-title floatleft"><a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}">{{ $pr->name }}</a></h4>
+                                            <h4 class="post-title floatleft"><a href="#">{{ $pr->name }}</a></h4>
                                         </div>
                                         <div class="fix">
                                             <span class="pro-price floatleft">{{ number_format($pr->mainVariant->price,0,',','.').' '.'VNĐ' }}</span>
@@ -233,12 +222,17 @@
                 success: function(response) {
                     let html = '';
 
+                    // Khai báo biến đường dẫn trong Blade
+                    const getDetailProductUrl = '{{ route("getDetailProduct", ["slug" => "__slug__"]) }}';
+
                     response.forEach(function(product) {
+                        // Thay thế __slug__ bằng slug của sản phẩm hiện tại
+                        const productUrl = getDetailProductUrl.replace('__slug__', product.slug);
                         html += `
                             <div class="single-product col-xl-3 col-md-4 col-12">
                                 <div class="product-img">
                                     <span class="pro-label new-label">new</span>
-                                    <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}">
+                                    <a href="${productUrl}">
                                         <img src="${product.image}" alt="" />
                                     </a>
                                     <div class="product-action clearfix">
@@ -259,7 +253,7 @@
                                 <div class="product-info clearfix">
                                     <div class="fix">
                                         <h4 class="post-title floatleft">
-                                            <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}">${product.name}</a>
+                                            <a href="#">${product.name}</a>
                                         </h4>
                                     </div>
                                     <div class="fix">
