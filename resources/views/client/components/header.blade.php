@@ -155,7 +155,7 @@
                                     <i class="zmdi zmdi-shopping-cart"></i>
                                     <span class="cart-count"></span>
                                 </a>
-                                <div class="mini-cart-brief text-left">
+                                {{-- <div class="mini-cart-brief text-left">
                                     <div class="cart-items">
                                         <p class="mb-0">You have <span>03 items</span> in your shopping bag</p>
                                     </div>
@@ -180,7 +180,7 @@
                                         <a href="{{route('cart')}}" class="button-one floatleft text-uppercase" data-text="View cart">View cart</a>
                                         <a href="{{route('checkout')}}" class="button-one floatright text-uppercase" data-text="Check out">Check out</a>
                                     </div>
-                                </div>
+                                </div> --}}
                             </li>
                         </ul>
                     </div>
