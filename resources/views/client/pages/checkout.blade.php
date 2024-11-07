@@ -317,7 +317,7 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
-                                                    <button class="submit-button mt-15 col-12" type="submit">Thanh
+                                                    <button class="submit-button button-one mt-15 col-12" data-text="Thanh Toán" type="submit">Thanh
                                                         Toán</button>
                                                 </div>
 

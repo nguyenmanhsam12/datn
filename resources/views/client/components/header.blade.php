@@ -18,9 +18,9 @@
                                             <li><a href="{{ route('dashboard') }}">Admin</a></li>   
                                         @endif
 
-                                        <li><a href="my-account.html">Tài khoản của tôi</a></li>
+                                        <li><a href="">Tài khoản của tôi</a></li>
 
-                                        <li><a href="wishlist.html">Yêu thích</a></li>
+                                        <li><a href="">Yêu thích</a></li>
                                         
                                         
 
@@ -70,7 +70,7 @@
                 <!-- logo start -->
                 <div class="col-md col-6">
                     <div class="top-logo">
-                        <a href="{{route('home')}}"><img src="{{asset('img/logo/logo.webp')}}" alt="" /></a>
+                        <a href="{{route('home')}}"><img style="width: 100px;" src="{{asset('img/logo/logo.png')}}" alt="" /></a>
                     </div>
                 </div>
                 <!-- logo end -->
@@ -80,43 +80,13 @@
                     <div class="mainmenu  position-relative">
                         <nav>
                             <ul>
-                                <li class="expand"><a href="{{ route('home') }}">Trang chủ</a>							
-                                </li>
-                                <li class="expand"><a href="about.html">Về chúng tôi</a></li>
-                                <li class="expand position-static"><a href="single-product.html">Man</a>
-                                    <div class="restrain mega-menu megamenu1">
-                                        <span>
-                                            <a class="mega-menu-title" href="shop-grid.html"> Dresses </a>
-                                            <a href="single-product.html">Coctail</a>
-                                            <a href="single-product.html">Day</a>
-                                            <a href="single-product.html">Evening </a>
-                                            <a href="single-product.html">Sports</a>
-                                        </span>
-                                        <span>
-                                            <a class="mega-menu-title" href="shop-grid.html"> Handbags </a>
-                                            <a href="single-product.html">Blazers</a>
-                                            <a href="single-product.html">Table</a>
-                                            <a href="single-product.html">Coats</a>
-                                            <a href="single-product.html">Kids</a>
-                                        </span>
-                                        <span>
-                                            <a class="mega-menu-title" href="shop-grid.html"> Clothing </a>
-                                            <a href="single-product.html">T-Shirt</a>
-                                            <a href="single-product.html">Coats</a>
-                                            <a href="single-product.html">Jackets</a>
-                                            <a href="single-product.html">Jeans</a>
-                                        </span>
-
-                                        <span class="block-last">
-                                            <img class="img-fluid" src="{{ asset('img/megamenu/block_menu.webp') }}" alt="" />
-                                        </span>
-                                    </div>
-                                </li>
+                                <li class="expand"><a href="{{ route('home') }}">Trang chủ</a></li>						
+                                
                          
-                                <li class="expand position-static"><a href="shop.html">Sản phẩm</a>
+                                <li class="expand position-static"><a href="{{route('shop')}}">Cửa Hàng</a>
                                     <div class="restrain mega-menu megamenu4">
                                         <span>
-                                            <a class="mega-menu-title" href="shop.html">Shop Pages</a>
+                                            <a class="mega-menu-title" href="">Shop Pages</a>
                                             <a href="shop-list.html">List View </a>
                                             <a href="shop.html">Grid View</a>
                                             <a href="shop-sidebar.html">Shop Sidebar</a>
@@ -136,13 +106,9 @@
                                         </span>
                                     </div>
                                 </li>
-                                <li class="expand"><a href="blog.html">Tin tức</a>
-                                    <ul class="restrain sub-menu">
-                                        <li><a href="blog.html">Blog</a></li><li><a href="single-blog.html">Single Blog</a></li>
-                                        <li><a href="single-blog-sidebar.html">Single Blog Sidebar</a></li>
-                                    </ul>									
-                                </li>
-                                <li class="expand"><a href="contact.html">Liên hệ</a></li>
+                                <li class="expand"><a href="{{route('blog')}}">Tin tức</a></li>
+                                <li class="expand"><a href="{{route('contact')}}">Liên hệ</a></li>
+                                <li class="expand"><a href="{{route('about')}}">Về chúng tôi</a></li>
                             </ul>
                         </nav>
                     </div>
