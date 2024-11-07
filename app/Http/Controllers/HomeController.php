@@ -36,6 +36,11 @@ class HomeController extends Controller
             ->where('slug',$slug)
             ->first();
         $productDetail->gallary = json_decode($productDetail->gallary);
+        
+        // Lấy giá nhỏ nhất từ các biến thể
+        $minPrice = $productDetail->variants->min('price');
+
+
 
         // sp liên quan
         $relatedProduct = Product::where('category_id',$productDetail->category_id)
@@ -43,7 +48,7 @@ class HomeController extends Controller
             ->take(4)   //lấy  4 sp
             ->get();
         
-        return view('client.pages.detail',compact('productDetail','relatedProduct'));
+        return view('client.pages.detail',compact('productDetail','relatedProduct','minPrice'));
     }
 
     

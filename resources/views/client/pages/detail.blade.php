@@ -3,7 +3,7 @@
 @push('styles')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
 
     <style>
         .size-option {
@@ -127,10 +127,10 @@
                                 <h4 class="post-title floatleft">{{ $productDetail->name }}</h4>
                             </div>
                             <div class="fix mb-20">
-                                <span class="pro-price"></span>
+                                <span class="pro-price">{{ number_format($minPrice, 0, ',', '.') . ' VNĐ' }}</span>
                             </div>
                             <div class="product-description">
-                                <p>{!!$productDetail->description!!}</p>
+                                <p>{!! $productDetail->description !!}</p>
                             </div>
 
 
@@ -140,8 +140,9 @@
                                     <li><span class="color-title text-capitalize p-1">size</span></li>
                                     @foreach ($productDetail->variants as $variant)
                                         <li>
-                                            <a href="#" class="size-option p-1" data-size="{{ $variant->size->name }}"
-                                                data-price="{{ $variant->price }}" data-variant-id="{{ $variant->id }}">
+                                            <a href="#" class="size-option p-1" data-variant-id="{{ $variant->id }}"
+                                                data-price = "{{ $variant->price }}"
+                                                >
                                                 {{ $variant->size->name }}
                                             </a>
                                         </li>
@@ -349,6 +350,11 @@
             const sizeOptions = document.querySelectorAll('.size-option');
             const priceElement = document.querySelector('.pro-price');
 
+            // Kiểm tra sự tồn tại của sizeOptions và priceElement
+            if (!sizeOptions.length || !priceElement) {
+                return; // Dừng lại nếu không có phần tử nào
+            }
+
             // Hàm format giá tiền sang định dạng VND
             function formatPrice(price) {
                 return new Intl.NumberFormat('vi-VN').format(price) + ' VNĐ';
@@ -381,13 +387,6 @@
                 option.addEventListener('click', handleSizeClick);
             });
 
-            // Tự động chọn và hiển thị giá của size đầu tiên khi trang load
-            if (sizeOptions.length > 0) {
-                const firstSize = sizeOptions[0];
-                firstSize.classList.add('active');
-                const initialPrice = firstSize.getAttribute('data-price');
-                updatePrice(initialPrice);
-            }
         });
     </script>
 
@@ -399,20 +398,23 @@
 
 
             addToCartButton.addEventListener('click', function(e) {
+
                 e.preventDefault();
                 const selectedOption = document.querySelector('.size-option.active');
-                const variantId = selectedOption.getAttribute('data-variant-id');
-                const size = selectedOption.getAttribute('data-size');
-                const price = selectedOption.getAttribute('data-price');
-                const quantity = quantityInput.value;
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-
-
-                if (!variantId) {
+                if (!selectedOption) {
                     alert('Vui lòng chọn size sản phẩm.');
                     return;
                 }
+
+                const variantId = selectedOption.getAttribute('data-variant-id');
+                const quantity = parseInt(quantityInput.value);
+                if(quantity < 1){
+                    alert('Số lượng phải lớn hơn 0');
+                    return;
+                }
+
 
                 fetch("{{ route('addToCart') }}", {
                         method: "POST",
@@ -422,8 +424,6 @@
                         },
                         body: JSON.stringify({
                             variant_id: variantId,
-                            size: size,
-                            price: price,
                             quantity: quantity
                         })
                     })
@@ -441,7 +441,7 @@
                                 if (result.isConfirmed) {
                                     // Điều hướng đến giỏ hàng
                                     window.location.href =
-                                    "{{ route('cart') }}"; // Đường dẫn đến giỏ hàng
+                                        "{{ route('cart') }}"; // Đường dẫn đến giỏ hàng
                                 } else {
                                     // Người dùng chọn xem tiếp sản phẩm
                                     console.log('Người dùng chọn xem tiếp sản phẩm');
