@@ -283,7 +283,7 @@
                                     <h4>Mã Giảm Giá</h4>
                                     <p>Nhập mã giảm giá của bạn nếu có:</p>
                                     <input type="text" class="form-control mb-3" placeholder="Mã giảm giá">
-                                    <button class="btn btn-primary">Áp dụng</button>
+                                    <button class="submit-button button-one" data-text="Áp dụng">Áp dụng</button>
                                 </div>
                             </div>
 
@@ -312,7 +312,7 @@
                                     </table>
 
 
-                                    <a href="{{ route('checkout') }}" class="btn btn-success w-100 mt-3">Thanh Toán</a>
+                                    <a href="{{ route('checkout') }}" class="submit-button button-one text-center w-100 mt-3" data-text="Thanh Toán">Thanh Toán</a>
                                 </div>
                             </div>
                         </div>
