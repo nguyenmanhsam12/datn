@@ -36,10 +36,17 @@ Route::get('/logout',[AuthController::class,'logout'])->name('logout');
 
 Route::get('/cart',[CartController::class,'cart'])->name('cart');
 Route::post('/addToCart',[CartController::class,'addToCart'])->name('addToCart');
+
 // Tổng số lượng giỏ hàng
 Route::get('/getCartItemCount',[CartController::class,'getCartItemCount'])->name('getCartItemCount');
+
 // update số lượng giỏ hàng
-Route::put('updateCartQuantity', [CartController::class, 'updateCartQuantity'])->name('updateCartQuantity');
+Route::put('/cart/increase-quantity', [CartController::class, 'increaseQuantity'])->name('increaseQuantity');
+Route::put('/cart/decrease-quantity', [CartController::class, 'decreaseQuantity'])->name('decreaseQuantity');
+Route::put('/updateQuantity', [CartController::class, 'updateQuantity'])->name('updateQuantity');
+
+
+
 // xóa giỏ hàng 
 Route::delete('removeFromCart', [CartController::class, 'removeFromCart'])->name('removeFromCart');
 
