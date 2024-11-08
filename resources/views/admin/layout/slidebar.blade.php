@@ -55,7 +55,7 @@
                     <a href="#" class="nav-link ">
                         <i class="nav-icon fas fa-users"></i>
                         <p>
-                            User
+                            Tài Khoản
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
@@ -63,12 +63,12 @@
                         <li class="nav-item">
                             <a href="{{route('admin.user.index')}}" class="nav-link">
 
-                                <p>Danh sách User</p>
+                                <p>Danh sách Tài Khoản</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{route('admin.user.create')}}" class="nav-link">
-                                <p>Thêm User</p>
+                                <p>Thêm Tài Khoản</p>
                             </a>
                         </li>
                     </ul>
@@ -149,7 +149,7 @@
                 {{-- sản phẩm --}}
                 <li class="nav-item ">
                     <a href="#" class="nav-link ">
-                        <i class="nav-icon fas fa-box"></i>
+                        <i class="nav-icon fas fa-cubes"></i>
                         <p>
                             Sản phẩm
                             <i class="right fas fa-angle-left"></i>
@@ -183,6 +183,24 @@
                         <li class="nav-item">
                             <a href="{{route('admin.variant.index')}}" class="nav-link">
                                 <p>Danh sách thuộc tính</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {{-- Đơn Hàng --}}
+                <li class="nav-item ">
+                    <a href="#" class="nav-link ">
+                        <i class="nav-icon fas fa-box"></i>
+                        <p>
+                            Đơn Hàng
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{route('admin.order.index')}}" class="nav-link">
+                                <p>Danh Sách Đơn Hàng</p>
                             </a>
                         </li>
                     </ul>
