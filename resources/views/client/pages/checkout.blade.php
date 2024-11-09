@@ -218,7 +218,8 @@
                                                             id="province">
                                                             <option value = "">Tỉnh / Thành phố</option>
                                                             @foreach ($province as $pro)
-                                                                <option value="{{ $pro->matinh }}">{{ $pro->name }}
+                                                                <option data-id = "{{ $pro->matinh }}" value="{{ $pro->name }}">{{ $pro->name }}
+                                                                    
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -228,14 +229,14 @@
                                                         <label for="">Quận / Huyện</label>
                                                         <select class="custom-select mb-15 city choose" name="city"
                                                             id="city">
-                                                            <option>Quận / Huyện</option>
+                                                            <option value="">Quận / Huyện</option>
 
                                                         </select>
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="">Xã / Phường</label>
                                                         <select class="custom-select mb-15" name="ward" id="ward">
-                                                            <option>Xã / Phường</option>
+                                                            <option value="">Xã / Phường</option>
                                                         </select>
                                                     </div>
                                                     <div class="form-group">
@@ -256,16 +257,16 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            @if ($cart)
-                                                                @foreach ($cart->cartItem as $item)
+                                                            @if ($cartItems)
+                                                                @foreach ($cartItems as $item)
                                                                 <tr>
                                                                     <td style="display: flex;gap: 5px;align-items: center;">
                                                                         <img style="width: 10%;"
-                                                                            src="{{ $item->product_image }}" alt="">
-                                                                        {{ $item->product_name }} x {{ $item->quantity }}
+                                                                            src="{{ $item['image'] }}" alt="">
+                                                                            {{ $item['name'] }}  x {{ $item['quantity'] }}
                                                                     </td>
                                                                     <td class="text-right">
-                                                                        {{ number_format($item->product_price * $item->quantity, 0, ',', '.') . ' VNĐ' }}
+                                                                        {{ number_format($item['total_price'],0,',','.').' VNĐ' }}
                                                                     </td>
                                                                 </tr>
                                                                 @endforeach
@@ -286,7 +287,7 @@
                                                                 <td>Tổng đơn hàng</td>
                                                                 <td class="text-right" name="total_amount"
                                                                     id="total_amount">
-                                                                    {{ number_format($totalAmount, 0, ',', '.') . ' VNĐ' }}
+                                                                    {{ number_format($sub_total,0,',','.').' VNĐ' }}
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -348,13 +349,19 @@
 
             // Khi người dùng chọn tỉnh/thành phố
             provinceSelect.addEventListener('change', function() {
-                let province = provinceSelect.value;
-                province = province.padStart(2, '0'); // Chuyển đổi giá trị thành chuỗi có số 0 đứng đầu
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                
+                const selectedProvince = provinceSelect.selectedOptions[0];
+                const provinceId = selectedProvince ? selectedProvince.dataset.id : ''; // Lấy ID từ data-id
+                const formattedProvinceId = provinceId.padStart(2, '0'); // Đảm bảo provinceId có ít nhất 2 chữ số
+
+               
+                
+                
 
                 // Xóa tất cả tùy chọn trong citySelect và wardSelect
-                citySelect.innerHTML = '<option value="">Quận / Huyện</option>';
-                wardSelect.innerHTML = '<option value="">Xã / Phường</option>'; // Đặt lại tùy chọn phường
+                citySelect.innerHTML = '<option value = "" >Quận / Huyện</option>';
+                wardSelect.innerHTML = '<option value = "" >Xã / Phường</option>'; 
 
                 if (province) {
                     // Gọi API để lấy danh sách thành phố dựa vào tỉnh
@@ -365,14 +372,15 @@
                                 'X-CSRF-TOKEN': csrfToken,
                             },
                             body: JSON.stringify({
-                                province: province,
+                                province: formattedProvinceId,
                             })
                         })
                         .then(response => response.json())
                         .then(data => {
                             data.citys.forEach(city => {
                                 const option = document.createElement('option');
-                                option.value = city.macity;
+                                option.dataset.id = city.macity;
+                                option.value = city.name;
                                 option.textContent = city.name;
                                 citySelect.appendChild(option);
                             });
@@ -385,8 +393,9 @@
 
             // Khi người dùng chọn thành phố
             citySelect.addEventListener('change', function() {
-                let city = citySelect.value;
-                city = city.padStart(3, '0')
+                const selectedCity = citySelect.selectedOptions[0]; // Lấy tùy chọn đã chọn
+                const cityId = selectedCity ? selectedCity.dataset.id : ''; // Lấy ID từ data-id
+                const fomatCityId = cityId.padStart(3,'0');
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 // Xóa tất cả tùy chọn trong wardSelect
                 wardSelect.innerHTML = '<option value="">Xã / Phường</option>'; // Đặt lại tùy chọn phường
@@ -399,14 +408,15 @@
                                 'X-CSRF-TOKEN': csrfToken,
                             },
                             body: JSON.stringify({
-                                city: city
+                                city: fomatCityId
                             })
                         })
                         .then(response => response.json())
                         .then(data => {
                             data.wards.forEach(ward => {
                                 const option = document.createElement('option');
-                                option.value = ward.phuongid;
+                                option.dataset.id = ward.phuongid;
+                                option.value = ward.name;
                                 option.textContent = ward.name;
                                 wardSelect.appendChild(option);
                             });
@@ -433,9 +443,17 @@
             const ward = document.getElementById('ward').value;
             const address_order = document.getElementById('address_order').value;
             const payment_method = document.getElementById('payment_method').value;
-
+           
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+            // alert(recipient_name)
+            // alert(recipient_email)
+            // alert(phone_number)
+            // alert(province)
+            // alert(city)
+            // alert(ward)
+            // alert(address_order)
+            // alert(payment_method)
 
             fetch('{{ route('placeOrder') }}', {
                     method: 'POST',
@@ -462,10 +480,11 @@
                             text: 'Đơn hàng của bạn đã được tạo thành công.',
                             icon: 'success',
                             confirmButtonText: 'OK'
-                        }).then( () => {
+                        })
+                        .then( () => {
                             setTimeout(() => {
                             window.location.href = '{{ route('home') }}';
-                        }, 5000); // Thay đổi 2000 thành số milliseconds mà bạn muốn
+                            }, 5000); 
                         });
                     };
                     // Xử lý dữ liệu trả về

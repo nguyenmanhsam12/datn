@@ -51,7 +51,6 @@ Route::put('/cart/decrease-quantity', [CartController::class, 'decreaseQuantity'
 Route::put('/updateQuantity', [CartController::class, 'updateQuantity'])->name('updateQuantity');
 
 
-
 // xóa giỏ hàng 
 Route::delete('removeFromCart', [CartController::class, 'removeFromCart'])->name('removeFromCart');
 

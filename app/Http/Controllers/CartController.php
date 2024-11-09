@@ -74,7 +74,9 @@ class CartController extends Controller
     {
         $user = Auth::user();
         if (!$user) {
-            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập trước'); // Nếu người dùng chưa đăng nhập, chuyển hướng đến trang đăng nhập
+            return response()->json([
+                'error' => 'Vui lòng đăng nhập trước',
+            ]); // Nếu người dùng chưa đăng nhập, chuyển hướng đến trang đăng nhập
         }
 
         // Kiểm tra dữ liệu từ request

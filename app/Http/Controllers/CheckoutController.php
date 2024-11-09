@@ -11,10 +11,13 @@ use App\Models\Ward;
 
 use App\Models\Payment_Methods;
 use App\Http\Requests\PlaceOrderRequest;
+use App\Mail\OrderShipped;
+use App\Models\CartItems;
 use App\Models\Order;
 use App\Models\OrderAddress;
 use App\Models\OrderItem;
 use App\Models\ProductVariants;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
@@ -25,21 +28,35 @@ class CheckoutController extends Controller
         }
 
         // Tìm giỏ hàng của người dùng
-        $cart = Cart::with('cartItem')->where('user_id', $user->id)->first();
+        $cart = Cart::where('user_id', $user->id)->first();
 
-         // Tính tổng tiền của các sản phẩm trong giỏ hàng
-         $totalAmount = 0;
+        $cartItems = CartItems::with('variants.product','variants.size')->where('cart_id',$cart->id)->get();
+        
+        $cartItems = $cartItems->map(function($item){
+            $variant = $item->variants;
+            $product = $variant->product;
 
-         if ($cart && $cart->cartItem) {
-             foreach ($cart->cartItem as $item) {
-                 $totalAmount += $item->product_price * $item->quantity; // Tính tổng tiền
-             }
-         }
+        
+            return [
+                'id' => $item->id,
+                'variant_id' => $variant->id,
+                'name' => $product->name,
+                'image' =>  asset($product->image),
+                'price' => $variant->price,
+                'quantity' => $item->quantity,
+                'size' => $variant->size->name,
+                'total_price' => $variant->price * $item->quantity,
+            ];
 
+
+        });
+
+        // Tổng đơn hàng
+        $sub_total = $cartItems->sum('total_price');    
         $province = Province::orderBy('matinh','asc')->get();
         $payment = Payment_Methods::all();
         
-        return view('client.pages.checkout',compact('cart','totalAmount','user','province','payment'));
+        return view('client.pages.checkout',compact('cartItems','sub_total','user','province','payment'));
     }
 
     public function selectProvince(Request $request){
@@ -97,18 +114,26 @@ class CheckoutController extends Controller
 
             // Tạo đơn hàng
             // Lấy thông tin giỏ hàng của người dùng
-            $cart = Cart::with('cartItem')->where('user_id', auth()->id())->first();
+            $cart = Cart::where('user_id', auth()->id())->first();
 
-            $total_amount = 0;
-            foreach($cart->cartItem as $ca){
-                $total_amount += $ca->product_price *  $ca->quantity;
+
+            $totalAmount = 0;
+
+            $cartItems = CartItems::with('variants.product','variants.size')->where('cart_id',$cart->id)->get();
+
+            // tổng đơn hàng
+            foreach ($cartItems as $item) {
+                $price = $item->variants->price; 
+                $quantity = $item->quantity; 
+                $totalAmount += $price * $quantity; 
             }
 
+            
             // Tạo đơn hàng mới
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'status_id' => 1, // Đang chờ xử lý
-                'total_amount' => $total_amount,
+                'total_amount' => $totalAmount,
                 'payment_method_id' => $data['payment_method'],
             ]);
 
@@ -126,28 +151,43 @@ class CheckoutController extends Controller
             ]);
 
             // Tạo các mục trong đơn hàng
-            foreach ($cart->cartItem as $cartItem) {
+            foreach ($cartItems as $item) {
 
                 // giảm số lượng khi đặt hàng
                 // decrement hàm có trong orm của laravel dùng để làm giảm 1 cột cụ thể trong bảng
-                $productVariant = ProductVariants::find($cartItem->product_variant_id);
-                $productVariant->decrement('stock', $cartItem->quantity);
+                $productVariant = ProductVariants::find($item->product_variant_id);
+                $productVariant->decrement('stock', $item->quantity);
                 $productVariant->save();
 
 
                 OrderItem::create([
                     'order_id' => $order->id,
-                    'product_variant_id' => $cartItem->product_variant_id,
-                    'quantity' => $cartItem->quantity,
-                    'price' => $cartItem->product_price,
-                    'product_name' => $cartItem->product_name,
-                    'product_image' => $cartItem->product_image,
-                    'size' => $cartItem->size,
+                    'product_variant_id' => $item->product_variant_id,
+                    'quantity' => $item->quantity,
+                    'price' => $productVariant->price,
+                    'product_name' => $productVariant->product->name,
+                    'product_image' => $productVariant->product->image,
+                    'size' => $productVariant->size->name,
                 ]);
             }
 
+            // Eager load các quan hệ: 'payment' và 'orderItems'
+            $order = $order->load('payment', 'cartItems');
+            $orderAddress = $orderAddress->load('province','city','ward');
+
+            
+
             // Xóa giỏ hàng của người dùng
             $cart->delete();
+
+            // Kiểm tra null trước khi gửi email
+            if (!$order || !$orderAddress) {
+                return response()->json(['message' => 'Không tìm thấy đơn hàng hoặc địa chỉ giao hàng.'], 404);
+            }
+            
+
+            // Gửi email xác nhận đơn hàng
+            Mail::to($data['recipient_email'])->queue(new OrderShipped($order,$orderAddress));
 
             // Trả về thông báo thành công
             return response()->json(
@@ -155,7 +195,7 @@ class CheckoutController extends Controller
             );
     
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Đặt hàng không thành công.'], 500);
+            return response()->json(['message' => 'Có lỗi xảy ra: ' . $e->getMessage()], 500);
         }
     }
 }
