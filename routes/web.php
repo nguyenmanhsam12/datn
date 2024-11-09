@@ -14,6 +14,7 @@ use App\Http\Controllers\SizeController;
 use App\Http\Controllers\VariantController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MyAccountController;
+use App\Http\Controllers\OrderAdminController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
@@ -150,5 +151,10 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::get('/edit/{id}',[VariantController::class,'edit'])->name('admin.variant.edit');
         Route::put('/update/{id}',[VariantController::class,'update'])->name('admin.variant.update');
         Route::get('/delete/{id}',[VariantController::class,'delete'])->name('admin.variant.delete');
+    });
+
+    Route::prefix('order')->group(function(){
+        Route::get('/',[OrderAdminController::class,'index'])->name('admin.order.index');
+        Route::get('/detail/{id}',[OrderAdminController::class,'detail'])->name('admin.order.detail');
     });
 });

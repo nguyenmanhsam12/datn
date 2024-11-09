@@ -9,4 +9,6 @@ class OrderController extends Controller
     public function order(){
         return view('client.pages.order');
     }
+
+    
 }
