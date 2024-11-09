@@ -70,7 +70,7 @@
                 <!-- logo start -->
                 <div class="col-md col-6">
                     <div class="top-logo">
-                        <a href="{{route('home')}}"><img style="width: 100px;" src="{{asset('img/logo/logo.png')}}" alt="" /></a>
+                        <a href="{{route('home')}}"><img style="width: 200px;" src="{{asset('img/logo/logo.png')}}" alt="" /></a>
                     </div>
                 </div>
                 <!-- logo end -->
