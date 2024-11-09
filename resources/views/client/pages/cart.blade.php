@@ -312,7 +312,7 @@
                                     </table>
 
 
-                                    <a href="{{ route('checkout') }}" class="submit-button button-one text-center w-100 mt-3" data-text="Thanh Toán">Thanh Toán</a>
+                                    <a href="" id="check_out" class="submit-button button-one text-center w-100 mt-3 check" data-text="Thanh Toán">Thanh Toán</a>
                                 </div>
                             </div>
                         </div>
@@ -333,9 +333,6 @@
                 const cartCount = document.querySelector('.cart-count');
                 cartCount.textContent = newQuantityCart
             }
-
-
-
             // Format lại giá tiền
             function formatPrice(price) {
                 // Chuyển giá trị thành chuỗi và loại bỏ các ký tự không phải là số
@@ -343,7 +340,6 @@
                 // Thêm đuôi "VNĐ"
                 return formattedPrice + " VNĐ";
             }
-
             // Xử lý tăng số lượng
             document.querySelectorAll('.increase-quantity').forEach(function(button) {
                 button.addEventListener('click', function() {
@@ -436,8 +432,6 @@
                         .catch(error => console.error('Error:', error));
                 });
             });
-
-
             // focus ô input
             // Lắng nghe thay đổi số lượng từ ô input
             document.querySelectorAll('.cart-plus-minus-box').forEach(function(input) {
@@ -451,7 +445,6 @@
 
                     // số lượng
                     const quantityInput = this;
-
                     // lấy ra từng thành của tiền của 1 sản phẩm
                     let itemTotalPrice = document.querySelector(`.total-price-${cartItemId}`);
 
@@ -524,6 +517,31 @@
                         });
 
                 });
+            });
+
+            // kiểm tra lỗi trước khi sang trang thanh toán
+            document.getElementById('check_out').addEventListener('click', function(event) {
+                event.preventDefault(); // Ngừng việc chuyển trang để kiểm tra lỗi
+
+                const errorMessages = document.querySelectorAll('.error-message'); // Lấy tất cả các thông báo lỗi
+                let hasError = false;
+
+                // Kiểm tra nếu có bất kỳ thông báo lỗi nào hiển thị
+                errorMessages.forEach(function(errorMessage) {
+                    if (errorMessage.style.display === 'block') {
+                        hasError = true; // Nếu có lỗi, gán hasError thành true
+                    }
+                });
+
+                // Nếu không có lỗi, chuyển sang trang thanh toán
+                if (!hasError) {
+                    // Chuyển trang đến trang thanh toán
+                    window.location.href = '{{ route('checkout') }}'; // Hoặc sử dụng phương thức chuyển hướng khác
+                } else {
+                    // Nếu có lỗi, không thực hiện chuyển trang
+                    console.log('Có lỗi cần sửa trước khi thanh toán!');
+                }
+                
             });
         });
     </script>

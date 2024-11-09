@@ -4,6 +4,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
 
     <style>
         .size-option {
@@ -396,6 +401,14 @@
             const quantityInput = document.querySelector('input[name="qtybutton"]');
             const cartCountElement = document.querySelector('.cart-count'); // Phần tử hiển thị số lượng sản phẩm
 
+            // Cấu hình Toastr
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "3000"
+            };
+
 
             addToCartButton.addEventListener('click', function(e) {
 
@@ -429,6 +442,15 @@
                     })
                     .then(response => response.json())
                     .then(data => {
+
+                        console.log(data);
+                        
+
+                        if(data.error){
+                            toastr.error(data.error); // Hiển thị lỗi yêu cầu đăng nhập bằng toastr
+                            return;
+                        }   
+
                         if (data.message) {
                             Swal.fire({
                                 title: 'Thêm vào giỏ hàng thành công!',
@@ -453,6 +475,7 @@
                                 cartCountElement.textContent = data.cartItemCount;
                             }
                         }
+                        
                     })
                     .catch(error => {
                         console.error('Lỗi:', error);
