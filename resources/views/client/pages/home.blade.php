@@ -39,7 +39,7 @@
                                         <div class="product-action clearfix">
                                             <a href="#" data-bs-toggle="tooltip" data-bs-placement="top"
                                                 title="Wishlist"><i class="zmdi zmdi-favorite-outline"></i></a>
-                                            <a href="#" data-bs-toggle="modal" data-bs-target="#productModal"
+                                            <a href="#" data-bs-toggle="modal" data-bs-target="#productModal{{ $pr->id }}"
                                                 title="Quick View"><i class="zmdi zmdi-zoom-in"></i></a>
                                             <a href="#" data-bs-toggle="tooltip" data-bs-placement="top"
                                                 title="Compare"><i class="zmdi zmdi-refresh"></i></a>
@@ -62,6 +62,10 @@
                                     </div>
                                 </a>
                             </div>
+
+
+                            {{-- modal --}}
+                           
                         @endforeach
 
                         <!-- Single-product end -->
