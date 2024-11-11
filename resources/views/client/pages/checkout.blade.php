@@ -191,9 +191,8 @@
                                         <div class="row">
                                             <div class="col-md-6 col-12">
                                                 <div class="billing-details pr-20">
-                                                    <h4 class="title-1 title-border text-uppercase mb-30">Chi tiết thanh
-                                                        toán</h4>
-                                                    <div class="form-group">
+                                                    <h4 class="title-1 title-border text-uppercase mb-30">Thông tin thanh toán</h4>
+                                                    <div class="form-group">    
 
                                                         <label for="">Tên người nhận</label>
                                                         <input type="text" placeholder="Tên của bạn..."
@@ -276,18 +275,17 @@
                                                             
                                                             <tr>
                                                                 <td>Giảm giá</td>
-                                                                <td class="text-right">0 VNĐ</td>
+                                                                <td class="text-right">{{ number_format(session('discount',0),0,',','.').' VNĐ' }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Phí vận chuyển</td>
                                                                 <td class="text-right">0 VNĐ</td>
                                                             </tr>
-
                                                             <tr>
                                                                 <td>Tổng đơn hàng</td>
                                                                 <td class="text-right" name="total_amount"
                                                                     id="total_amount">
-                                                                    {{ number_format($sub_total,0,',','.').' VNĐ' }}
+                                                                    {{ number_format(session('newTotal',0),0,',','.').' VNĐ' }}
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -445,15 +443,6 @@
             const payment_method = document.getElementById('payment_method').value;
            
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            // alert(recipient_name)
-            // alert(recipient_email)
-            // alert(phone_number)
-            // alert(province)
-            // alert(city)
-            // alert(ward)
-            // alert(address_order)
-            // alert(payment_method)
 
             fetch('{{ route('placeOrder') }}', {
                     method: 'POST',

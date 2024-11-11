@@ -2,16 +2,59 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
+use App\Models\OrderStatus;
 use Illuminate\Http\Request;
 
 class OrderAdminController extends Controller
 {
     // Giao diện admin
-    public function index(){
-        return view('admin.order.list');
+    public function index()
+    {
+        $orders = Order::with('user', 'payment', 'orderStatus')->orderBy('id', 'desc')->get();
+        $order_status = OrderStatus::all();
+        return view('admin.order.list', compact('orders', 'order_status'));
     }
 
-    public function detail() {
-        return view('admin.order.detailOrder');
+    public function detail($id)
+    {
+        $order = Order::with('user', 'payment', 'orderStatus', 'orderAddress', 'cartItems')->find($id);
+        $order_status = OrderStatus::all();
+        return view('admin.order.detailOrder', compact('order', 'order_status'));
+    }
+
+    public function updateOrder(Request $request)
+    {   
+        $data = $request->all();
+
+        $orderId = $data['orderId'];
+        $newStatus = $data['status_id'];
+
+        $order = Order::find($orderId);
+        if ($order) {
+            $order->status_id = $newStatus;
+            $order->save();
+            return redirect()->route('admin.order.index')->with('success','Cập nhật thành công');
+        } else {
+            return redirect()->route('admin.order.index')->with('error','Không tìm thấy đơn hàng');
+        }
+    }
+
+    // cập nhật bằng js
+    public function updateStatus(Request $request)
+    {   
+        $data = $request->all();
+
+        $orderId = $data['orderId'];
+        $newStatus = $data['status_id'];
+
+        $order = Order::find($orderId);
+        if ($order) {
+            $order->status_id = $newStatus;
+            $order->save();
+            return response()->json(['message' => 'Cập nhật trạng thái thành công!'],200);
+        } else {
+            return response()->json(['message' => 'Không tìm thấy đơn hàng!'], 404);
+        }
     }
 }

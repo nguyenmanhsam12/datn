@@ -9,6 +9,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\VariantController;
@@ -53,6 +54,12 @@ Route::put('/updateQuantity', [CartController::class, 'updateQuantity'])->name('
 
 // xóa giỏ hàng 
 Route::delete('removeFromCart', [CartController::class, 'removeFromCart'])->name('removeFromCart');
+
+// áp mã giảm giá vào giỏ hàng
+Route::post('/apply-coupon', [CartController::class, 'applyCoupon'])->name('applyCoupon');
+// hủy mã giảm giá
+Route::post('/remove-coupon', [CartController::class, 'removeCoupon'])->name('removeCoupon');
+
 
 // xử lí đơn vị hành chính
 Route::post('/selectProvince',[CheckoutController::class,'selectProvince'])->name('selectProvince');
@@ -155,5 +162,18 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
     Route::prefix('order')->group(function(){
         Route::get('/',[OrderAdminController::class,'index'])->name('admin.order.index');
         Route::get('/detail/{id}',[OrderAdminController::class,'detail'])->name('admin.order.detail');
+        Route::put('/admin/orders/update-status', [OrderAdminController::class, 'updateStatus'])->name('admin.order.updateStatus');
+        Route::put('/admin/orders/update-order', [OrderAdminController::class, 'updateOrder'])->name('admin.order.updateOrder');
+
+
+    });
+
+    Route::prefix('coupons')->group(function(){
+        Route::get('/',[CouponController::class,'index'])->name('admin.coupons.index');
+        Route::get('/create',[CouponController::class,'create'])->name('admin.coupons.create');
+        Route::post('/storeCoupon',[CouponController::class,'storeCoupon'])->name('admin.coupons.storeCoupon');
+        Route::get('/edit/{id}',[CouponController::class,'edit'])->name('admin.coupons.edit');
+        Route::put('/update/{id}',[CouponController::class,'update'])->name('admin.coupons.update');
+        Route::get('/delete/{id}',[CouponController::class,'delete'])->name('admin.coupons.delete');
     });
 });

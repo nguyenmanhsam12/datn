@@ -1,9 +1,6 @@
 @extends('admin.layout.default')
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('backend/plugins/select2/css/select2.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('backend/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
-@endpush
+
 
 @section('content')
     <div class="content-wrapper">
@@ -113,19 +110,4 @@
     </div>
 @endsection
 
-@push('script')
 
-    <script>
-        <script src="{{ asset('backend/plugins/select2/js/select2.full.min.js') }}"></script>
-    </script>
-
-    <script type="text/javascript">
-        $(function() {
-            if ($.fn.select2) {
-                $('#select2').select2();
-            } else {
-                console.error("Select2 plugin is not loaded");
-            }
-        })
-    </script>
-@endpush
