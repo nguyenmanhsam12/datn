@@ -279,13 +279,13 @@
                                                             </tr>
                                                             <tr>
                                                                 <td>Phí vận chuyển</td>
-                                                                <td class="text-right">0 VNĐ</td>
+                                                                <td class="text-right">{{ number_format($shipping,0,',','.').' VNĐ' }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Tổng đơn hàng</td>
                                                                 <td class="text-right" name="total_amount"
                                                                     id="total_amount">
-                                                                    {{ number_format(session('newTotal',0),0,',','.').' VNĐ' }}
+                                                                    {{ number_format($newTotal,0,',','.').' VNĐ' }}
                                                                 </td>
                                                             </tr>
                                                         </tbody>

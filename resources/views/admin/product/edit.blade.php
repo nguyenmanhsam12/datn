@@ -56,12 +56,22 @@
                                     @enderror
                                 </div>
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Mô tả</label>
-                                    <textarea name="description" id="summernote" cols="10" rows="5" class="form-control">
+                                    <label for="exampleInputEmail1">Mô tả ngắn</label>
+                                    <textarea name="description" id="" cols="10" rows="5" class="form-control">
                                         {{$product->description}}
                                     </textarea>
 
                                     @error('description')
+                                        <div class="text-danger mt-3">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="description_text">Mô tả dài</label>
+                                    <textarea name="description_text" id="summernote" cols="10" rows="5" class="form-control">
+                                        {{$product->description_text}}
+                                    </textarea>
+                                    @error('description_text')
                                         <div class="text-danger mt-3">{{ $message }}</div>
                                     @enderror
                                 </div>

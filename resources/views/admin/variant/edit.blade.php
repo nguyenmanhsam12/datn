@@ -64,6 +64,12 @@
                                     >
                                 </div>
                                 <div class="form-group">
+                                    <label for="weight">Trọng lượng</label>
+                                    <input type="text" class="form-control" name="weight"
+                                    value="{{ $variant->weight }}"
+                                    >
+                                </div>
+                                <div class="form-group">
                                     <label for="inputStatus">Giá</label>
                                     <input type="text" class="form-control" name="price"
                                     value="{{ $variant->price }}"

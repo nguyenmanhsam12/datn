@@ -76,6 +76,8 @@ class CartController extends Controller
         // Tính tổng tiền của giỏ hàng
         $totalAmount = $cartItems->sum('total_price');
 
+        
+
         // Lưu tổng giỏ hàng vào session
         session(['totalAmount' => $totalAmount]);
 

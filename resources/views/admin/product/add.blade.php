@@ -52,10 +52,17 @@
                                     @enderror
                                 </div>
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Mô tả</label>
-                                    <textarea name="description" id="summernote" cols="10" rows="5" class="form-control"></textarea>
+                                    <label for="exampleInputEmail1">Mô tả ngắn</label>
+                                    <textarea name="description" id="" cols="10" rows="5" class="form-control"></textarea>
 
                                     @error('description')
+                                        <div class="text-danger mt-3">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="form-group">
+                                    <label for="description_text">Mô tả dài</label>
+                                    <textarea name="description_text" id="summernote" cols="10" rows="5" class="form-control"></textarea>
+                                    @error('description_text')
                                         <div class="text-danger mt-3">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -145,6 +152,12 @@
                                                     </div>
 
                                                     <div class="form-group">
+                                                        <label for="weight">Trọng lượng</label>
+                                                        <input type="text" id="weight" class="form-control"
+                                                            name="variants[0][weight]">
+                                                    </div>
+
+                                                    <div class="form-group">
                                                         <label for="inputPrice">Giá</label>
                                                         <input type="text" id="inputPrice" class="form-control"
                                                             name="variants[0][price]">
@@ -231,6 +244,10 @@
                             <div class="form-group">
                                 <label for="inputStock${attributeIndex}">Số lượng</label>
                                 <input type="text" id="inputStock${attributeIndex}" class="form-control" name="variants[${attributeIndex}][stock]">
+                            </div>
+                            <div class="form-group">
+                                <label for="weight${attributeIndex}">Trọng lượng</label>
+                                <input type="text" id="weight${attributeIndex}" class="form-control" name="variants[${attributeIndex}][weight]">
                             </div>
                             <div class="form-group">
                                 <label for="inputPrice${attributeIndex}">Giá</label>

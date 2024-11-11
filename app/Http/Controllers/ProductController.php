@@ -71,6 +71,7 @@ class ProductController extends Controller
         $product = Product::create([
             'name' => $validatedData['name'],
             'description' => $validatedData['description'],
+            'description_text' => $validatedData['description_text'],
             'brand_id' => $validatedData['brand_id'],
             'category_id' => $validatedData['category_id'],
             'sku' => $validatedData['sku'],
@@ -93,6 +94,8 @@ class ProductController extends Controller
                         'product_id' => $product->id,
                         'size_id' => $variant['size_id'],
                         'price' => $variant['price'],
+                        'weight' => $variant['weight'],
+
                     ]);
                 }
 
@@ -102,6 +105,7 @@ class ProductController extends Controller
                     'size_id' => $variant['size_id'],
                     'stock' => $variant['stock'],
                     'price' => $variant['price'],
+                    'weight' => $variant['weight'],
                 ]);
             }
         }
@@ -172,6 +176,7 @@ class ProductController extends Controller
             $product->update([
                 'name' => $validatedData['name'],
                 'description' => $validatedData['description'],
+                'description_text' => $validatedData['description_text'],
                 'brand_id' => $validatedData['brand_id'],
                 'category_id' => $validatedData['category_id'],
                 'sku' => $validatedData['sku'],
