@@ -206,6 +206,28 @@
                     </ul>
                 </li>
 
+                {{-- mã giảm giá --}}
+                <li class="nav-item ">
+                    <a href="#" class="nav-link ">
+                        <i class="nav-icon fas fa-gift"></i>
+                        <p>
+                            Mã giảm giá
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{route('admin.coupons.index')}}" class="nav-link">
+                                <p>Danh Sách Mã</p>
+                            </a>
+                            <a href="{{route('admin.coupons.create')}}" class="nav-link">
+                                <p>Thêm mã giảm giá</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Dashboard</title>
 
     <!-- Google Font: Source Sans Pro -->
@@ -18,7 +19,7 @@
     <!-- iCheck -->
     <link rel="stylesheet" href="{{asset('backend/plugins/icheck-bootstrap/icheck-bootstrap.min.css')}}">
     <!-- JQVMap -->
-    <link rel="stylesheet" href="{{asset('backend/plugins/jqvmap/jqvmap.min.css')}}">
+    {{-- <link rel="stylesheet" href="{{asset('backend/plugins/jqvmap/jqvmap.min.css')}}"> --}}
     <!-- Theme style -->
     <link rel="stylesheet" href="{{asset('backend/dist/css/adminlte.min.css')}}">
     <!-- overlayScrollbars -->
@@ -79,10 +80,10 @@
     <!-- ChartJS -->
     <script src="{{asset('backend/plugins/chart.js/Chart.min.js')}}"></script>
     <!-- Sparkline -->
-    <script src="{{asset('backend/plugins/sparklines/sparkline.js')}}"></script>
+    {{-- <script src="{{asset('backend/plugins/sparklines/sparkline.js')}}"></script> --}}
     <!-- JQVMap -->
-    <script src="{{asset('backend/plugins/jqvmap/jquery.vmap.min.js')}}"></script>
-    <script src="{{asset('backend/plugins/jqvmap/maps/jquery.vmap.usa.js')}}"></script>
+    {{-- <script src="{{asset('backend/plugins/jqvmap/jquery.vmap.min.js')}}"></script> --}}
+    {{-- <script src="{{asset('backend/plugins/jqvmap/maps/jquery.vmap.usa.js')}}"></script> --}}
     <!-- jQuery Knob Chart -->
     <script src="{{asset('backend/plugins/jquery-knob/jquery.knob.min.js')}}"></script>
     <!-- daterangepicker -->

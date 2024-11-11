@@ -10,7 +10,7 @@
             text-align: center;
             border: 1px dotted #333;
             padding: 20px;
-            background-color: rgba(129, 185, 242, 0.1)
+            background-color: rgba(129, 185, 242, 0.1);
         }
 
         .notice__subtitle {
@@ -20,7 +20,6 @@
             justify-content: center;
             gap: 5px;
         }
-
 
         .text-light-black {
             display: -webkit-box;
@@ -32,105 +31,82 @@
         .coupon-section,
         .payment-details {
             background-color: #ffffff;
-            /* Màu nền trắng cho phần giảm giá và thanh toán */
             border-radius: 10px;
-            /* Bo góc */
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            /* Đổ bóng nhẹ cho phần */
         }
 
         .coupon-section h4,
         .payment-details h4 {
             font-size: 1.25rem;
-            /* Kích thước font cho tiêu đề */
             color: #333;
-            /* Màu chữ */
             font-weight: bold;
-            /* Chữ đậm */
             margin-bottom: 15px;
-            /* Khoảng cách dưới tiêu đề */
         }
 
         .table-bordered th,
         .table-bordered td {
             vertical-align: middle;
-            /* Căn giữa cho ô */
         }
-
-
 
         .payment-details .table tr td {
             padding: 8px 0;
-            /* Padding cho ô trong bảng thanh toán */
+            text-align: right;
+            vertical-align: middle;
+        }
+
+        .payment-details .table tr:first-child td {
+            font-weight: 500;
         }
 
         .payment-details .table tr:last-child td {
             font-weight: bold;
-            /* Chữ đậm cho dòng tổng đơn hàng */
             color: #3F51B5;
-            /* Màu sắc cho tổng đơn hàng */
         }
 
         .btn-primary {
             background-color: #007bff;
-            /* Màu nền cho nút chính */
             border: none;
-            /* Bỏ viền */
             color: #fff;
-            /* Màu chữ */
         }
 
         .btn-primary:hover {
             background-color: #0056b3;
-            /* Màu nền khi hover */
         }
 
         .btn-success {
             background-color: #28a745;
-            /* Màu nền cho nút thành công */
             border: none;
-            /* Bỏ viền */
             color: #fff;
-            /* Màu chữ */
         }
 
         .btn-success:hover {
             background-color: #218838;
-            /* Màu nền khi hover */
         }
 
         .text-danger i {
             font-size: 1.25rem;
-            /* Kích thước biểu tượng cảnh báo */
             color: #dc3545;
-            /* Màu đỏ cho biểu tượng cảnh báo */
         }
 
         .mt-4 {
             margin-top: 1.5rem;
-            /* Khoảng cách trên */
         }
 
         .mt-5 {
             margin-top: 3rem;
-            /* Khoảng cách trên */
         }
 
         .cart-item {
             display: flex;
             align-items: center;
             gap: 5px;
-            /* Khoảng cách giữa các nút và input */
         }
 
         .cart-item button,
         .cart-item input {
             height: 36px;
-            /* Đặt chiều cao cố định cho cả button và input */
             line-height: 36px;
-            /* Căn giữa nội dung theo chiều dọc */
             padding: 0 10px;
-            /* Điều chỉnh khoảng cách trong các nút */
             font-size: 14px;
         }
 
@@ -161,14 +137,16 @@
         .error-message {
             position: absolute;
             top: 100%;
-            /* Hiển thị ngay dưới ô input */
             left: 0;
             color: red;
             font-size: 12px;
             margin-top: 4px;
             display: none;
             white-space: nowrap;
-            /* Tránh xuống dòng nếu thông báo dài */
+        }
+
+        .payment-details .table tr td:first-child {
+            text-align: left;
         }
     </style>
 @endpush
@@ -282,8 +260,16 @@
                                 <div class="coupon-section p-4 border">
                                     <h4>Mã Giảm Giá</h4>
                                     <p>Nhập mã giảm giá của bạn nếu có:</p>
-                                    <input type="text" class="form-control mb-3" placeholder="Mã giảm giá">
-                                    <button class="submit-button button-one" data-text="Áp dụng">Áp dụng</button>
+                                    <input type="text" class="form-control mb-3" id="couponCode" placeholder="Mã giảm giá">
+                                    @if (session()->has('coupon_id'))
+                                         <!-- Nút Xóa Mã Giảm Giá -->
+                                         <button id="cancelCoupon" class="submit-button button-one mt-2" data-text="Hủy mã giảm giá"
+                                         >Hủy mã giảm giá</button>
+                                    @else
+                                        <button id="applyCoupon" class="submit-button button-one" data-text="Áp dụng">Áp
+                                            dụng</button>
+                                    @endif
+                                    <span id="coupon_message" class="text-success mt-3" style="display: none;"></span>
                                 </div>
                             </div>
 
@@ -295,24 +281,28 @@
                                         <tr>
                                             <td>Tổng tiền</td>
                                             <td class="total-amount">
-                                                {{ number_format($totalAmount, 0, ',', '.') . ' VNĐ' }}
+                                                {{ number_format(session('totalAmount', 0), 0, ',', '.').' VNĐ' }}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>Giảm giá</td>
-                                            <td class="text-end">0</td>
+                                            <td class="text-end">{{ number_format(session('discount', 0), 0, ',', '.').' VNĐ' }}</td>
                                         </tr>
                                         <tr>
                                             <td><strong>Tổng đơn hàng</strong></td>
                                             <td>
                                                 <strong
-                                                    class="total-items">{{ number_format($totalAmount, 0, ',', '.') . ' VNĐ' }}</strong>
+                                                    class="total-items">{{ number_format($newTotal, 0, ',', '.').' VNĐ' }}
+                                                
+                                                </strong>
                                             </td>
                                         </tr>
                                     </table>
 
 
-                                    <a href="" id="check_out" class="submit-button button-one text-center w-100 mt-3 check" data-text="Thanh Toán">Thanh Toán</a>
+                                    <a href="" id="check_out"
+                                        class="submit-button button-one text-center w-100 mt-3 check"
+                                        data-text="Thanh Toán">Thanh Toán</a>
                                 </div>
                             </div>
                         </div>
@@ -329,7 +319,7 @@
         document.addEventListener("DOMContentLoaded", function() {
 
             // hàm cập nhập số lượng giỏ hàng trên icon
-            function updateCartIconQuantity(newQuantityCart){
+            function updateCartIconQuantity(newQuantityCart) {
                 const cartCount = document.querySelector('.cart-count');
                 cartCount.textContent = newQuantityCart
             }
@@ -347,17 +337,18 @@
                     const cartItemId = cartItem.getAttribute('data-id');
                     let quantity = cartItem.querySelector('.cart-plus-minus-box');
                     let itemTotalPrice = document.querySelector(`.total-price-${cartItemId}`);
+
                     const csrfToken = document.querySelector('meta[name="csrf-token"]')
                         .getAttribute('content');
 
+                    const errorMessage = cartItem.querySelector(
+                            '.error-message'); // Thẻ hiển thị lỗi  
+                    // Xóa lỗi nếu giá trị hợp lệ
+                    errorMessage.style.display = 'none';
+                    errorMessage.innerText = '';
+
                     let totalAmount = document.querySelector('.total-amount');
-                    let totalItems = document.querySelector('.total-items');
-
-
-                    // message lỗi
-                    const errorMessage = cartItem.querySelector('.error-message'); // Thẻ hiển thị lỗi
-                    errorMessage.style.display = 'none'; // Ẩn thông báo lỗi
-
+                    let totalItems = document.querySelector('.total-items');            
 
                     fetch('{{ route('increaseQuantity') }}', {
                             method: 'PUT',
@@ -371,14 +362,17 @@
                         })
                         .then(response => response.json())
                         .then(data => {
-                            if (data) {
+                            if (data.error) {
+                                // Hiển thị thông báo lỗi từ server
+                                console.log('số lượng bạn thêm vượt quá số lượng trong kho');
+                            } else {
                                 quantity.value = data.quantity;
                                 itemTotalPrice.innerText = formatPrice(data.totalPrice);
                                 updateCartIconQuantity(data.quantityCartIcon);
-                                totalAmount.textContent = formatPrice(data.totalCartPrice);
+                                totalAmount.textContent = formatPrice(data.total);
                                 totalItems.textContent = formatPrice(data.totalCartPrice);
-                            } else {
-                                alert('Error increasing quantity.');
+                                document.querySelector('.text-end').textContent = formatPrice(data.discount);
+
                             }
                         })
                         .catch(error => console.error('Error:', error));
@@ -402,7 +396,8 @@
                     const csrfToken = document.querySelector('meta[name="csrf-token"]')
                         .getAttribute('content');
 
-                    const errorMessage = cartItem.querySelector('.error-message'); // Thẻ hiển thị lỗi
+                    const errorMessage = cartItem.querySelector(
+                    '.error-message'); // Thẻ hiển thị lỗi
                     errorMessage.style.display = 'none'; // Ẩn thông báo lỗi
 
 
@@ -424,6 +419,7 @@
                                 updateCartIconQuantity(data.quantityCartIcon);
                                 totalAmount.textContent = formatPrice(data.totalCartPrice);
                                 totalItems.textContent = formatPrice(data.totalCartPrice);
+                                document.querySelector('.text-end').textContent = formatPrice(data.discount);
 
                             } else {
                                 alert('Error decreasing quantity or minimum quantity reached.');
@@ -450,17 +446,20 @@
 
                     const errorMessage = cartItem.querySelector(
                         '.error-message'); // Thẻ hiển thị lỗi  
+
                     const csrfToken = document.querySelector('meta[name="csrf-token"]')
                         .getAttribute('content');
 
                     // Xóa lỗi nếu giá trị hợp lệ
                     errorMessage.style.display = 'none';
                     errorMessage.innerText = '';
+
                     // Kiểm tra nếu ô nhập trống
                     if (quantityInput.value === "") {
                         errorMessage.innerText = 'Số lượng không được để trống.';
                         errorMessage.style.display = 'block';
-                        itemTotalPrice.innerText = formatPrice(0); // Cập nhật lại thành tiền thành 0
+                        itemTotalPrice.innerText = formatPrice(
+                        0); // Cập nhật lại thành tiền thành 0
                         return;
                     }
 
@@ -470,7 +469,7 @@
                         errorMessage.innerText = 'Số lượng phải là một số.';
                         errorMessage.style.display = 'block';
                         itemTotalPrice.innerText = formatPrice(
-                        0); // Cập nhật lại thành tiền thành 0
+                            0); // Cập nhật lại thành tiền thành 0
                         return;
                     }
 
@@ -479,7 +478,7 @@
                         errorMessage.innerText = 'Số lượng phải lớn hơn 0.';
                         errorMessage.style.display = 'block';
                         itemTotalPrice.innerText = formatPrice(
-                        0); // Cập nhật lại thành tiền thành 0
+                            0); // Cập nhật lại thành tiền thành 0
                         return;
                     }
 
@@ -507,7 +506,8 @@
                                 updateCartIconQuantity(data.quantityCartIcon);
                                 totalAmount.textContent = formatPrice(data.totalCartPrice);
                                 totalItems.textContent = formatPrice(data.totalCartPrice);
-                                
+                                document.querySelector('.text-end').textContent = formatPrice(data.discount);
+
                             }
                         })
                         .catch(error => {
@@ -523,7 +523,8 @@
             document.getElementById('check_out').addEventListener('click', function(event) {
                 event.preventDefault(); // Ngừng việc chuyển trang để kiểm tra lỗi
 
-                const errorMessages = document.querySelectorAll('.error-message'); // Lấy tất cả các thông báo lỗi
+                const errorMessages = document.querySelectorAll(
+                '.error-message'); // Lấy tất cả các thông báo lỗi
                 let hasError = false;
 
                 // Kiểm tra nếu có bất kỳ thông báo lỗi nào hiển thị
@@ -536,18 +537,93 @@
                 // Nếu không có lỗi, chuyển sang trang thanh toán
                 if (!hasError) {
                     // Chuyển trang đến trang thanh toán
-                    window.location.href = '{{ route('checkout') }}'; // Hoặc sử dụng phương thức chuyển hướng khác
+                    window.location.href =
+                    '{{ route('checkout') }}'; // Hoặc sử dụng phương thức chuyển hướng khác
                 } else {
                     // Nếu có lỗi, không thực hiện chuyển trang
                     console.log('Có lỗi cần sửa trước khi thanh toán!');
                 }
-                
+
             });
+
+            // Lắng nghe sự kiện click vào nút áp dụng
+            document.getElementById('applyCoupon')?.addEventListener('click', function() {
+                var couponCode = document.getElementById('couponCode').value;
+                let coupon_message = document.getElementById('coupon_message');
+
+                if (couponCode) {
+                    // Gửi mã giảm giá đến backend thông qua AJAX
+                    fetch('{{ route('applyCoupon') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                code: couponCode
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Cập nhật thông báo và tổng tiền sau giảm giá
+                                coupon_message.innerText = data.message;
+                                coupon_message.style.display = 'block';
+                                document.querySelector('.text-end').textContent = formatPrice(data.discount);
+                                document.querySelector('.total-items').textContent = formatPrice(data.new_total);    
+                                location.reload();
+                            } else {
+                                // Hiển thị lỗi nếu mã giảm giá không hợp lệ
+                                coupon_message.textContent = data.message;
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                } else {
+                    console.error('Error:', error);
+                    coupon_message.textContent = 'Đã xảy ra lỗi khi áp dụng mã giảm giá';
+                    coupon_message.style.display = 'block';
+                }
+            });
+
+            document.getElementById('cancelCoupon')?.addEventListener('click', function() {
+
+                
+                fetch('{{ route('removeCoupon') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('coupon_message').innerText = 'Mã giảm giá đã được hủy!';
+                        document.querySelector('.total-items').textContent = formatPrice(data.original_total);
+
+                        // Reload trang để cập nhật giao diện dựa trên session
+                        location.reload();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+
+            
+
         });
     </script>
 
     {{-- xóa giỏ 1 sp trong giỏ hàng --}}
     <script>
+
+            function formatPrice(price) {
+                            // Chuyển giá trị thành chuỗi và loại bỏ các ký tự không phải là số
+                            let formattedPrice = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                            // Thêm đuôi "VNĐ"
+                            return formattedPrice + " VNĐ";
+            }
+
         document.addEventListener('DOMContentLoaded', function() {
             const removeButtons = document.querySelectorAll('.remove-from-cart');
 
@@ -590,10 +666,11 @@
                                     // Cập nhật giao diện: xóa sản phẩm khỏi bảng
                                     this.closest('tr').remove(); // Xóa hàng khỏi bảng
 
-                                    updateCartIconQuantity(data
-                                        .newQuantityCart); // Cập nhật số lượng trên biểu tượng giỏ hàng
+                                    updateCartIconQuantity(data .newQuantityCart); // Cập nhật số lượng trên biểu tượng giỏ hàng
                                     // Cập nhật tổng tiền và tổng số đơn hàng
-                                    updateTotals(data.cartTotal, data.cartTotal);
+                                    updateTotals(data.newTotalAmount, data.newTotalAmount);
+                                    document.querySelector('.text-end').textContent = formatPrice(data.discount);
+
                                     // Hiển thị thông báo thành công
                                     Swal.fire(
                                         'Đã xóa!',
@@ -620,7 +697,7 @@
                 });
             }
 
-            function updateCartIconQuantity(newQuantityCart){
+            function updateCartIconQuantity(newQuantityCart) {
                 const cartCount = document.querySelector('.cart-count');
                 cartCount.textContent = newQuantityCart
             }

@@ -7,7 +7,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="mb-4">Chi tiết Đơn hàng #12345</h1>
+                        <h1 class="mb-4">Chi tiết Đơn hàng # {{ $order->id }}</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -27,18 +27,23 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <p><strong>Mã Đơn hàng:</strong> #12345</p>
-                            <p><strong>Ngày Đặt hàng:</strong> 10/11/2023</p>
-                            <p><strong>Hình Thức Thanh Toán:</strong> Thanh Toán Online</p>
+                            <p><strong>Mã Đơn hàng:</strong> #{{ $order->id }}</p>
+                            <p><strong>Ngày Đặt hàng:</strong> {{ $order->created_at }}</p>
+                            <p><strong>Hình Thức Thanh Toán:</strong> {{ $order->payment->name }}</p>
                             <p><strong>Trạng thái:</strong>
-                                <span class="badge badge-warning text-white">Chờ xử lý</span>
+                                <span class="badge badge-warning text-white">{{ $order->orderStatus->name }}</span>
                             </p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>Tên khách hàng:</strong> Nguyễn Văn A</p>
-                            <p><strong>Email:</strong> nguyenvana@example.com</p>
-                            <p><strong>Số điện thoại:</strong> 0123456789</p>
-                            <p><strong>Địa Chỉ:</strong> 19C Hoàng Diệu, Điên Biên, Ba Đình, Hà Nội</p>
+                            <p><strong>Tên Người Nhận:</strong>{{ $order->orderAddress->recipient_name }}</p>
+                            <p><strong>Email:</strong>{{ $order->orderAddress->recipient_email }}</p>
+                            <p><strong>Số điện thoại:</strong> {{ $order->orderAddress->phone_number }}</p>
+                            <p><strong>Địa Chỉ:</strong> 
+                                {{ $order->orderAddress->address_order }},
+                                {{ $order->orderAddress->ward }},
+                                {{ $order->orderAddress->city }},
+                                {{ $order->orderAddress->province }}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -47,12 +52,13 @@
             <!-- Danh sách sản phẩm trong đơn hàng -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <strong>Danh sách Sản phẩm</strong>
+                    <strong>Thông tin sản phẩm đã đặt</strong>
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered">
                         <thead>
                             <tr>
+                                <th>Hình ảnh</th>
                                 <th>Sản phẩm</th>
                                 <th>Số lượng</th>
                                 <th>Giá</th>
@@ -60,21 +66,21 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Sản phẩm A</td>
-                                <td>2</td>
-                                <td>200,000 đ</td>
-                                <td>400,000 đ</td>
-                            </tr>
-                            <tr>
-                                <td>Sản phẩm B</td>
-                                <td>1</td>
-                                <td>300,000 đ</td>
-                                <td>300,000 đ</td>
-                            </tr>
+                            @foreach ($order->cartItems as $key => $sp)  
+                                <tr>
+                                    <td>
+                                        <img src="{{ $sp->product_image }}" alt="" width="100"height="100">
+                                    </td>
+                                    <td>{{ $sp->product_name }}</td>
+                                    <td>{{ $sp->quantity }}</td>
+                                    <td>{{ $sp->price }}</td>
+                                    <td>{{ number_format($sp->price * $sp->quantity,0,',','.').' VNĐ' }}</td>
+                                </tr>
+                            @endforeach
+                        
                             <tr>
                                 <td colspan="3" class="text-right"><strong>Tổng cộng</strong></td>
-                                <td><strong>700,000 đ</strong></td>
+                                <td><strong>{{ number_format($order->total_amount,0,',','.').' VNĐ' }}</strong></td>
                             </tr>
                         </tbody>
                     </table>
@@ -87,14 +93,16 @@
                     <strong>Cập nhật Trạng thái Đơn hàng</strong>
                 </div>
                 <div class="card-body">
-                    <form>
+                    <form action="{{ route('admin.order.updateOrder') }}" method="POST">
+                        @csrf
+                        @method('PUT')
                         <div class="form-group">
                             <label for="orderStatus">Trạng thái</label>
-                            <select id="orderStatus" class="form-control">
-                                <option value="pending">Chờ xử lý</option>
-                                <option value="processing">Đang xử lý</option>
-                                <option value="completed">Hoàn thành</option>
-                                <option value="cancelled">Hủy bỏ</option>
+                            <input type="hidden" name="orderId" value="{{ $order->id }}" />
+                            <select id="orderStatus" class="form-control" name="status_id">
+                                @foreach ($order_status as $status)
+                                        <option value="{{ $status->id }}" {{ $order->status_id == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>                                        
+                                @endforeach
                             </select>
                         </div>
                         <button type="submit" class="btn btn-primary">Cập nhật</button>

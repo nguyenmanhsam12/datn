@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\CartItems;
+use App\Models\Coupon;
 use App\Models\ProductVariants;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,20 @@ use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {   
+
+    // Cập nhật tổng tiền vào session khi thay đổi giỏ hàng
+    public function updateCartSession($cartId)
+    {
+        $cartItems = CartItems::where('cart_id', $cartId)->with('variants')->get();
+
+        $totalAmount = $cartItems->sum(function ($item) {
+            return $item->variants->price * $item->quantity;
+        });
+
+        // Lưu tổng tiền vào session
+        session(['totalAmount' => $totalAmount]);
+    }
+
     // lấy ra các sp trong giỏ hàng
     public function cart()
     {
@@ -31,10 +46,6 @@ class CartController extends Controller
         $cartItems = CartItems::where('cart_id', $cart->id)
             ->with(['variants.product','variants.size']) // Eager load variants và product cho cartItems
             ->get();
-
-       
-
-
 
         // Map các cartItems để lấy thông tin sản phẩm
         $cartItems = $cartItems->map(function ($item) {
@@ -65,8 +76,14 @@ class CartController extends Controller
         // Tính tổng tiền của giỏ hàng
         $totalAmount = $cartItems->sum('total_price');
 
+        // Lưu tổng giỏ hàng vào session
+        session(['totalAmount' => $totalAmount]);
 
-        return view('client.pages.cart', compact('cart', 'cartItems', 'totalAmount'));
+        // giá trị của tổng đơn hàng
+        $newTotal = session('newTotal',$totalAmount);
+
+
+        return view('client.pages.cart', compact('cart', 'cartItems','newTotal'));
     }
 
     // thêm giỏ hàng
@@ -110,8 +127,40 @@ class CartController extends Controller
                 $cartItem->save();
             }
 
+            // Cập nhật lại tổng tiền giỏ hàng vào session
+            $this->updateCartSession($cart->id);
+            
             // Tính tổng số lượng sản phẩm trong giỏ hàng
             $cartItemCount = CartItems::where('cart_id', $cart->id)->sum('quantity');
+
+            $totalCartPrice = session('totalAmount', 0);
+
+            // Kiểm tra và tính lại giảm giá nếu có mã giảm giá đã áp dụng
+            $discount = 0;
+            $coupon_id = session('coupon_id');
+            if ($coupon_id) {
+                $coupon = Coupon::find($coupon_id);
+                if ($coupon && $totalCartPrice >= $coupon->minimum_order_value) {
+                    // Tính lại giảm giá
+                    if ($coupon->discount_type === 'percentage') {
+                        $discount = $totalCartPrice * ($coupon->discount_value / 100);
+                    } else {
+                        $discount = $coupon->discount_value;
+                    }
+                } else {
+                    // Nếu tổng tiền không đủ điều kiện, bỏ giảm giá
+                    session()->forget(['discount', 'coupon_id']);
+                }
+            }
+
+        // Lưu tổng tiền và giảm giá vào session
+        session(['totalAmount' => $totalCartPrice, 'discount' => $discount]);
+
+        // Tính tổng tiền cuối cùng sau khi áp dụng giảm giá
+        $finalTotalPrice = $totalCartPrice - $discount;
+
+        // Lưu tổng tiền cuối cùng vào session với khóa `newTotal`
+        session(['newTotal' => $finalTotalPrice]);
 
             return response()->json([
                 'message' => 'Thêm giỏ hàng thành công',
@@ -133,10 +182,11 @@ class CartController extends Controller
         // Kiểm tra nếu người dùng đã đăng nhập
         if ($user) {
             // Lấy giỏ hàng của người dùng
-            $cart = Cart::where('user_id', $user->id)->first();
+            $cart = Cart::with('cartItem')->where('user_id', $user->id)->first();
+            
 
             // Kiểm tra nếu giỏ hàng tồn tại và đếm tổng số lượng sản phẩm trong bảng `cart_items`
-            $totalItems = $cart ? CartItems::sum('quantity') : 0;
+            $totalItems = $cart ? $cart->cartItem->sum('quantity') : 0;
             // lấy tất cả sp trong giỏ hàng
 
         }
@@ -151,27 +201,61 @@ class CartController extends Controller
     public function removeFromCart(Request $request)
     {
         $cartItems = CartItems::find($request->cart_item_id);
+
+        if (!$cartItems) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sản phẩm không tồn tại trong giỏ hàng'
+            ]);
+        }
+        
         $cartItems->delete();
 
+        // Cập nhật lại tổng tiền giỏ hàng vào session
+        $this->updateCartSession($cartItems->cart_id);
+
         // lấy tổng số lượng để hiển thị lên icon
-        $newQuantityCart = CartItems::sum('quantity');
+        $cart_items = CartItems::with('variants')->where('cart_id',$cartItems->cart_id)->get();
+        $newQuantityCart = $cart_items->sum('quantity');
 
-        $cart_items = CartItems::with('variants')->get();
+        
+        // Lấy tổng tiền từ session
+        $totalCartPrice = session('totalAmount', 0);
 
-        $newTotalAmount = $cart_items->sum(function ($item) {
+        // Kiểm tra và tính lại giảm giá nếu có mã giảm giá đã áp dụng
+        $discount = 0;
+        $coupon_id = session('coupon_id');
+        if ($coupon_id) {
+            $coupon = Coupon::find($coupon_id);
+            if ($coupon && $totalCartPrice >= $coupon->minimum_order_value) {
+                // Tính lại giảm giá
+                if ($coupon->discount_type === 'percentage') {
+                    $discount = $totalCartPrice * ($coupon->discount_value / 100);
+                } else {
+                    $discount = $coupon->discount_value;
+                }
+            } else {
+                // Nếu tổng tiền không đủ điều kiện, bỏ giảm giá
+                session()->forget(['discount', 'coupon_id']);
+            }
+        }
 
-            $variant = $item->variants;
+        // Lưu tổng tiền và giảm giá vào session
+        session(['totalAmount' => $totalCartPrice, 'discount' => $discount]);
 
-            return $variant->price * $item->quantity;
-        });
+        // Tính tổng tiền cuối cùng sau khi áp dụng giảm giá
+        $finalTotalPrice = $totalCartPrice - $discount;
 
+        // Lưu tổng tiền cuối cùng vào session với khóa `newTotal`
+        session(['newTotal' => $finalTotalPrice]);
 
-
+        
         return response()->json([
             'success' => true,
             'message' => 'Sản phẩm đã được xóa khỏi giỏ hàng',
             'newQuantityCart' => $newQuantityCart,
-            'cartTotal' => $newTotalAmount,
+            'newTotalAmount' => $totalCartPrice, // Trả về tổng tiền mới
+            'discount' => $discount,
         ]);
     }
 
@@ -180,10 +264,18 @@ class CartController extends Controller
     {
         $data = $request->all();
 
+        // id của chi tiết giỏ hàng
         $cartItemId = $data['cart_item_id'];
 
         // Tìm CartItem và lấy product_variant_id
         $cartItem = CartItems::with('variants')->findOrFail($cartItemId);
+
+        // Kiểm tra xem số lượng trong giỏ hàng có vượt quá số lượng tồn kho không
+        if ($cartItem->quantity + 1 > $cartItem->variants->stock) {
+            return response()->json([
+                'error' => 'Số lượng yêu cầu vượt quá số lượng sản phẩm còn lại trong kho.',
+            ], 400); // Trả về lỗi nếu số lượng vượt quá tồn kho
+        }
 
         // Tăng số lượng lên 1
         $cartItem->quantity += 1;
@@ -194,20 +286,50 @@ class CartController extends Controller
 
         $cartItem->save();
 
-        $cartItems = CartItems::all();
+        // Tính lại tổng số lượng trên icon giỏ hàng
+        $cartItems = CartItems::where('cart_id',$cartItem->cart_id)->get();
         $quantityCartIcon  = $cartItems->sum('quantity');
 
         // Tính tổng tiền của tất cả các sản phẩm trong giỏ hàng
-        $totalCartPrice = $cartItems->reduce(function ($carry, $item) {
-            return $carry + ($item->variants->price * $item->quantity);
-        }, 0);
+        $this->updateCartSession($cartItem->cart_id);  
+        $totalCartPrice = session('totalAmount', 0);
+
+        // Kiểm tra và tính lại giảm giá nếu có mã giảm giá đã áp dụng
+        $discount = 0;
+        $coupon_id = session('coupon_id');
+        if ($coupon_id) {
+            $coupon = Coupon::find($coupon_id);
+            if ($coupon && $totalCartPrice >= $coupon->minimum_order_value) {
+                // Tính lại giảm giá
+                if ($coupon->discount_type === 'percentage') {
+                    $discount = $totalCartPrice * ($coupon->discount_value / 100);
+                } else {
+                    $discount = $coupon->discount_value;
+                }
+            } else {
+                // Nếu tổng tiền không đủ điều kiện, bỏ giảm giá
+                session()->forget(['discount', 'coupon_id']);
+            }
+        }
+
+        // Lưu tổng tiền và giảm giá vào session
+        session(['totalAmount' => $totalCartPrice, 'discount' => $discount]);
+
+        // Tính tổng tiền cuối cùng sau khi áp dụng giảm giá
+        $finalTotalPrice = $totalCartPrice - $discount;
+
+        // Lưu tổng tiền cuối cùng vào session với khóa `newTotal`
+        session(['newTotal' => $finalTotalPrice]);
+
 
         // Trả về JSON response với số lượng và tổng tiền mới
         return response()->json([
             'quantity' => $cartItem->quantity,
             'totalPrice' => $total_price,
             'quantityCartIcon' => $quantityCartIcon,
-            'totalCartPrice' => $totalCartPrice,
+            'totalCartPrice' => $finalTotalPrice,
+            'total' => $totalCartPrice,
+            'discount' => $discount,
         ]);
     }
 
@@ -227,19 +349,43 @@ class CartController extends Controller
             // Tính lại thành tiền cho sản phẩm
             $total_price = 0;
             $total_price = $cartItem->variants->price * $cartItem->quantity;
-
-            
-
             $cartItem->save();
         }
 
-        $cartItems = CartItems::all();
+        $cartItems = CartItems::where('cart_id',$cartItem->cart_id)->get();
         $quantityCartIcon  = $cartItems->sum('quantity');
 
-         // Tính tổng tiền của tất cả các sản phẩm trong giỏ hàng
-         $totalCartPrice = $cartItems->reduce(function ($carry, $item) {
-            return $carry + ($item->variants->price * $item->quantity);
-        }, 0);
+        // Tính tổng tiền của tất cả các sản phẩm trong giỏ hàng
+        $this->updateCartSession($cartItem->cart_id);  
+        $totalCartPrice = session('totalAmount', 0);
+
+        // Kiểm tra và tính lại giảm giá nếu có mã giảm giá đã áp dụng
+        $discount = 0;
+        $coupon_id = session('coupon_id');
+        if ($coupon_id) {
+            $coupon = Coupon::find($coupon_id);
+            if ($coupon && $totalCartPrice >= $coupon->minimum_order_value) {
+                // Tính lại giảm giá
+                if ($coupon->discount_type === 'percentage') {
+                    $discount = $totalCartPrice * ($coupon->discount_value / 100);
+                } else {
+                    $discount = $coupon->discount_value;
+                }
+            } else {
+                // Nếu tổng tiền không đủ điều kiện, bỏ giảm giá
+                session()->forget(['discount', 'coupon_id']);
+            }
+        }
+
+        // Lưu tổng tiền và giảm giá vào session
+        session(['totalAmount' => $totalCartPrice, 'discount' => $discount]);
+
+        // Tính tổng tiền cuối cùng sau khi áp dụng giảm giá
+        $finalTotalPrice = $totalCartPrice - $discount;
+
+        // Lưu tổng tiền cuối cùng vào session với khóa `newTotal`
+        session(['newTotal' => $finalTotalPrice]);
+
 
         // Trả về JSON response với số lượng và tổng tiền mới
         return response()->json([
@@ -247,6 +393,7 @@ class CartController extends Controller
             'totalPrice' => $total_price,
             'quantityCartIcon' => $quantityCartIcon,
             'totalCartPrice' => $totalCartPrice,
+            'discount'=>$discount,
         ]);
     }
 
@@ -277,16 +424,43 @@ class CartController extends Controller
         $cartItem->quantity = $quantity;
         $cartItem->save();
 
-        // Tính lại tổng tiền cho sản phẩm trong giỏ hàng
+        // Tính lại thành tiền cho sản phẩm trong giỏ hàng
         $totalPrice = $cartItem->quantity * $cartItem->variants->price;
 
-        $cartItems = CartItems::all();
+        // cập nhập lại số lượng trên icon
+        $cartItems = CartItems::where('cart_id',$cartItem->cart_id)->get();
         $quantityCartIcon  = $cartItems->sum('quantity');
 
-         // Tính tổng tiền của tất cả các sản phẩm trong giỏ hàng
-         $totalCartPrice = $cartItems->reduce(function ($carry, $item) {
-            return $carry + ($item->variants->price * $item->quantity);
-        }, 0);
+        // Tính tổng tiền của tất cả các sản phẩm trong giỏ hàng
+        $this->updateCartSession($cartItem->cart_id);
+        $totalCartPrice = session('totalAmount', 0);
+
+        // Kiểm tra và tính lại giảm giá nếu có mã giảm giá đã áp dụng
+        $discount = 0;
+        $coupon_id = session('coupon_id');
+        if ($coupon_id) {
+            $coupon = Coupon::find($coupon_id);
+            if ($coupon && $totalCartPrice >= $coupon->minimum_order_value) {
+                // Tính lại giảm giá
+                if ($coupon->discount_type === 'percentage') {
+                    $discount = $totalCartPrice * ($coupon->discount_value / 100);
+                } else {
+                    $discount = $coupon->discount_value;
+                }
+            } else {
+                // Nếu tổng tiền không đủ điều kiện, bỏ giảm giá
+                session()->forget(['discount', 'coupon_id']);
+            }
+        }
+
+        // Lưu tổng tiền và giảm giá vào session
+        session(['totalAmount' => $totalCartPrice, 'discount' => $discount]);
+
+        // Tính tổng tiền cuối cùng sau khi áp dụng giảm giá
+        $finalTotalPrice = $totalCartPrice - $discount;
+
+        // Lưu tổng tiền cuối cùng vào session với khóa `newTotal`
+        session(['newTotal' => $finalTotalPrice]);
 
         // Trả về kết quả
         return response()->json([
@@ -294,6 +468,83 @@ class CartController extends Controller
             'totalPrice' => $totalPrice,
             'quantityCartIcon' => $quantityCartIcon,
             'totalCartPrice' => $totalCartPrice,
+            'discount' => $discount,
+        ]);
+    }
+
+    // áp mã giảm giá
+    public function applyCoupon(Request $request)
+    {
+        $data = $request->all();
+    
+        // Kiểm tra xem mã giảm giá có tồn tại hay không
+        $coupon = Coupon::where('code', $data['code'])->first();
+        
+        if (!$coupon) {
+            return response()->json([
+                'error' => 'Mã giảm giá không tồn tại!'
+            ]);
+        }
+    
+        // Kiểm tra xem mã giảm giá có còn hạn hay không
+        if ($coupon->isExpired()) {
+            return response()->json([
+                'error' => 'Mã giảm giá đã hết hạn!'
+            ]);
+        }
+    
+        // Kiểm tra trạng thái mã giảm giá
+        if ($coupon->status !== 'active') {
+            return response()->json([
+                'error' => 'Mã giảm giá này đã bị vô hiệu hóa!'
+            ]);
+        }
+    
+        // Lấy tổng tiền từ session (đã lưu trước đó khi thêm sản phẩm vào giỏ)
+        $totalAmount = session('totalAmount', 0);
+
+        // Kiểm tra tổng tiền có đủ để áp dụng mã giảm giá không
+        if ($totalAmount <= 0 || $totalAmount < $coupon->minimum_order_value) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Tổng giỏ hàng không đủ để áp dụng mã giảm giá!'
+            ]);
+        }
+    
+        // Tính toán giảm giá
+        $discount = 0;
+        if ($coupon->discount_type === 'percentage') {
+            $discount = $totalAmount * ($coupon->discount_value / 100);
+        } else {
+            $discount = $coupon->discount_value; // Mã giảm giá theo số tiền cố định
+        }
+    
+        // tổng tiền mới sau khi áp mã
+        $newTotal = $totalAmount - $discount;
+    
+        // Lưu mã giảm giá vào session (sử dụng session helper)
+        session(['discount' => $discount, 'newTotal' => $newTotal,'coupon_id'=> $coupon->id]);
+    
+        // Trả về kết quả cho người dùng
+        return response()->json([
+            'success' => true,
+            'message' => 'Mã giảm giá đã được áp dụng!',
+            'new_total' => $newTotal,
+            'discount' => $discount,
+        ]);
+    }
+
+    public function removeCoupon(Request $request)
+    {
+        // Xóa thông tin mã giảm giá khỏi session
+        session()->forget(['discount', 'newTotal', 'coupon_id']);
+
+        // Trả lại tổng tiền ban đầu
+        $originalTotal = session('totalAmount', 0);
+
+        return response()->json([
+            'success' => true,
+            'original_total' => $originalTotal
         ]);
     }
 }

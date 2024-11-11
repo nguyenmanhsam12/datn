@@ -51,12 +51,11 @@ class CheckoutController extends Controller
 
         });
 
-        // Tổng đơn hàng
-        $sub_total = $cartItems->sum('total_price');    
         $province = Province::orderBy('matinh','asc')->get();
         $payment = Payment_Methods::all();
+
         
-        return view('client.pages.checkout',compact('cartItems','sub_total','user','province','payment'));
+        return view('client.pages.checkout',compact('cartItems','user','province','payment'));
     }
 
     public function selectProvince(Request $request){
@@ -116,24 +115,19 @@ class CheckoutController extends Controller
             // Lấy thông tin giỏ hàng của người dùng
             $cart = Cart::where('user_id', auth()->id())->first();
 
-
-            $totalAmount = 0;
+            $couponId = session('coupon_id',null);
+            $totalAmount = session('totalAmount',0);
+            $discountAmount = session('discount',0);
 
             $cartItems = CartItems::with('variants.product','variants.size')->where('cart_id',$cart->id)->get();
 
-            // tổng đơn hàng
-            foreach ($cartItems as $item) {
-                $price = $item->variants->price; 
-                $quantity = $item->quantity; 
-                $totalAmount += $price * $quantity; 
-            }
-
-            
             // Tạo đơn hàng mới
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'status_id' => 1, // Đang chờ xử lý
                 'total_amount' => $totalAmount,
+                'coupon_id' => $couponId,
+                'discount_amount' => $discountAmount,
                 'payment_method_id' => $data['payment_method'],
             ]);
 
@@ -147,7 +141,6 @@ class CheckoutController extends Controller
                 'phone_number' => $data['phone_number'],
                 'recipient_name' => $data['recipient_name'],
                 'recipient_email' => $data['recipient_email'],
-
             ]);
 
             // Tạo các mục trong đơn hàng
@@ -173,9 +166,6 @@ class CheckoutController extends Controller
 
             // Eager load các quan hệ: 'payment' và 'orderItems'
             $order = $order->load('payment', 'cartItems');
-            $orderAddress = $orderAddress->load('province','city','ward');
-
-            
 
             // Xóa giỏ hàng của người dùng
             $cart->delete();
@@ -188,6 +178,8 @@ class CheckoutController extends Controller
 
             // Gửi email xác nhận đơn hàng
             Mail::to($data['recipient_email'])->queue(new OrderShipped($order,$orderAddress));
+
+            session()->forget(['coupon_id', 'discount', 'newTotal','totalAmount']);
 
             // Trả về thông báo thành công
             return response()->json(
