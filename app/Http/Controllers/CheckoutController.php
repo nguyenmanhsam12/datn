@@ -20,7 +20,22 @@ use App\Models\ProductVariants;
 use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
-{
+{   
+
+    private function calculateShippingFee($total_weight)
+    {
+        // Xử lý mức phí vận chuyển dựa trên trọng lượng sản phẩm (có thể cứng hóa giá trị trong code)
+        if ($total_weight >=0  && $total_weight <= 0.7) {
+            return 15000;
+        } elseif ($total_weight > 0.7 && $total_weight <= 1.5) {
+            return 25000;  // Phí vận chuyển cho trọng lượng từ 5kg đến 10kg là 100
+        } elseif ($total_weight > 1.5 && $total_weight < 5 ) {
+            return 40000;  // Phí vận chuyển cho trọng lượng từ 10kg đến 20kg là 150
+        } else {
+            return 0;  // Phí vận chuyển cho trọng lượng trên 20kg là 200
+        }
+    }
+
     public function Checkout(){
         $user = Auth::user();
         if(!$user){
@@ -32,9 +47,15 @@ class CheckoutController extends Controller
 
         $cartItems = CartItems::with('variants.product','variants.size')->where('cart_id',$cart->id)->get();
         
-        $cartItems = $cartItems->map(function($item){
+        // Tính tổng trọng lượng cho tất cả các sản phẩm trong giỏ hàng
+        $total_weight = 0; // Khởi tạo tổng trọng lượng
+
+        $cartItems = $cartItems->map(function($item) use (&$total_weight) {
             $variant = $item->variants;
             $product = $variant->product;
+
+            
+            $total_weight += $variant->weight * $item->quantity ;
 
         
             return [
@@ -49,13 +70,19 @@ class CheckoutController extends Controller
             ];
 
 
+
         });
 
         $province = Province::orderBy('matinh','asc')->get();
-        $payment = Payment_Methods::all();
+        $payment = Payment_Methods::all();  
+
+        $shipping = $this->calculateShippingFee($total_weight);
+        session(['shipping'=>$shipping]);
+
+        $newTotal = session('newTotal',0) - $shipping;
 
         
-        return view('client.pages.checkout',compact('cartItems','user','province','payment'));
+        return view('client.pages.checkout',compact('cartItems','user','province','payment','shipping','newTotal'));
     }
 
     public function selectProvince(Request $request){
@@ -118,6 +145,8 @@ class CheckoutController extends Controller
             $couponId = session('coupon_id',null);
             $totalAmount = session('totalAmount',0);
             $discountAmount = session('discount',0);
+            $shipping = session('shipping',0);
+
 
             $cartItems = CartItems::with('variants.product','variants.size')->where('cart_id',$cart->id)->get();
 
@@ -128,6 +157,7 @@ class CheckoutController extends Controller
                 'total_amount' => $totalAmount,
                 'coupon_id' => $couponId,
                 'discount_amount' => $discountAmount,
+                'shipping_fee' => $shipping,
                 'payment_method_id' => $data['payment_method'],
             ]);
 

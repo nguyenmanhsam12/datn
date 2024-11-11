@@ -31,6 +31,7 @@ class VariantController extends Controller
             'size_id' => 'required|exists:sizes,id',
             'stock' => 'required|integer|min:1',
             'price' => 'required|numeric',
+            'weight' => 'required|numeric',
         ]);
 
 

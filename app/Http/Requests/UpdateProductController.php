@@ -28,6 +28,7 @@ class UpdateProductController extends FormRequest
             'name' => 'required|string|max:255',
             'sku' => ['required','string','max:50',Rule::unique('products')->ignore($productId)],
             'description' => 'nullable|string',
+            'description_text' => 'nullable|string',
             'category_id' => 'required|exists:category,id',
             'brand_id' => 'required|exists:brands,id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',

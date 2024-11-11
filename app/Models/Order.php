@@ -11,7 +11,9 @@ class Order extends Model
 
     protected $table = 'orders';
 
-    protected $fillable = ['user_id','status_id','payment_method_id','total_amount','coupon_id','discount_amount'];
+    protected $fillable = ['user_id','status_id','payment_method_id','total_amount','coupon_id','discount_amount',
+        'shipping_fee',
+    ];
 
     public function cartItems(){
         return $this->hasMany(OrderItem::class);

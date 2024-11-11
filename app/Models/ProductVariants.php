@@ -11,7 +11,7 @@ class ProductVariants extends Model
 
     protected $table = 'product_variants';
 
-    protected $fillable = ['product_id','size_id','stock','selled','price','deleted_at'];
+    protected $fillable = ['product_id','size_id','stock','selled','price','deleted_at','weight'];
 
     public function product(){
         return $this->belongsTo(Product::class);
