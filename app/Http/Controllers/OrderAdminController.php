@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use Illuminate\Http\Request;
+use App\Mail\OrderStatusUpdated;
+use Illuminate\Support\Facades\Mail;
+
+
 
 class OrderAdminController extends Controller
 {
@@ -50,9 +54,21 @@ class OrderAdminController extends Controller
 
         $order = Order::find($orderId);
         if ($order) {
-            $order->status_id = $newStatus;
-            $order->save();
-            return response()->json(['message' => 'Cập nhật trạng thái thành công!'],200);
+
+            $currentStatus = $order->status_id;
+
+            if($newStatus == $currentStatus + 1 ){
+
+                $order->status_id = $newStatus;
+                $order->save();
+
+                // Gửi email thông báo
+                Mail::to($order->orderAddress->recipient_email)->queue(new OrderStatusUpdated($order));
+
+                return response()->json(['message' => 'Cập nhật trạng thái thành công!'],200);
+            }else{
+                return response()->json(['error' => 'Chỉ có thể cập nhật trạng thái lên 1 cấp!'],400);
+            }
         } else {
             return response()->json(['message' => 'Không tìm thấy đơn hàng!'], 404);
         }

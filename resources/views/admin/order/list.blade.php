@@ -48,7 +48,9 @@
                                 <select class="form-control update-status" data-order-id="{{ $order->id }}">
                                     @foreach ($order_status as $status)
                                         <option value="{{ $status->id }}"
-                                            {{ $order->status_id == $status->id ? 'selected' : '' }}>{{ $status->name }}
+                                            {{ $order->status_id == $status->id ? 'selected' : '' }}
+                                            {{ $order->status_id > $status->id ? 'disabled' : '' }}
+                                            >{{ $status->name }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -79,6 +81,10 @@
             const statusDropdowns = document.querySelectorAll('.update-status');
 
             statusDropdowns.forEach(function(dropdown) {
+
+                let previousSelectedStatus = dropdown.value;  // Lưu lại trạng thái đã chọn trước đó
+
+
                 dropdown.addEventListener('change', function() {
                     const orderId = this.getAttribute('data-order-id');
                     const newStatus = this.value;
@@ -97,8 +103,20 @@
                     })
                     .then(response => response.json()) // Giải mã JSON từ response
                     .then(data => {
-                        if (data.message) {
-                            alert(data.message); // Hiển thị thông báo thành công
+                        if (data) {
+
+                            if(data.message){
+                                alert(data.message); // Hiển thị thông báo thành công
+                                dropdown.querySelectorAll('option').forEach(option => {
+                                    option.disabled = parseInt(option.value) < newStatus;
+                                });
+
+                                
+                            }
+                            if(data.error){
+                                alert(data.error);
+                                dropdown.value = previousSelectedStatus; // Quay về trạng thái đã chọn ban đầu
+                            }
                         } else {
                             alert('Cập nhật thất bại: ' + result.message); // Thông báo lỗi
                         }

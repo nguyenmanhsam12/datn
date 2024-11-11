@@ -165,7 +165,6 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::put('/admin/orders/update-status', [OrderAdminController::class, 'updateStatus'])->name('admin.order.updateStatus');
         Route::put('/admin/orders/update-order', [OrderAdminController::class, 'updateOrder'])->name('admin.order.updateOrder');
 
-
     });
 
     Route::prefix('coupons')->group(function(){

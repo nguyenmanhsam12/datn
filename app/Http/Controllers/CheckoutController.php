@@ -79,7 +79,7 @@ class CheckoutController extends Controller
         $shipping = $this->calculateShippingFee($total_weight);
         session(['shipping'=>$shipping]);
 
-        $newTotal = session('newTotal',0) - $shipping;
+        $newTotal = session('newTotal',0) + $shipping;
 
         
         return view('client.pages.checkout',compact('cartItems','user','province','payment','shipping','newTotal'));
