@@ -79,9 +79,6 @@ Route::get('/blog',[BlogController::class,'blog'])->name('blog');
 //về chúng tôi
 Route::get('/about',[AboutController::class,'about'])->name('about');
 
-//đơn hàng của tôi
-Route::get('/order',[OrderController::class,'order'])->name('order');
-
 //Liên Hệ
 Route::get('/contact',[ContactController::class,'contact'])->name('contact');
 
