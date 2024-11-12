@@ -99,39 +99,29 @@
         .cart-item {
             display: flex;
             align-items: center;
+            border: 1px solid #d6d6d6;
+            justify-content: center;
             gap: 5px;
         }
 
         .cart-item button,
         .cart-item input {
-            height: 36px;
             line-height: 36px;
             padding: 0 10px;
             font-size: 14px;
         }
 
         .cart-item button {
-            background-color: #f1f1f1;
-            border: 1px solid #ccc;
             cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
         }
 
-        .cart-item button:hover {
-            background-color: #ddd;
-        }
 
         .cart-item input {
-            width: 50px;
+            width: 40px;
             text-align: center;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .cart-item input:focus {
-            outline: none;
-            border-color: #007bff;
+            background-color: #fff;
+            border-left: 1px solid #d6d6d6;
+            border-right: 1px solid #d6d6d6;
         }
 
         .error-message {
