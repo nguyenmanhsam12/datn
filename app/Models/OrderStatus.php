@@ -12,4 +12,9 @@ class OrderStatus extends Model
     protected $table = 'order_status';
 
     protected $fillable = ['name'];
+      // quan hệ với đơn hàng
+      public function orders()
+      {
+          return $this->hasMany(Order::class, 'status_id');
+      }
 }

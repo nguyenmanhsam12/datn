@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactController;
@@ -176,4 +177,12 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::put('/update/{id}',[CouponController::class,'update'])->name('admin.coupons.update');
         Route::get('/delete/{id}',[CouponController::class,'delete'])->name('admin.coupons.delete');
     });
+
+    Route::prefix('statistical')->group(function(){
+        Route::get('/',[StatisticsController::class,'index'])->name('admin.statistical.index');
+        Route::get('/bieudo',[StatisticsController::class,'bieudo'])->name('admin.statistical.bieudo');
+
+
+    });
+
 });

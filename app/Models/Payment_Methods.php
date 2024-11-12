@@ -12,4 +12,9 @@ class Payment_Methods extends Model
     protected $table = 'payment_methods';
 
     protected $fillable = ['name'];
+      // Quan hệ với đơn hàng
+      public function orders()
+      {
+          return $this->hasMany(Order::class, 'payment_method_id');
+      }
 }
