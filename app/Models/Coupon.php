@@ -18,4 +18,9 @@ class Coupon extends Model
     {
         return $this->end_date && $this->end_date < now();
     }
+      //  quan hệ với bảng orders
+      public function orders()
+      {
+          return $this->hasMany(Order::class,'coupon_id');
+      }
 }
