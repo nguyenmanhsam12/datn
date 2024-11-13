@@ -7,6 +7,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactController;
@@ -94,9 +95,8 @@ Route::get('/getDetailProduct/{slug}',[HomeController::class,'getDetailProduct']
 
 Route::prefix('admin')->middleware('checkadmin')->group(function(){
 
-    Route::get('/', function () {
-        return view('admin.layout.default');
-    })->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+   
 
     Route::prefix('user')->group(function(){
         Route::get('/',[UserController::class,'index'])->name('admin.user.index');
