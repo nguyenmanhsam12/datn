@@ -7,6 +7,7 @@ use App\Models\OrderStatus;
 use Illuminate\Http\Request;
 use App\Mail\OrderStatusUpdated;
 use Illuminate\Support\Facades\Mail;
+use App\Events\OrderStatusUpdatedEvent;
 
 
 
@@ -61,6 +62,9 @@ class OrderAdminController extends Controller
 
                 $order->status_id = $newStatus;
                 $order->save();
+
+                // Phát sự kiện OrderStatusUpdatedEvent
+                broadcast(new OrderStatusUpdatedEvent($order));
 
                 // Gửi email thông báo
                 Mail::to($order->orderAddress->recipient_email)->queue(new OrderStatusUpdated($order));

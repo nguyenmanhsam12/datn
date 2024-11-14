@@ -64,10 +64,10 @@
             text-align: right;
         }
 
-        .btn-info {
-            background-color: #E03550;
-            color: white;
-        }
+        /* .btn-info {
+                                    background-color: #E03550;
+                                    color: white;
+                                } */
 
         .tab-links a {
             display: inline-block;
@@ -81,32 +81,64 @@
             background-color: #E03550;
             color: white;
         }
+
         .order-body {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
 
-.order__left {
-    display: flex;
-    align-items: center;
-}
+        .order__left {
+            display: flex;
+            align-items: center;
+        }
 
-.order__left .image {
-    margin-right: 10px;
-}
+        .order__left .image {
+            margin-right: 10px;
+        }
 
-.order-details p {
-    margin: 0;
-    font-size: 14px;
-}
+        .order-details p {
+            margin: 0;
+            font-size: 14px;
+        }
 
-.order__right {
-    text-align: right;
-}
+        .order__right {
+            text-align: right;
+        }
+
+
+        .order-status[data-status="1"] {
+            color: #FFC107;
+            /* Đang chờ xử lý */
+        }
+
+        .order-status[data-status="2"] {
+            color: #17A2B8;
+            /* Đã xác nhận */
+        }
+
+        .order-status[data-status="3"] {
+            color: #007BFF;
+            /* Đang vận chuyển */
+        }
+
+        .order-status[data-status="4"] {
+            color: #28A745;
+            /* Đang giao hàng */
+        }
+
+        .order-status[data-status="5"] {
+            color: #28A745;
+            /* Hoàn tất */
+        }
+
+        .order-status[data-status="6"] {
+            color: #DC3545;
+            /* Đã hủy */
+        }
     </style>
 @endpush
 
@@ -162,154 +194,75 @@
                     <!-- Tab Links for Order Status -->
                     <div class="tab-links">
                         <a href="#" class="tab-link active" data-status="all">Tất Cả</a>
-                        <a href="#" class="tab-link" data-status="processing">Đang Xử Lý</a>
-                        <a href="#" class="tab-link" data-status="confirming">Đã Xác Nhận</a>
-                        <a href="#" class="tab-link" data-status="shipping">Đang Giao Hàng</a>
-                        <a href="#" class="tab-link" data-status="delivered">Đã Giao Hàng</a>
-                        <a href="#" class="tab-link" data-status="canceled">Đã Hủy</a>
+                        @foreach ($status as $st)
+                            <a href="#" class="tab-link" data-status="{{ $st->id }}">{{ $st->name }}</a>
+                        @endforeach
                     </div>
 
                     <!-- Order Cards -->
                     <div id="ordersContainer">
-                        <div class="order-card" data-status="delivered">
-                            <div class="order-header">
-                                <h6>Đơn Hàng #12345</h6>
-                                <p class="order-status text-success">Đã Giao Hàng</p>
-                            </div>
-                            <div class="order-body">
-                                <div class="order__left">
-                                    <div class="image">
-                                        <img src="https://via.placeholder.com/80" alt="product image" class="img-fluid">
-                                    </div>
-                                    <div class="order-details">
-                                        <p><strong>Sản Phẩm:</strong> Giày Thể Thao</p>
-                                        <p><strong>Kích Cỡ:</strong> 40</p>
-                                        <p><strong>Số Lượng:</strong> 1</p>
-                                    </div>
+                        @foreach ($order as $or)
+                            <div class="order-card" data-status="{{ $or->status_id }}" data-order-id={{ $or->id }}>
+                                <div class="order-header">
+                                    <h6 class="order-id">Đơn Hàng #{{ $or->id }}
+                                    </h6>
+                                    <p class="order-status " data-status= "{{ $or->status_id }}">{{ $or->orderStatus->name }}</p>
                                 </div>
-                                <div class="order__right">
-                                    <p><strong>Tổng Tiền:</strong> 500,000 VND</p>
-                                    <div class="button-group">
-                                        <button class="btn btn-info">Xem Chi Tiết</button>
-                                        <button class="btn btn-primary">Mua Lại</button>
-                                        <button class="btn btn-success">Đánh Giá</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                <div class="order-body">
+                                    @foreach ($or->cartItems as $item)
+                                        <div class="order__left">
+                                            <div class="image">
+                                                <img src="{{ $item->product_image }}" alt="product image" class="img-fluid">
+                                            </div>
+                                            <div class="order-details">
+                                                <p><strong>Sản Phẩm:</strong>{{ $item->product_name }}</p>
+                                                <p><strong>Kích Cỡ:</strong>{{ $item->size }}</p>
+                                                <p><strong>Số Lượng:</strong>{{ $item->quantity }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="order__right">
+                                            @php
+                                                $newTotal = 0;
+                                                $newTotal =
+                                                    $or->total_amount - $or->discount_amount + $or->shipping_fee;
+                                            @endphp
+                                            <p><strong>Tổng
+                                                    Tiền:</strong>{{ number_format($newTotal, 0, ',', '.') . ' VNĐ' }}
+                                            </p>
+                                            <div class="button-group">
+                                                <button class="btn btn-success">Xem Chi Tiết</button>
+    
+                                                <!-- Nút Hủy cho trạng thái "Chờ xử lý" -->
+                                                @if ($or->status_id == 1)
+                                                    <button class="btn btn-danger">Hủy</button>
+                                                @endif
+                                                
+                                                <!-- Nút xác nhận đơn hàng cho trạng thái "Đã giao" -->
+                                                @if ($or->status_id == 4)
+                                                    <button class="btn btn-primary">Xác Nhận Đơn Hàng</button>
+                                                @endif
+                                                
+                                                <!-- Nút Khiếu nại cho trạng thái "Hoàn tất" -->
+                                                @if ($or->status_id == 5)
+                                                    <button class="btn btn-warning">Khiếu Nại</button>
+                                                @endif
 
-                        <div class="order-card" data-status="processing">
-                            <div class="order-header">
-                                <h6>Đơn Hàng #12346</h6>
-                                <p class="order-status text-warning">Đang Chờ Xử Lý</p>
-                            </div>
-                            <div class="order-body">
-                                <div class="order__left">
-                                    <div class="image">
-                                        <img src="https://via.placeholder.com/80" alt="product image" class="img-fluid">
-                                    </div>
-                                    <div class="order-details">
-                                        <p><strong>Sản Phẩm:</strong> Giày Thể Thao</p>
-                                        <p><strong>kích cỡ:</strong> 40</p>
-                                        <p><strong>Số Lượng:</strong> 1</p>
-                                    </div>
-                                </div>
-                                <div class="order__right">
-                                    <p><strong>Tổng Tiền:</strong> 400,000 VND</p>
-                                    <div class="button-group">
-                                        <button class="btn btn-info">Xem Chi Tiết</button>
-                                        <button class="btn btn-danger">Hủy Đơn Hàng</button>
-                                    </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
-                        </div>
+                        @endforeach
 
-                        <div class="order-card" data-status="confirming">
-                            <div class="order-header">
-                                <h6>Đơn Hàng #12348</h6>
-                                <p class="order-status text-success">Đã Xác Nhận</p>
-                            </div>
-                            <div class="order-body">
-                                <div class="order__left">
-                                    <div class="image">
-                                        <img src="https://via.placeholder.com/80" alt="product image" class="img-fluid">
-                                    </div>
-                                    <div class="order-details">
-                                        <p><strong>Sản Phẩm:</strong> Giày Thể Thao</p>
-                                        <p><strong>Kích Cỡ:</strong> 40</p>
-                                        <p><strong>Số Lượng:</strong> 1</p>
-                                    </div>
-                                </div>
-                                <div class="order__right">
-                                    <p><strong>Tổng Tiền:</strong> 400,000 VND</p>
-                                    <div class="button-group">
-                                        <button class="btn btn-info">Xem Chi Tiết</button>
-                                        <button class="btn btn-secondary">Liên Hệ Hỗ Trợ</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="order-card" data-status="shipping">
-                            <div class="order-header">
-                                <h6>Đơn Hàng #12347</h6>
-                                <p class="order-status text-primary">Đang Giao Hàng</p>
-                            </div>
-                            <div class="order-body">
-                                <div class="order__left">
-                                    <div class="image">
-                                        <img src="https://via.placeholder.com/80" alt="product image" class="img-fluid">
-                                    </div>
-                                    <div class="order-details">
-                                        <p><strong>Sản Phẩm:</strong> Giày Thể Thao</p>
-                                        <p><strong>Kích Cỡ:</strong> 40</p>
-                                        <p><strong>Số Lượng:</strong> 1</p>
-                                    </div>
-                                </div>
-                                <div class="order__right">
-                                    <p><strong>Tổng Tiền:</strong> 700,000 VND</p>
-                                    <div class="button-group">
-                                        <button class="btn btn-info">Xem Chi Tiết</button>
-                                        <button class="btn btn-primary">Theo Dõi Giao Hàng</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-
-                        <div class="order-card" data-status="canceled">
-                            <div class="order-header">
-                                <h6>Đơn Hàng #12347</h6>
-                                <p class="order-status text-danger">Đã Hủy</p>
-                            </div>
-                            <div class="order-body">
-                                <div class="order__left">
-                                    <div class="image">
-                                        <img src="https://via.placeholder.com/80" alt="product image" class="img-fluid">
-                                    </div>
-                                    <div class="order-details">
-                                        <p><strong>Sản Phẩm:</strong> Giày Thể Thao</p>
-                                        <p><strong>Kích Cỡ:</strong> 40</p>
-                                        <p><strong>Số Lượng:</strong> 1</p>
-                                    </div>
-                                </div>
-                                <div class="order__right">
-                                    <p><strong>Tổng Tiền:</strong> 700,000 VND</p>
-                                    <div class="button-group">
-                                        <button class="btn btn-info">Xem Chi Tiết</button>
-                                        <button class="btn btn-secondary">Đặt Lại Đơn Hàng</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
                     </div>
                 </div>
             </div>
         </div>
     </div>
+@endsection
 
-    <script>
+@push('script')
+    <script type="module">
         // Switching between Account and Orders sections
         document.getElementById('accountLink').addEventListener('click', function() {
             document.getElementById('accountInfo').style.display = 'block';
@@ -346,4 +299,61 @@
             });
         });
     </script>
-@endsection
+
+    <script type="module">
+        // Lắng nghe sự kiện từ Laravel Echo
+        Echo.channel('order')
+            .listen('OrderStatusUpdatedEvent', (e) => {
+                console.log(e); // Kiểm tra dữ liệu sự kiện nhận được
+
+                // Lấy thông tin từ sự kiện
+                const orderId = e.order.id;
+                const newStatus = e.order.order_status.name;
+                const newStatusId = e.order.status_id;
+
+
+                // Tìm đơn hàng trong DOM theo `data-order-id`
+                const orderElement = document.querySelector(`.order-card[data-order-id="${orderId}"]`);
+
+                if (orderElement) {
+                    // Cập nhật tên trạng thái đơn hàng
+                    const statusElement = orderElement.querySelector('.order-status');
+                    
+                    statusElement.textContent = newStatus;
+                    statusElement.setAttribute('data-status', newStatusId); // Cập nhật data-status
+
+
+                    // Cập nhật `data-status` với trạng thái mới
+                    orderElement.setAttribute('data-status', newStatusId);
+
+                    
+
+                    // Hiển thị và ẩn các nút button theo `newStatusId`
+                    const buttonGroup = orderElement.querySelector('.button-group');
+                    buttonGroup.innerHTML = ''; // Xóa các nút hiện có
+
+                    // Thêm nút dựa vào trạng thái mới
+                    if (newStatusId === 1) { // Trạng thái "Chờ xử lý"
+                        buttonGroup.innerHTML = '<button class="btn btn-danger">Hủy</button><button class="btn btn-success">Xem chi tiết</button>';
+                    } else if(newStatusId === 2){
+                        buttonGroup.innerHTML = '<button class="btn btn-success">Xem chi tiết</button>';
+                    } else if(newStatusId === 3){
+                        buttonGroup.innerHTML = '<button class="btn btn-success">Xem chi tiết</button>';
+                    } else if(newStatusId === 4){
+                        buttonGroup.innerHTML = '<button class="btn btn-success">Xem chi tiết</button><button class="btn btn-primary">Xác nhận đơn hàng</button>';
+                    } else if(newStatusId === 5){
+                        buttonGroup.innerHTML = '<button class="btn btn-success">Xem chi tiết</button><button class="btn btn-warning">Khiếu nại</button>';
+                    }
+
+
+                    // Lọc và hiển thị đơn hàng theo tab trạng thái hiện tại
+                    const activeStatus = document.querySelector('.tab-link.active').getAttribute('data-status');
+                    if (activeStatus !== 'all' && activeStatus !== newStatusId.toString()) {
+                        orderElement.style.display = 'none';
+                    } else {
+                        orderElement.style.display = 'block';
+                    }
+                }
+            });
+    </script>
+@endpush
