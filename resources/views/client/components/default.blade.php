@@ -41,6 +41,10 @@
     <link rel="stylesheet" href="{{ asset('css/responsive.css') }}">
     <!-- modernizr css -->
     <script src="{{ asset('js/vendor/modernizr-2.8.3.min.js') }}"></script>
+    
+
+    <!-- slick css -->
+    <link rel="stylesheet" href="{{ asset('css/shop.css') }}">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -203,8 +207,6 @@
                 });
         });
     </script>
-
-
     @stack('script')
 </body>
 

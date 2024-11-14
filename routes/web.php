@@ -7,6 +7,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactController;
@@ -71,7 +72,11 @@ Route::get('/my-account',[MyAccountController::class,'myAccount'])->name('myAcco
 Route::get('/checkout',[CheckoutController::class,'checkout'])->name('checkout');
 
 // cửa hàng
-Route::get('/shop',[ShopController::class,'shop'])->name('shop');
+// Route::get('/shop',[ShopController::class,'shop'])->name('shop');
+// Route::get('/shop/category/{id}', [ShopController::class, 'showProByCate'])->name('shop.byCategory');
+Route::get('/shop', [ShopController::class, 'shop'])->name('shop');
+Route::get('/shop/category/{categoryId}', [ShopController::class, 'showProByCate'])->name('shop.byCategory');
+
 
 // bài viết
 Route::get('/blog',[BlogController::class,'blog'])->name('blog');
@@ -92,11 +97,11 @@ Route::get('/getProductsByCategory/{category_id}', [HomeController::class, 'getP
 Route::get('/getDetailProduct/{slug}',[HomeController::class,'getDetailProduct'])->name('getDetailProduct');
 
 
+
 Route::prefix('admin')->middleware('checkadmin')->group(function(){
 
-    Route::get('/', function () {
-        return view('admin.layout.default');
-    })->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+   
 
     Route::prefix('user')->group(function(){
         Route::get('/',[UserController::class,'index'])->name('admin.user.index');

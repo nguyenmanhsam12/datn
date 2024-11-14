@@ -2419,7 +2419,7 @@ input.cart-plus-minus-box {
   appearance: none;
   background: rgba(246, 246, 246, 1) url("img/bg/angel-down.webp") no-repeat scroll 97% center;
   border: medium none;
-  color: #999;
+  /* color: #999; */
   height: 40px;
   padding: 0 20px;
   text-transform: capitalize;

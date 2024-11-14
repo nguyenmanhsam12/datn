@@ -42,6 +42,7 @@
             /* Viền xám */
             border-radius: 5px;
             transition: border-color 0.3s;
+            background: #fff;
         }
 
         .billing-details input:focus,
@@ -151,6 +152,10 @@
             cursor: pointer;
             /* Con trỏ chuột khi hover */
         }
+
+        label {
+            color: #333;
+        }
     </style>
 @endpush
 
@@ -191,8 +196,9 @@
                                         <div class="row">
                                             <div class="col-md-6 col-12">
                                                 <div class="billing-details pr-20">
-                                                    <h4 class="title-1 title-border text-uppercase mb-30">Thông tin thanh toán</h4>
-                                                    <div class="form-group">    
+                                                    <h4 class="title-1 title-border text-uppercase mb-30">Thông tin thanh
+                                                        toán</h4>
+                                                    <div class="form-group">
 
                                                         <label for="">Tên người nhận</label>
                                                         <input type="text" placeholder="Tên của bạn..."
@@ -217,8 +223,9 @@
                                                             id="province">
                                                             <option value = "">Tỉnh / Thành phố</option>
                                                             @foreach ($province as $pro)
-                                                                <option data-id = "{{ $pro->matinh }}" value="{{ $pro->name }}">{{ $pro->name }}
-                                                                    
+                                                                <option data-id = "{{ $pro->matinh }}"
+                                                                    value="{{ $pro->name }}">{{ $pro->name }}
+
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -246,8 +253,7 @@
                                             </div>
                                             <div class="col-md-6 col-12">
                                                 <div class="our-order payment-details pr-20">
-                                                    <h4 class="title-1 title-border text-uppercase mb-30">Đơn hàng của tôi
-                                                    </h4>
+                                                    <h4 class="title-1 title-border text-uppercase mb-30">Đơn hàng của tôi</h4>
                                                     <table>
                                                         <thead>
                                                             <tr>
@@ -258,39 +264,54 @@
                                                         <tbody>
                                                             @if ($cartItems)
                                                                 @foreach ($cartItems as $item)
-                                                                <tr>
-                                                                    <td style="display: flex;gap: 5px;align-items: center;">
-                                                                        <img style="width: 10%;"
-                                                                            src="{{ $item['image'] }}" alt="">
-                                                                            {{ $item['name'] }}  x {{ $item['quantity'] }}
-                                                                    </td>
-                                                                    <td class="text-right">
-                                                                        {{ number_format($item['total_price'],0,',','.').' VNĐ' }}
-                                                                    </td>
-                                                                </tr>
+                                                                    <tr>
+                                                                        <td
+                                                                            style="display: flex;gap: 5px;align-items: center; ">
+                                                                            <img style="width: 10%;"
+                                                                                src="{{ $item['image'] }}" alt="">
+                                                                            {{ $item['name'] }} x {{ $item['quantity'] }}
+                                                                        </td>
+                                                                        <td class="text-right" style="white-space: nowrap">
+                                                                            {{ number_format($item['total_price'], 0, ',', '.') . ' VNĐ' }}
+                                                                        </td>
+                                                                    </tr>
                                                                 @endforeach
                                                             @else
                                                                 <p>Giỏ hàng đang chưa có sản phẩm nào</p>
                                                             @endif
+
                                                             
                                                             <tr>
                                                                 <td>Giảm giá</td>
-                                                                <td class="text-right">{{ number_format(session('discount',0),0,',','.').' VNĐ' }}</td>
+                                                                <td class="text-right" style="white-space: nowrap">
+                                                                    {{ number_format(session('discount', 0), 0, ',', '.') . ' VNĐ' }}
+                                                                </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Phí vận chuyển</td>
-                                                                <td class="text-right">{{ number_format($shipping,0,',','.').' VNĐ' }}</td>
+                                                                <td class="text-right" style="white-space: nowrap">
+                                                                    {{ number_format($shipping, 0, ',', '.') . ' VNĐ' }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td >
+                                                                    <label for="discount_code" style="white-space: nowrap">Mã giảm giá (nếu có)</label>
+                                                                    <input class="border" type="text" id="discount_code" name="discount_code" style="width: 100%;" placeholder="Nhập mã giảm giá">
+                                                                </td>
+                                                                <td>
+                                                                    <button class="" type="button">Áp dụng</button>
+                                                                </td>
                                                             </tr>
                                                             <tr>
                                                                 <td>Tổng đơn hàng</td>
-                                                                <td class="text-right" name="total_amount"
-                                                                    id="total_amount">
-                                                                    {{ number_format($newTotal,0,',','.').' VNĐ' }}
+                                                                <td class="text-right" style="white-space: nowrap"
+                                                                    name="total_amount" id="total_amount">
+                                                                    {{ number_format($newTotal, 0, ',', '.') . ' VNĐ' }}
                                                                 </td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
+                                                
                                                 <div class="payment-method mt-60 pl-20">
                                                     <h4 class="title-1 title-border text-uppercase mb-30">Phương thức thanh
                                                         toán</h4>
@@ -316,7 +337,8 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
-                                                    <button class="submit-button button-one mt-15 col-12" data-text="Thanh Toán" type="submit">Thanh
+                                                    <button class="submit-button button-one mt-15 col-12"
+                                                        data-text="Thanh Toán" type="submit">Thanh
                                                         Toán</button>
                                                 </div>
 
@@ -348,18 +370,19 @@
             // Khi người dùng chọn tỉnh/thành phố
             provinceSelect.addEventListener('change', function() {
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                
+
                 const selectedProvince = provinceSelect.selectedOptions[0];
                 const provinceId = selectedProvince ? selectedProvince.dataset.id : ''; // Lấy ID từ data-id
-                const formattedProvinceId = provinceId.padStart(2, '0'); // Đảm bảo provinceId có ít nhất 2 chữ số
+                const formattedProvinceId = provinceId.padStart(2,
+                '0'); // Đảm bảo provinceId có ít nhất 2 chữ số
 
-               
-                
-                
+
+
+
 
                 // Xóa tất cả tùy chọn trong citySelect và wardSelect
                 citySelect.innerHTML = '<option value = "" >Quận / Huyện</option>';
-                wardSelect.innerHTML = '<option value = "" >Xã / Phường</option>'; 
+                wardSelect.innerHTML = '<option value = "" >Xã / Phường</option>';
 
                 if (province) {
                     // Gọi API để lấy danh sách thành phố dựa vào tỉnh
@@ -393,7 +416,7 @@
             citySelect.addEventListener('change', function() {
                 const selectedCity = citySelect.selectedOptions[0]; // Lấy tùy chọn đã chọn
                 const cityId = selectedCity ? selectedCity.dataset.id : ''; // Lấy ID từ data-id
-                const fomatCityId = cityId.padStart(3,'0');
+                const fomatCityId = cityId.padStart(3, '0');
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 // Xóa tất cả tùy chọn trong wardSelect
                 wardSelect.innerHTML = '<option value="">Xã / Phường</option>'; // Đặt lại tùy chọn phường
@@ -441,7 +464,7 @@
             const ward = document.getElementById('ward').value;
             const address_order = document.getElementById('address_order').value;
             const payment_method = document.getElementById('payment_method').value;
-           
+
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
             fetch('{{ route('placeOrder') }}', {
@@ -451,30 +474,30 @@
                         'X-CSRF-TOKEN': csrfToken
                     },
                     body: JSON.stringify({
-                        recipient_name : recipient_name,
-                        recipient_email : recipient_email,
-                        phone_number : phone_number,
-                        province : province,
-                        city : city,
-                        ward : ward,
-                        address_order : address_order,
-                        payment_method : payment_method,
+                        recipient_name: recipient_name,
+                        recipient_email: recipient_email,
+                        phone_number: phone_number,
+                        province: province,
+                        city: city,
+                        ward: ward,
+                        address_order: address_order,
+                        payment_method: payment_method,
                     }),
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if(data.message){
+                    if (data.message) {
                         Swal.fire({
-                            title: 'Đặt hàng thành công!',
-                            text: 'Đơn hàng của bạn đã được tạo thành công.',
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        })
-                        .then( () => {
-                            setTimeout(() => {
-                            window.location.href = '{{ route('home') }}';
-                            }, 5000); 
-                        });
+                                title: 'Đặt hàng thành công!',
+                                text: 'Đơn hàng của bạn đã được tạo thành công.',
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            })
+                            .then(() => {
+                                setTimeout(() => {
+                                    window.location.href = '{{ route('home') }}';
+                                }, 5000);
+                            });
                     };
                     // Xử lý dữ liệu trả về
                 })
@@ -482,10 +505,10 @@
                     console.error('Error:', error);
                     // Hiển thị thông báo lỗi SweetAlert
                     Swal.fire({
-                    title: 'Đặt hàng thất bại',
-                    text: 'Đã có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
+                        title: 'Đặt hàng thất bại',
+                        text: 'Đã có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
                     });
                 });
         });
