@@ -18,14 +18,13 @@
                                             <li><a href="{{ route('dashboard') }}">Admin</a></li>   
                                         @endif
 
-                                        <li><a href="">Tài khoản của tôi</a></li>
+                                        <li><a href="{{ route('myAccount') }}">Tài khoản của tôi</a></li>
 
                                         <li><a href="">Yêu thích</a></li>
                                         
                                         
 
                                         <li><a href="{{ route('checkout') }}">Thanh toán</a></li>
-                                        <li><a href="order.html">Đơn hàng của tôi</a></li>
                                         <li><a href="{{ route('logout') }}">Đăng Xuất</a></li>
 
                                     </ul>
@@ -33,10 +32,9 @@
                             @else
                                 <li><a href="#">Tài khoản</a><i class="zmdi zmdi-chevron-down"></i>
                                     <ul>
-                                        <li><a href="my-account.html">Tài khoản của tôi</a></li>
+                                        <li><a href="{{ route('myAccount') }}">Tài khoản của tôi</a></li>
                                         <li><a href="wishlist.html">Yêu thích</a></li>
                                         <li><a href="{{ route('checkout') }}">Thanh toán</a></li>
-                                        <li><a href="order.html">Đơn hàng của tôi</a></li>
                                         <li><a href="{{ route('login') }}">Đăng nhập</a></li>
                                         <li><a href="{{ route('register') }}">Đăng Ký</a></li>
                                         
