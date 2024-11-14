@@ -55,3 +55,40 @@
 .pagination-wrapper .pagination .active span {
     color: #ff4d4d; /* Màu cho nút hiện tại */
 }
+.spor{
+    height: 30px;
+    max-width:200px;
+    opacity: 0;
+    visibility: hidden;
+    display: flex;
+    margin-right: 60px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    background-color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.5s ease 0s;
+}
+
+.spor a {
+    color: #333;
+    font-size: 16px; /* Giảm kích thước biểu tượng */
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.spor a:not(:last-child)::after {
+    content: "";
+    height: 16px; /* Giảm chiều cao của đường phân cách */
+   
+    background-color: #ddd;
+    position: absolute;
+    right: -5px; /* Giảm khoảng cách của đường phân cách */
+}

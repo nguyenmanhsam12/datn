@@ -2,10 +2,10 @@
 
 @push('styles')
     <style>
-        .post-title a{
+        .post-title a {
             display: -webkit-box;
             -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;  
+            -webkit-box-orient: vertical;
             overflow: hidden;
         }
     </style>
@@ -35,7 +35,8 @@
                                 <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}">
                                     <div class="product-img">
                                         <span class="pro-label new-label">new</span>
-                                        <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}"><img src="{{ $pr->image }}" alt="" /></a>
+                                        <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}"><img
+                                                src="{{ $pr->image }}" alt="" /></a>
                                         <div class="product-action clearfix">
                                             <a href="#" data-bs-toggle="tooltip" data-bs-placement="top"
                                                 title="Wishlist"><i class="zmdi zmdi-favorite-outline"></i></a>
@@ -47,10 +48,13 @@
                                     </div>
                                     <div class="product-info clearfix">
                                         <div class="fix">
-                                            <h4 class="post-title floatleft"><a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}">{{ $pr->name }}</a></h4>
+                                            <h4 class="post-title floatleft"><a
+                                                    href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}">{{ $pr->name }}</a>
+                                            </h4>
                                         </div>
                                         <div class="fix">
-                                            <span class="pro-price floatleft">{{ number_format($pr->mainVariant->price,0,',','.').' '.'VNĐ' }}</span>
+                                            <span
+                                                class="pro-price floatleft">{{ number_format($pr->mainVariant->price, 0, ',', '.') . ' ' . 'VNĐ' }}</span>
                                             <span class="pro-rating floatright">
                                                 <a href="#"><i class="zmdi zmdi-star"></i></a>
                                                 <a href="#"><i class="zmdi zmdi-star"></i></a>
@@ -65,7 +69,6 @@
 
 
                             {{-- modal --}}
-                           
                         @endforeach
 
                         <!-- Single-product end -->
@@ -76,7 +79,7 @@
         </div>
     </div>
     <!-- PRODUCT-AREA END -->
-    
+
 
 
 
@@ -237,7 +240,7 @@
                     let html = '';
 
                     // Khai báo biến đường dẫn trong Blade
-                    const getDetailProductUrl = '{{ route("getDetailProduct", ["slug" => "__slug__"]) }}';
+                    const getDetailProductUrl = '{{ route('getDetailProduct', ['slug' => '__slug__']) }}';
 
                     response.forEach(function(product) {
                         // Thay thế __slug__ bằng slug của sản phẩm hiện tại
@@ -308,4 +311,3 @@
         });
     </script>
 @endpush
-
