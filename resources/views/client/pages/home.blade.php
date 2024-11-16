@@ -38,8 +38,15 @@
                                         <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}"><img
                                                 src="{{ $pr->image }}" alt="" /></a>
                                         <div class="product-action clearfix">
-                                            <a href="#" data-bs-toggle="tooltip" data-bs-placement="top"
-                                                title="Wishlist"><i class="zmdi zmdi-favorite-outline"></i></a>
+                                            <a href=""><form action="{{ route('wishlist.add', $pr->id) }}"
+                                                method="POST">
+                                                @csrf
+                                                <button type="submit" class="wishlist-action"
+                                                    title="Thêm vào wishlist">
+                                                    <i class="zmdi zmdi-favorite-outline"></i>
+                                                </button>
+                                            </form></a>
+                                            
                                             <a href="#" data-bs-toggle="modal" data-bs-target="#productModal"
                                                 title="Quick View"><i class="zmdi zmdi-zoom-in"></i></a>
                                             <a href="#" data-bs-toggle="tooltip" data-bs-placement="top"

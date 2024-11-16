@@ -20,7 +20,7 @@
 
                                         <li><a href="{{ route('myAccount') }}">Tài khoản của tôi</a></li>
 
-                                        <li><a href="">Yêu thích</a></li>
+                                        <li><a href="{{ route('wishlist.index') }}">Yêu thích</a></li>
                                         
                                         
 

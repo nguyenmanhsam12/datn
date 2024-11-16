@@ -21,6 +21,7 @@ use App\Http\Controllers\OrderAdminController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -72,10 +73,9 @@ Route::get('/my-account',[MyAccountController::class,'myAccount'])->name('myAcco
 Route::get('/checkout',[CheckoutController::class,'checkout'])->name('checkout');
 
 // cửa hàng
-// Route::get('/shop',[ShopController::class,'shop'])->name('shop');
-// Route::get('/shop/category/{id}', [ShopController::class, 'showProByCate'])->name('shop.byCategory');
 Route::get('/shop', [ShopController::class, 'shop'])->name('shop');
 Route::get('/shop/category/{categoryId}', [ShopController::class, 'showProByCate'])->name('shop.byCategory');
+// Route::post('/filter', [ShopController::class, 'filter'])->name('filter');
 
 
 // bài viết
@@ -96,7 +96,11 @@ Route::get('/getProductsByCategory/{category_id}', [HomeController::class, 'getP
 // lấy chi tiết sp
 Route::get('/getDetailProduct/{slug}',[HomeController::class,'getDetailProduct'])->name('getDetailProduct');
 
-
+Route::middleware('auth')->group(function () {
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/add/{productId}', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');    
+    Route::delete('/wishlist/remove/{productId}', [WishlistController::class, 'removeFromWishlist'])->name('wishlist.remove');
+});
 
 Route::prefix('admin')->middleware('checkadmin')->group(function(){
 

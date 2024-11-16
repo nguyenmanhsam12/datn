@@ -75,10 +75,9 @@
                             <ul>
                                 @foreach ($list_size as $size)
                                     <li>
-                                        <a
-                                            href="{{ route('shop', ['size' => $size->name, 'price' => request('price'), 'search' => request('search')]) }}">
+                                        <button onclick="sizeFilter('{{$size->name}}')">
                                             {{ $size->name }}
-                                        </a>
+                                        </button>
                                     </li>
                                 @endforeach
                             </ul>
@@ -210,5 +209,31 @@
                 productAction.style.visibility = 'hidden';
             });
         });
+        function sizeFilter(size){
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            fetch("{{route("filter")}}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    size: size
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // console.log(data);
+                   
+                } else {
+                    alert(data.message || 'Có lỗi xảy ra khi xóa sản phẩm.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Đã xảy ra lỗi khi xóa sản phẩm.');
+            });
+        }
     </script>
 @endpush

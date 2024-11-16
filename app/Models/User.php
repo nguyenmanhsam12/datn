@@ -59,5 +59,8 @@ class User extends Authenticatable
         return $this->roles->contains('name', 'admin');  // Kiểm tra nếu user có vai trò 'admin'
     }
     
-    
+    public function wishlist()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
 }
