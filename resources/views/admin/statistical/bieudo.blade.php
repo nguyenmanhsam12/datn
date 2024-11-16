@@ -51,7 +51,7 @@
                                 <th>Thương hiệu</th>
                                 <th>Danh mục</th>
                                 <th>Thao tác</th>
-                            </tr>
+                            </tr>   
                         </thead>
                         <tbody>
                             @foreach ($list_product as $key => $pr)
