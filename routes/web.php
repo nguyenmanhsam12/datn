@@ -54,6 +54,7 @@ Route::put('/cart/decrease-quantity', [CartController::class, 'decreaseQuantity'
 Route::put('/updateQuantity', [CartController::class, 'updateQuantity'])->name('updateQuantity');
 
 
+
 // xóa giỏ hàng 
 Route::delete('removeFromCart', [CartController::class, 'removeFromCart'])->name('removeFromCart');
 
@@ -70,6 +71,13 @@ Route::post('/selectCity',[CheckoutController::class,'selectCity'])->name('selec
 
 Route::get('/my-account',[MyAccountController::class,'myAccount'])->name('myAccount');
 Route::get('/checkout',[CheckoutController::class,'checkout'])->name('checkout');
+// xác nhận đã nhận hàng 
+Route::post('/order/confirm', [MyAccountController::class, 'confirmOrder'])->name('confirmOrder');
+// xác nhận hủy đơn hàng
+Route::post('/cancelOrder', [MyAccountController::class, 'cancelOrder'])->name('cancelOrder');
+
+
+
 
 // cửa hàng
 // Route::get('/shop',[ShopController::class,'shop'])->name('shop');
