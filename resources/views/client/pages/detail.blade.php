@@ -137,7 +137,9 @@
                             <div class="product-description">
                                 <p>{!! $productDetail->description !!}</p>
                             </div>
+                            <div class="product-stock">
 
+                            </div>
 
                             <!-- Size start -->
                             <div class="size-filter single-pro-size mb-35 clearfix">
@@ -146,8 +148,7 @@
                                     @foreach ($productDetail->variants as $variant)
                                         <li>
                                             <a href="#" class="size-option p-1" data-variant-id="{{ $variant->id }}"
-                                                data-price = "{{ $variant->price }}"
-                                                >
+                                                data-price = "{{ $variant->price }}" data-stock = "{{ $variant->stock }}">
                                                 {{ $variant->size->name }}
                                             </a>
                                         </li>
@@ -349,11 +350,15 @@
 @endsection
 
 @push('script')
-    <script>
+    <script type="module">
         document.addEventListener('DOMContentLoaded', function() {
             // Lấy tất cả các nút size
             const sizeOptions = document.querySelectorAll('.size-option');
             const priceElement = document.querySelector('.pro-price');
+            const stockElement = document.querySelector('.product-stock');
+
+            // Biến lưu variantId hiện tại để tránh đăng ký kênh lặp
+            let currentVariantId = null;
 
             // Kiểm tra sự tồn tại của sizeOptions và priceElement
             if (!sizeOptions.length || !priceElement) {
@@ -385,6 +390,38 @@
                 // Lấy giá từ data attribute và cập nhật
                 const price = this.getAttribute('data-price');
                 updatePrice(price);
+                const stock = this.getAttribute('data-stock');
+                stockElement.textContent = `Số lượng : ${stock}`
+                const variantId = this.getAttribute('data-variant-id');
+
+                // Kiểm tra nếu có variantId và xử lý lắng nghe sự kiện
+                if (variantId) {
+                    // Nếu variantId thay đổi, hủy đăng ký kênh cũ và đăng ký kênh mới
+                    if (currentVariantId !== variantId) {
+                        // Hủy kênh cũ nếu đã đăng ký
+                        if (currentVariantId) {
+                            Echo.leave(`product-${currentVariantId}`);
+                        }
+
+                        // Cập nhật variantId hiện tại
+                        currentVariantId = variantId;
+                        
+
+                        // Đăng ký kênh mới để lắng nghe sự kiện
+                        Echo.channel(`product-${currentVariantId}`)
+                            .listen('ProductStockUpdated', (event) => {
+                                console.log('Stock update received: ', event);
+
+                                // Cập nhật số lượng tồn kho nếu sự kiện trùng variant
+                                if (event.variantId == currentVariantId) {
+                                    stockElement.textContent = `Số lượng: ${event.stock}`;
+                                    console.log(stockElement);
+                                }
+                            });
+                    }
+                }
+
+
             }
 
             // Thêm event listener cho tất cả các nút size
@@ -393,7 +430,7 @@
             });
 
         });
-    </script>
+    </script>   
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -423,7 +460,7 @@
 
                 const variantId = selectedOption.getAttribute('data-variant-id');
                 const quantity = parseInt(quantityInput.value);
-                if(quantity < 1){
+                if (quantity < 1) {
                     alert('Số lượng phải lớn hơn 0');
                     return;
                 }
@@ -444,12 +481,12 @@
                     .then(data => {
 
                         console.log(data);
-                        
 
-                        if(data.error){
+
+                        if (data.error) {
                             toastr.error(data.error); // Hiển thị lỗi yêu cầu đăng nhập bằng toastr
                             return;
-                        }   
+                        }
 
                         if (data.message) {
                             Swal.fire({
@@ -475,13 +512,31 @@
                                 cartCountElement.textContent = data.cartItemCount;
                             }
                         }
-                        
+
                     })
                     .catch(error => {
                         console.error('Lỗi:', error);
                         alert('Có lỗi xảy ra, vui lòng thử lại.');
                     });
             });
+        });
+    </script>
+
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lắng nghe sự kiện từ kênh 'product-{id}'
+            const stockElement = document.querySelector('.product-stock');
+            const variantId = stockElement.getAttribute('data-variant-id'); // Lấy variantId của sản phẩm hiện tại
+
+            if (variantId) {
+                Echo.channel(`product-${variantId}`)
+                    .listen('ProductStockUpdated', (event) => {
+                        console.log('Stock update received: ', event);
+
+                        // Cập nhật số lượng tồn kho
+                        stockElement.textContent = `Số lượng: ${event.stock}`;
+                    });
+            }
         });
     </script>
 @endpush
