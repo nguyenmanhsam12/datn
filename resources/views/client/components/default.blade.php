@@ -43,9 +43,6 @@
     <script src="{{ asset('js/vendor/modernizr-2.8.3.min.js') }}"></script>
     
 
-    <!-- slick css -->
-    <link rel="stylesheet" href="{{ asset('css/shop.css') }}">
-
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
