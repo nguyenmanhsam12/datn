@@ -81,6 +81,12 @@
             border-radius: 5px;
             width: 25%;
         }
+
+        /* comment */
+        .pro-reviewer img{
+            border-radius: 50%;
+            border: 1px solid #6c757d;
+        }
     </style>
 @endpush
 
@@ -188,33 +194,22 @@
                     <div class="col-md-3 col-12">
                         <!-- Nav tabs -->
                         <ul class="single-pro-tab-menu  nav">
-                            <li class="nav-item"><button class="nav-link" data-bs-target="#description"
+                            <li class="nav-item"><button class="nav-link active" data-bs-target="#description"
                                     data-bs-toggle="tab">Mô tả</button></li>
-                            <li class="nav-item"><button class="nav-link active" data-bs-target="#reviews"
+                            <li class="nav-item"><button class="nav-link " data-bs-target="#reviews"
                                     data-bs-toggle="tab">Đánh giá</button></li>
-                            <li class="nav-item"><button class="nav-link" data-bs-target="#information"
-                                    data-bs-toggle="tab">Thông tin</button></li>
-
                         </ul>
                     </div>
                     <div class="col-md-9 col-12">
                         <!-- Tab panes -->
                         <div class="tab-content">
-                            <div class="tab-pane" id="description">
+                            <div class="tab-pane active" id="description">
                                 <div class="pro-tab-info pro-description">
-                                    <h3 class="tab-title title-border mb-30">dummy Product name</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer accumsan egestas
-                                        elese ifend. Phasellus a felis at est bibendum feugiat ut eget eni Praesent et
-                                        messages in con sectetur posuere dolor non.</p>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer accumsan egestas
-                                        elese ifend. Phasellus a felis at est bibendum feugiat ut eget eni Praesent et
-                                        messages in con sectetur posuere dolor non.</p>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer accumsan egestas
-                                        elese ifend. Phasellus a felis at est bibendum feugiat ut eget eni Praesent et
-                                        messages in con sectetur posuere dolor non.</p>
+                                    <h3 class="tab-title title-border mb-30">Mô tả sản phẩm</h3>
+                                    <div>{!! $productDetail->description_text !!}</div>
                                 </div>
                             </div>
-                            <div class="tab-pane active" id="reviews">
+                            <div class="tab-pane " id="reviews">
                                 <div class="pro-tab-info pro-reviews">
                                     <div class="customer-review mb-60">
                                         <h3 class="tab-title title-border mb-30">Đánh giá của khách hàng</h3>
@@ -312,7 +307,7 @@
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <textarea class="custom-textarea" name="message" placeholder="Đánh giá của bạn..." required></textarea>
-                                                        <button type="submit" class="button-one submit-button mt-20">Gửi
+                                                        <button type="submit" data-text="Gửi đánh giá" class="button-one submit-button mt-20">Gửi
                                                             đánh giá</button>
                                                     </div>
                                                 </div>
@@ -321,22 +316,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="tab-pane" id="information">
-                                <div class="pro-tab-info pro-information">
-                                    <h3 class="tab-title title-border mb-30">Product information</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer accumsan egestas
-                                        elese ifend. Phasellus a felis at est bibendum feugiat ut eget eni Praesent et
-                                        messages in con sectetur posuere dolor non.</p>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer accumsan egestas
-                                        elese ifend. Phasellus a felis at est bibendum feugiat ut eget eni Praesent et
-                                        messages in con sectetur posuere dolor non.</p>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer accumsan egestas
-                                        elese ifend. Phasellus a felis at est bibendum feugiat ut eget eni Praesent et
-                                        messages in con sectetur posuere dolor non.</p>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
                 </div>
