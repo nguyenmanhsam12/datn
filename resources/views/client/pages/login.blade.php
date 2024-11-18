@@ -121,6 +121,10 @@
                             <button type="submit" class="btn btn-primary button-register">Đăng Nhập</button>
                             <p class="text-gray mt-3">Bạn chưa có tài khoản? <a href="{{ route('register') }}"
                                     class="text-primary">Đăng ký tại đây</a></p>
+
+
+                                    <p class="text-gray mt-3">Bạn đã  <a href="{{ route('password.request') }}"
+                                        class="text-primary">Quên mật khẩu</a></p>
                         </div>
                     </div>
                 </div>
