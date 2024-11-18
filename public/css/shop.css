@@ -92,3 +92,17 @@
     position: absolute;
     right: -5px; /* Giảm khoảng cách của đường phân cách */
 }
+/* product */
+.product-info h4 {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0;
+    white-space: nowrap;
+    height: 3rem; 
+    overflow: hidden; /* Ẩn phần dư */
+    text-overflow: ellipsis; /* Thêm dấu "..." khi quá dài */
+    cursor: pointer;
+}
+.product-info h4:hover {
+    transform: scale(1.05);
+}
