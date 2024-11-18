@@ -170,7 +170,7 @@
                 <div class="col-12">
                     <div class="shopping-cart">
                         <!-- Continue Shopping Link -->
-                        <div class="shopping__notice mt-4 mb-4">
+                        {{-- <div class="shopping__notice mt-4 mb-4">
                             <h6 class="notice__title">
                                 <p>Chỉ cần thêm <strong>200.000 VND</strong> nữa để được miễn phí vận chuyển!</p>
                             </h6>
@@ -178,7 +178,7 @@
                                 <div>Tiếp tục mua sắm</div>
                                 <div><i class="zmdi zmdi-arrow-right"></i></div>
                             </a>
-                        </div>
+                        </div> --}}
 
                         <!-- Cart Table -->
                         <div class="shop-cart-table">
