@@ -64,11 +64,6 @@
             text-align: right;
         }
 
-        /* .btn-info {
-                                            background-color: #E03550;
-                                            color: white;
-                                        } */
-
         .tab-links a {
             display: inline-block;
             padding: 10px 20px;
@@ -139,6 +134,11 @@
             color: #DC3545;
             /* Đã hủy */
         }
+
+        .button-group button {
+            margin-right: 2px;
+            /* Thay đổi giá trị theo ý muốn */
+        }
     </style>
 @endpush
 
@@ -168,7 +168,7 @@
             <!-- Sidebar -->
             <div class="col-md-3">
                 <div class="sidebar">
-                    <h4 class="mb-4">Admin!</h4>
+                    <h4 class="mb-4">{{ Auth()->user()->name }}</h4>
                     <div class="sidebar-nav">
                         <a href="#" id="accountLink" class="active">Quản Lý Tài Khoản</a>
                         <a href="#" id="ordersLink">Đơn Mua</a>
@@ -213,7 +213,8 @@
                                     @foreach ($or->cartItems as $item)
                                         <div class="order__left">
                                             <div class="image">
-                                                <img src="{{ $item->product_image }}" alt="product image" class="img-fluid">
+                                                <img src="{{ $item->product_image }}" alt="product image"
+                                                    class="img-fluid">
                                             </div>
                                             <div class="order-details">
                                                 <p><strong>Sản Phẩm:</strong>{{ $item->product_name }}</p>
@@ -237,40 +238,113 @@
                                                     <button
                                                         class="btn btn-danger cancel-order"data-order-id="{{ $or->id }}"
                                                         data-status={{ $or->status_id }}>Hủy</button>
-                                                    <button class="btn btn-success">Xem Chi Tiết</button>
+                                                    <button class="btn btn-success" 
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#orderModal{{ $or->id }}">Xem Chi
+                                                        Tiết</button>
                                                 @endif
 
                                                 @if ($or->status_id == 2)
                                                     <button
                                                         class="btn btn-danger cancel-order"data-order-id="{{ $or->id }}"
                                                         data-status={{ $or->status_id }}>Hủy</button>
-                                                        <button class="btn btn-success">Xem Chi Tiết</button>
+                                                    <button class="btn btn-success"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#orderModal{{ $or->id }}"
+                                                    >Xem Chi Tiết</button>
                                                 @endif
 
                                                 @if ($or->status_id == 3)
-                                                    <button class="btn btn-success">Xem Chi Tiết</button>
+                                                    <button class="btn btn-success"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#orderModal{{ $or->id }}"
+                                                    >Xem Chi Tiết</button>
                                                 @endif
 
 
                                                 <!-- Nút xác nhận đơn hàng cho trạng thái "Đã giao" -->
                                                 @if ($or->status_id == 4)
-                                                    <button class="btn btn-success">Xem Chi Tiết</button>
+                                                    <button class="btn btn-success"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#orderModal{{ $or->id }}"
+                                                    >Xem Chi Tiết</button>
                                                     <button class="btn btn-primary confirm-order"
                                                         data-order-id="{{ $or->id }}"
                                                         data-status={{ $or->status_id }}>Xác nhận đơn hàng</button>
-
                                                 @endif
 
                                                 <!-- Nút Khiếu nại cho trạng thái "Hoàn tất" -->
                                                 @if ($or->status_id == 5)
+                                                    <button class="btn btn-success"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#orderModal{{ $or->id }}"
+                                                    >Xem Chi Tiết</button>
                                                     <button class="btn btn-warning">Khiếu Nại</button>
                                                 @endif
 
                                                 @if ($or->status_id == 6)
-                                                    <button class="btn btn-success">Xem Chi Tiết</button>
+                                                    <button class="btn btn-success"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#orderModal{{ $or->id }}"
+                                                    >Xem Chi Tiết</button>
                                                 @endif
-                                                
 
+
+                                            </div>
+                                        </div>
+                                        <!-- Modal cho từng đơn hàng -->
+                                        <div class="modal fade" id="orderModal{{ $or->id }}" tabindex="-1"
+                                            role="dialog" aria-labelledby="orderModalLabel{{ $or->id }}"
+                                            aria-hidden="true">
+                                            <div class="modal-dialog modal-lg" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="orderModalLabel{{ $or->id }}">Chi
+                                                            tiết đơn hàng #{{ $or->id }}</h5>
+                                                        <button type="button" class="close" data-bs-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body d-flex justify-content-between">
+                                                        <div>
+                                                            <ul>
+                                                                @foreach ($or->cartItems as $item)
+                                                                    <li>
+                                                                        <strong>Sản phẩm:</strong>
+                                                                        {{ $item->product_name }}<br>
+                                                                        <strong>Kích cỡ:</strong> {{ $item->size }}<br>
+                                                                        <strong>Số lượng:</strong> {{ $item->quantity }}
+                                                                    </li>
+                                                                @endforeach
+                                                            </ul>
+                                                            <p><strong>Phí vận chuyển:</strong>
+                                                                {{ number_format($or->shipping_fee, 0, ',', '.') }} VNĐ</p>
+                                                            <p><strong>Tổng tiền:</strong>
+                                                                {{ number_format($or->total_amount, 0, ',', '.') }} VNĐ</p>
+                                                        </div>
+                                                        <div>
+                                                            <ul>
+                                                                    <li>
+                                                                        <strong>Tên người nhận:</strong>
+                                                                        {{ $or->orderAddress->recipient_name }}<br>
+                                                                        <strong>Email người nhận:</strong>{{ $or->orderAddress->recipient_email }}<br>
+                                                                        <strong>Địa chỉ:</strong>{{ $or->orderAddress->address_order }},
+                                                                        {{ $or->orderAddress->ward }},
+                                                                        {{ $or->orderAddress->city }},
+                                                                        {{ $or->orderAddress->province }}<br>
+                                                                        <strong>Số điện thoại:</strong>
+                                                                        {{ $or->orderAddress->phone_number }}
+                                                                    </li>
+                                                            </ul>
+                        
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">Đóng</button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     @endforeach
@@ -464,7 +538,7 @@
                                     orderCard.setAttribute('data-status', data.newStatus);
                                     // tên trạng thái
                                     const orderStatus = orderCard.querySelector(
-                                    '.order-status');
+                                        '.order-status');
                                     // Cập nhật trạng thái hiển thị trong giao diện
                                     orderStatus.textContent = data.statusName;
                                     orderStatus.setAttribute('data-status', data
@@ -492,7 +566,7 @@
                                                 '.order-card');
                                             orders.forEach(function(order) {
                                                 if (order.getAttribute(
-                                                    'data-status') === '6') {
+                                                        'data-status') === '6') {
                                                     order.style.display = 'block';
 
                                                 } else {
@@ -558,17 +632,36 @@
                     // Thêm nút dựa vào trạng thái mới
                     if (newStatusId === 1) { // Trạng thái "Chờ xử lý"
                         buttonGroup.innerHTML =
-                            '<button class="btn btn-danger">Hủy</button><button class="btn btn-success">Xem chi tiết</button>';
+                            `<button class="btn btn-danger ">Hủy
+                            </button><button class="btn btn-success"
+                            data-bs-toggle="modal"data-bs-target="#orderModal${orderId}">
+                            Xem chi tiết</button>`;
+                                                        
                     } else if (newStatusId === 2) {
-                        buttonGroup.innerHTML = '<button class="btn btn-success">Xem chi tiết</button>';
+                        buttonGroup.innerHTML =
+                            `<button class="btn btn-danger">Hủy</button>
+                            <button class="btn btn-success"
+                            data-bs-toggle="modal" data-bs-target="#orderModal${orderId}"
+                            >Xem chi tiết</button>`;
                     } else if (newStatusId === 3) {
-                        buttonGroup.innerHTML = '<button class="btn btn-success">Xem chi tiết</button>';
+                        buttonGroup.innerHTML = `<button class="btn btn-success"
+                        data-bs-toggle="modal" data-bs-target="#orderModal${orderId}"
+                        >Xem chi tiết</button>`;
                     } else if (newStatusId === 4) {
                         buttonGroup.innerHTML =
-                            '<button class="btn btn-success">Xem chi tiết</button><button class="btn btn-primary ml-2">Xác nhận đơn hàng</button>';
+                            `<button class="btn btn-success"
+                            data-bs-toggle="modal" data-bs-target="#orderModal${orderId}"
+                            >Xem chi tiết</button><button class="btn btn-primary ml-2">Xác nhận đơn hàng</button>`;
                     } else if (newStatusId === 5) {
                         buttonGroup.innerHTML =
-                            '<button class="btn btn-success">Xem chi tiết</button><button class="btn btn-warning">Khiếu nại</button>';
+                            `<button class="btn btn-success"
+                            data-bs-toggle="modal" data-bs-target="#orderModal${orderId}"
+                            
+                            >Xem chi tiết</button><button class="btn btn-warning">Khiếu nại</button>`;
+                    } else if(newStatusId === 6){
+                        buttonGroup.innerHTML = `<button class="btn btn-success"
+                        data-bs-toggle="modal" data-bs-target="#orderModal${orderId}"
+                        >Xem chi tiết</button>`;
                     }
 
 

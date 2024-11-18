@@ -45,6 +45,10 @@ class CheckoutController extends Controller
 
         // Tìm giỏ hàng của người dùng
         $cart = Cart::where('user_id', $user->id)->first();
+        
+        if(!$cart){
+            return redirect()->route('shop')->with('error','Vui lòng chọn sản phẩm trước khi thanh toán');
+        }
 
         $cartItems = CartItems::with('variants.product','variants.size')->where('cart_id',$cart->id)->get();
         
@@ -186,6 +190,7 @@ class CheckoutController extends Controller
                 }
 
                 $productVariant->decrement('stock', $item->quantity);
+                $productVariant->selled = $item->quantity;
                 $productVariant->save();
 
                 // Phát sự kiện cập nhật tồn kho
