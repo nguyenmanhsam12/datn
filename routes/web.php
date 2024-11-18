@@ -40,6 +40,22 @@ Route::get('/register',[AuthController::class,'register'])->name('register');
 Route::post('/postlogin',[AuthController::class,'postlogin'])->name('postlogin');
 Route::post('/postRegister',[AuthController::class,'postRegister'])->name('postRegister');
 
+
+// quen mk
+Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request'); 
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+
+//otp
+Route::get('password/otp', [AuthController::class, 'showOtpForm'])->name('password.otp');
+Route::post('password/otp', [AuthController::class, 'verifyOtp'])->name('password.verifyOtp');
+
+// ko otp
+// Route::get('reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
+// Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+
+
+
+
 Route::get('/logout',[AuthController::class,'logout'])->name('logout');
 
 Route::get('/cart',[CartController::class,'cart'])->name('cart');
