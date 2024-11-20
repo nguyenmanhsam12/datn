@@ -226,28 +226,7 @@
                         </li>
                     </ul>
                 </li>
-                {{-- thống kê --}}
-                <li class="nav-item ">
-                    <a href="#" class="nav-link ">
-                        <i class="nav-icon fas fa-gift"></i>
-                        <p>
-                            Thống kê
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{route('admin.statistical.bieudo')}}" class="nav-link">
-                                <p>Biểu đồ</p>
-                            </a>
-                            <a href="{{route('admin.statistical.index')}}" class="nav-link">
-                                <p>Thống kê tổng quan</p>
-                            </a>
-                           
-                        </li>
-                        
-                    </ul>
-                </li>
+               
 
             </ul>
         </nav>

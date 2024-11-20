@@ -26,6 +26,7 @@ class StoreCouponRequest extends FormRequest
             'discount_type' => 'required|in:percentage,fixed',
             'discount_value' => 'required|numeric|min:0',
             'minimum_order_value' => 'required|numeric|min:0',
+            'maximum_discount' => 'required|numeric|min:0',
             'end_date' => 'required|date|after_or_equal:today',
             'status' => 'required|in:active,expired',
         ];
