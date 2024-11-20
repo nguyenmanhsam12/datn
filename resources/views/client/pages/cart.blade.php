@@ -366,7 +366,7 @@
                         .then(data => {
                             if (data.error) {
                                 // Hiển thị thông báo lỗi từ server
-                                console.log('số lượng bạn thêm vượt quá số lượng trong kho');
+                                alert(data.error);
                             } else {
                                 quantity.value = data.quantity;
                                 itemTotalPrice.innerText = formatPrice(data.totalPrice);
@@ -501,7 +501,7 @@
                                 // Cập nhật số lượng và tổng tiền nếu thành công
                                 itemTotalPrice.innerText = formatPrice(data.totalPrice);
                                 updateCartIconQuantity(data.quantityCartIcon);
-                                totalAmount.textContent = formatPrice(data.totalCartPrice);
+                                totalAmount.textContent = formatPrice(data.total);
                                 totalItems.textContent = formatPrice(data.totalCartPrice);
                                 document.querySelector('.text-end').textContent = formatPrice(data.discount);
 

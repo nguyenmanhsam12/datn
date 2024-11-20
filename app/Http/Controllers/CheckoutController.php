@@ -19,50 +19,54 @@ use App\Models\OrderItem;
 use App\Models\ProductVariants;
 use Illuminate\Support\Facades\Mail;
 use App\Events\ProductStockUpdated;
+use App\Models\Coupon;
+use App\Models\Transactions;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
-{   
+{
 
     private function calculateShippingFee($total_weight)
     {
         // Xử lý mức phí vận chuyển dựa trên trọng lượng sản phẩm (có thể cứng hóa giá trị trong code)
-        if ($total_weight >=0  && $total_weight <= 0.7) {
+        if ($total_weight >= 0  && $total_weight <= 0.7) {
             return 15000;
         } elseif ($total_weight > 0.7 && $total_weight <= 1.5) {
             return 25000;  // Phí vận chuyển cho trọng lượng từ 5kg đến 10kg là 100
-        } elseif ($total_weight > 1.5 && $total_weight < 5 ) {
+        } elseif ($total_weight > 1.5 && $total_weight < 5) {
             return 40000;  // Phí vận chuyển cho trọng lượng từ 10kg đến 20kg là 150
         } else {
             return 0;  // Phí vận chuyển cho trọng lượng trên 20kg là 200
         }
     }
 
-    public function Checkout(){
+    public function Checkout()
+    {
         $user = Auth::user();
-        if(!$user){
-            return redirect()->route('login')->with('error','Vui lòng đăng nhập trước');
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập trước');
         }
 
         // Tìm giỏ hàng của người dùng
         $cart = Cart::where('user_id', $user->id)->first();
-        
-        if(!$cart){
-            return redirect()->route('shop')->with('error','Vui lòng chọn sản phẩm trước khi thanh toán');
+
+        if (!$cart) {
+            return redirect()->route('shop')->with('error', 'Vui lòng chọn sản phẩm trước khi thanh toán');
         }
 
-        $cartItems = CartItems::with('variants.product','variants.size')->where('cart_id',$cart->id)->get();
-        
+        $cartItems = CartItems::with('variants.product', 'variants.size')->where('cart_id', $cart->id)->get();
+
         // Tính tổng trọng lượng cho tất cả các sản phẩm trong giỏ hàng
         $total_weight = 0; // Khởi tạo tổng trọng lượng
 
-        $cartItems = $cartItems->map(function($item) use (&$total_weight) {
+        $cartItems = $cartItems->map(function ($item) use (&$total_weight) {
             $variant = $item->variants;
             $product = $variant->product;
 
-            
-            $total_weight += $variant->weight * $item->quantity ;
 
-        
+            $total_weight += $variant->weight * $item->quantity;
+
+
             return [
                 'id' => $item->id,
                 'variant_id' => $variant->id,
@@ -73,73 +77,70 @@ class CheckoutController extends Controller
                 'size' => $variant->size->name,
                 'total_price' => $variant->price * $item->quantity,
             ];
-
-
-
         });
 
-        $province = Province::orderBy('matinh','asc')->get();
-        $payment = Payment_Methods::all();  
+        $province = Province::orderBy('matinh', 'asc')->get();
+        $payment = Payment_Methods::all();
 
         $shipping = $this->calculateShippingFee($total_weight);
-        session(['shipping'=>$shipping]);
+        session(['shipping' => $shipping]);
 
-        $newTotal = session('newTotal',0) + $shipping;
+        $newTotal = session('newTotal', 0) + $shipping;
 
-        
-        return view('client.pages.checkout',compact('cartItems','user','province','payment','shipping','newTotal'));
+
+        return view('client.pages.checkout', compact('cartItems', 'user', 'province', 'payment', 'shipping', 'newTotal'));
     }
 
-    public function selectProvince(Request $request){
+    public function selectProvince(Request $request)
+    {
 
         try {
-            
+
             $data = $request->all();
 
             $province = $data['province'];
-    
-            $citys = City::where('matinh',$province)->get();
-    
+
+            $citys = City::where('matinh', $province)->get();
+
             // Trả về danh sách thành phố dưới dạng JSON
-            
+
 
             return response()->json([
                 'message' => 'Lấy danh sách thành phố thành công',
                 'citys' => $citys,
             ]);
-
         } catch (\Exception $e) {
             // Bắt lỗi và trả về thông điệp lỗi
             return response()->json(['message' => 'Có lỗi xảy ra: ' . $e->getMessage()], 500);
         }
-        
-       
     }
 
-    public function selectCity(Request $request){
+    public function selectCity(Request $request)
+    {
         try {
-            
+
             $data = $request->all();
 
             $city = $data['city'];
-    
-            $wards = Ward::where('macity',$city)->get();
-    
+
+            $wards = Ward::where('macity', $city)->get();
+
             // Trả về danh sách thành phố dưới dạng JSON
-            
+
 
             return response()->json([
                 'message' => 'Lấy danh sách phường thành công',
                 'wards' => $wards,
             ]);
-
         } catch (\Exception $e) {
             // Bắt lỗi và trả về thông điệp lỗi
             return response()->json(['message' => 'Có lỗi xảy ra: ' . $e->getMessage()], 500);
         }
     }
 
-    public function placeOrder(PlaceOrderRequest $request){
+    // đặt hàng
+    public function placeOrder(PlaceOrderRequest $request)
+    {
         try {
             $data = $request->validated();
 
@@ -147,13 +148,13 @@ class CheckoutController extends Controller
             // Lấy thông tin giỏ hàng của người dùng
             $cart = Cart::where('user_id', auth()->id())->first();
 
-            $couponId = session('coupon_id',null);
-            $totalAmount = session('totalAmount',0);
-            $discountAmount = session('discount',0);
-            $shipping = session('shipping',0);
+            $couponId = session('coupon_id', null);
+            $totalAmount = session('totalAmount', 0);
+            $discountAmount = session('discount', 0);
+            $shipping = session('shipping', 0);
 
 
-            $cartItems = CartItems::with('variants.product','variants.size')->where('cart_id',$cart->id)->get();
+            $cartItems = CartItems::with('variants.product', 'variants.size')->where('cart_id', $cart->id)->get();
 
             // Tạo đơn hàng mới
             $order = Order::create([
@@ -217,20 +218,147 @@ class CheckoutController extends Controller
             if (!$order || !$orderAddress) {
                 return response()->json(['message' => 'Không tìm thấy đơn hàng hoặc địa chỉ giao hàng.'], 404);
             }
-            
 
+                  
             // Gửi email xác nhận đơn hàng
-            Mail::to($data['recipient_email'])->queue(new OrderShipped($order,$orderAddress));
+            Mail::to($data['recipient_email'])->queue(new OrderShipped($order, $orderAddress));
 
-            session()->forget(['coupon_id', 'discount', 'newTotal','totalAmount']);
+            session()->forget(['coupon_id', 'discount', 'newTotal', 'totalAmount']);
+
+            if ($data['payment_method'] == 2) { // Giả sử 2 là ID của VNPAY
+                $newTotal = $order->total_amount + $order->shipping_fee;
+                
+                // Tạo bản ghi thanh toán trong transactions khi có giao dịch thanh toán
+                Transactions::create([
+                    'order_id' => $order->id,
+                ]);
+
+                // Gọi hàm xử lý thanh toán VNPAY
+                return $this->vnpayPayment($newTotal,$order->id);
+            }
+
 
             // Trả về thông báo thành công
             return response()->json(
                 ['message' => 'Đơn hàng đã được tạo thành công.'],
             );
-    
         } catch (\Exception $e) {
             return response()->json(['message' => 'Có lỗi xảy ra: ' . $e->getMessage()], 500);
         }
     }
+
+    public function vnpayPayment($newTotal,$orderId){
+        
+        $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+        $vnp_Returnurl = route('vnpayCallback');
+        $vnp_TmnCode = "8BH5Y90V";//Mã website tại VNPAY 
+        $vnp_HashSecret = "N14KVQSQUB63K18EERWUTT3Z5S1QQXIQ"; //Chuỗi bí mật
+        
+        $vnp_TxnRef = $orderId; //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này , mã giao dịch
+        $vnp_OrderInfo = 'Thanh toán vnpay';   //Thông tin đơn hàng
+        $vnp_OrderType = 'billpayment';
+        $vnp_Amount = $newTotal * 100;  // số tiền thanh toán đã được tính trước 
+        $vnp_Locale = 'vn';
+        $vnp_BankCode = 'NCB';
+        $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
+
+   
+        $inputData = array(
+            "vnp_Version" => "2.1.0",
+            "vnp_TmnCode" => $vnp_TmnCode,
+            "vnp_Amount" => $vnp_Amount,
+            "vnp_Command" => "pay",
+            "vnp_CreateDate" => date('YmdHis'),
+            "vnp_CurrCode" => "VND",
+            "vnp_IpAddr" => $vnp_IpAddr,
+            "vnp_Locale" => $vnp_Locale,
+            "vnp_OrderInfo" => $vnp_OrderInfo,
+            "vnp_OrderType" => $vnp_OrderType,
+            "vnp_ReturnUrl" => $vnp_Returnurl,
+            "vnp_TxnRef" => $vnp_TxnRef,
+        );
+        
+        if (isset($vnp_BankCode) && $vnp_BankCode != "") {
+            $inputData['vnp_BankCode'] = $vnp_BankCode;
+        }
+        if (isset($vnp_Bill_State) && $vnp_Bill_State != "") {
+            $inputData['vnp_Bill_State'] = $vnp_Bill_State;
+        }
+        
+        //var_dump($inputData);
+        ksort($inputData);
+        $query = "";
+        $i = 0;
+        $hashdata = "";
+        foreach ($inputData as $key => $value) {
+            if ($i == 1) {
+                $hashdata .= '&' . urlencode($key) . "=" . urlencode($value);
+            } else {
+                $hashdata .= urlencode($key) . "=" . urlencode($value);
+                $i = 1;
+            }
+            $query .= urlencode($key) . "=" . urlencode($value) . '&';
+        }
+        
+        $vnp_Url = $vnp_Url . "?" . $query;
+        if (isset($vnp_HashSecret)) {
+            $vnpSecureHash =   hash_hmac('sha512', $hashdata, $vnp_HashSecret);//  
+            $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
+        }
+
+        return response()->json([
+            'vnpay' => $vnp_Url,
+        ]);
+
+    }
+
+    public function vnpayCallback(Request $request)
+    {
+        try {
+            $data = $request->all();
+            
+            $vnp_TransactionStatus = $data['vnp_TransactionStatus'];
+            $vnp_TxnRef = $data['vnp_TxnRef'];  // Mã đơn hàng
+            
+            // Lấy đơn hàng từ mã giao dịch
+            $order = Order::find($vnp_TxnRef);
+            $transaction = Transactions::where('order_id', $order->id)->first();
+
+            // Kiểm tra trạng thái thanh toán của VNPAY
+            if ($vnp_TransactionStatus == '00') {
+                // Thanh toán thành công
+                $order->payment_status = 'paid';
+                $status = 'success';  // Trạng thái giao dịch thành công
+                // Cập nhật trạng thái thanh toán trong bảng transactions ngay lập tức
+                if ($transaction) {
+                    $transaction->status = $status;
+                    $transaction->transaction_id = $data['vnp_TransactionNo'];
+                    $transaction->payment_date = $data['vnp_PayDate'];
+                    $transaction->save();
+                }
+            } else {
+                // Thanh toán thất bại
+                $order->payment_status = 'failed';
+                $status = 'failed';  // Trạng thái giao dịch thất bại
+                if($transaction){
+                    $transaction->status = $status;
+                    $transaction->transaction_id = $data['vnp_TransactionNo'];
+                    $transaction->payment_date = $data['vnp_PayDate'];
+                    $transaction->save();
+                }
+            }
+
+            // Lưu thay đổi vào đơn hàng
+            $order->save();
+
+            // Điều hướng người dùng tới trang thành công
+            return redirect()->route('home');
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Có lỗi xảy ra: ' . $e->getMessage()], 500);
+        }
+    }
+
+   
+
+
 }
