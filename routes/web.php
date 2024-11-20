@@ -20,6 +20,7 @@ use App\Http\Controllers\MyAccountController;
 use App\Http\Controllers\OrderAdminController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ThanhYouController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -113,6 +114,9 @@ Route::get('/contact',[ContactController::class,'contact'])->name('contact');
 
 // đặt hàng
 Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('placeOrder');
+
+// đặt hàng thành công -> cảm ơn 
+Route::get('/thank-you', [ThanhYouController::class,'thankyou'])->name('thankyou');
 
 // lấy sản phẩm theo danh mục
 Route::get('/getProductsByCategory/{category_id}', [HomeController::class, 'getProductsByCategory'])->name('getProductsByCategory');

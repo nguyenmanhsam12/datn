@@ -7,8 +7,8 @@
     <title>Đơn hàng của bạn</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #e0eafc);
             margin: 0;
             padding: 0;
             color: #333;
@@ -16,92 +16,105 @@
 
         table {
             width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
+            max-width: 900px;
+            margin: 40px auto;
             background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
         h2, h3 {
-            color: #2a2a2a;
+            color: #ffffff; /* Đảm bảo màu chữ là trắng */
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 0;
         }
 
         p {
-            font-size: 14px;
-            line-height: 1.6;
+            font-size: 16px;
+            line-height: 1.8;
+            margin: 10px 0;
         }
 
         .header {
-            background-color: #28a745;
+            background: linear-gradient(135deg, #5e35b1, #9c27b0);
             color: white;
-            padding: 20px;
+            padding: 40px;
             text-align: center;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
         }
 
         .content {
-            padding: 20px;
+            padding: 30px;
+            background-color: #f9f9f9;
         }
 
         .order-summary {
             margin-bottom: 20px;
-            border-bottom: 2px solid #f4f4f4;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
         }
 
-        .order-summary th, .order-summary td {
-            padding: 10px;
-            text-align: left;
+        .order-summary p {
+            margin: 10px 0;
         }
 
-        .order-summary th {
-            background-color: #f8f8f8;
-            color: #555;
-        }
-
-        .order-summary td {
-            font-size: 14px;
-        }
-
-        .order-items td {
-            padding: 10px;
+        .order-summary strong {
+            color: #9c27b0;
         }
 
         .order-items {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .order-items th, .order-items td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
         }
 
         .order-items th {
-            background-color: #f8f8f8;
+            background-color: #f1f1f1;
+            color: #2c3e50;
+        }
+
+        .order-items td {
+            color: #7f8c8d;
         }
 
         .footer {
-            background-color: #f8f8f8;
-            color: #777;
+            background-color: #f1f1f1;
+            color: #7f8c8d;
             text-align: center;
-            padding: 10px;
-            font-size: 12px;
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
+            padding: 20px;
+            font-size: 14px;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
         }
 
         .footer a {
-            color: #28a745;
+            color: #9c27b0;
             text-decoration: none;
+            font-weight: bold;
         }
 
         .total-price {
-            font-size: 16px;
+            font-size: 22px;
             font-weight: bold;
-            color: #2a2a2a;
+            color: #9c27b0;
+            text-align: right;
+            margin-top: 20px;
         }
 
         .product-name {
             font-weight: bold;
+            color: #2c3e50;
         }
     </style>
 </head>
@@ -110,7 +123,7 @@
         <tr class="header">
             <td>
                 <h2>Đơn hàng của bạn đã được xác nhận!</h2>
-                <p>Chúng tôi xin cảm ơn bạn đã mua hàng tại cửa hàng của chúng tôi.</p>
+                <p>Cảm ơn bạn đã tin tưởng và mua sắm tại cửa hàng của chúng tôi. Chúng tôi sẽ xử lý đơn hàng của bạn ngay lập tức.</p>
             </td>
         </tr>
 
@@ -125,12 +138,11 @@
 
                 <div class="order-summary">
                     <h3>Thông tin giao hàng</h3>
-                    <p><strong>Người nhận:</strong> {{ $orderAddress->recipient_name }}</p>
+                    <p><strong>Người nhận:</strong>{{ $orderAddress->recipient_name }}</p>
                     <p><strong>Địa chỉ:</strong> {{ $orderAddress->address_order }}, 
                         {{ $orderAddress->ward }},
                         {{ $orderAddress->city }},
                         {{ $orderAddress->province }}
-                        </p>
                     </p>
                     <p><strong>Số điện thoại:</strong> {{ $orderAddress->phone_number }}</p>
                 </div>
@@ -147,12 +159,12 @@
                     </thead>
                     <tbody>
                         @foreach($order->cartItems as $item)
-                            <tr>
-                                <td class="product-name">{{ $item->product_name }}</td>
-                                <td>{{ $item->size }}</td>
-                                <td>{{ $item->quantity }}</td>
-                                <td>{{ number_format($item->price, 0, ',', '.') }} VNĐ</td>
-                            </tr>
+                        <tr>
+                            <td class="product-name">{{ $item->product_name }}</td>
+                            <td>{{ $item->size }}</td>
+                            <td>{{ $item->quantity }}</td>
+                            <td>{{ number_format($item->price, 0, ',', '.') }} VNĐ</td>
+                        </tr>
                         @endforeach
                     </tbody>
                 </table>
@@ -164,7 +176,7 @@
         <tr class="footer">
             <td>
                 <p>Chúng tôi sẽ gửi bạn thông tin cập nhật về tình trạng đơn hàng qua email. Cảm ơn bạn đã chọn chúng tôi!</p>
-                <p><a href="{{ route('home') }}">Truy cập website của chúng tôi</a></p>
+                <p><a href="https://www.websitecua.com">Truy cập website của chúng tôi</a></p>
             </td>
         </tr>
     </table>
