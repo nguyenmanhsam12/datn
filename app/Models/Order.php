@@ -12,7 +12,7 @@ class Order extends Model
     protected $table = 'orders';
 
     protected $fillable = ['user_id','status_id','payment_method_id','total_amount','coupon_id','discount_amount',
-        'shipping_fee',
+        'shipping_fee','payment_status',
     ];
 
     public function cartItems(){
@@ -20,7 +20,7 @@ class Order extends Model
     }
 
     public function orderAddress(){
-        return $this->hasOne(OrderAddress::class);
+        return $this->hasOne(OrderAddress::class,'order_id');
     }
     
     public function payment(){
@@ -37,6 +37,10 @@ class Order extends Model
     public function coupon()
     {
         return $this->belongsTo(Coupon::class,'coupon_id');
+    }
+
+    public function transaction(){
+        return $this->hasOne(Transactions::class,'order_id','id');
     }
     
 }

@@ -7,7 +7,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="font-weight-bold">Thống kê doanh thu</h1>
+                    <h1 class="font-weight-bold">Thống kê   </h1>
                 </div>
             </div>
         </div>
@@ -16,7 +16,7 @@
     <!-- Main content -->
     <section class="content">
         <!-- Bộ lọc -->
-        <form action="{{ route('admin.statistical.index') }}" method="get" class="mb-4 p-4 shadow-sm rounded bg-light">
+        {{-- <form action="{{ route('admin.statistical.index') }}" method="get" class="mb-4 p-4 shadow-sm rounded bg-light">
             @csrf
             <h5 class="font-weight-bold mb-3">Bộ lọc thống kê</h5>
             <div class="row">
@@ -56,7 +56,7 @@
                     </select>
                 </div>
                 {{--  mã giảm giá --}}
-                            <div class="col-md-4 mb-2">
+                            {{-- <div class="col-md-4 mb-2">
                                 <label for="coupon_id" class="form-label">Mã giảm giá</label>
                                 <select name="coupon_id" id="coupon_id" class="form-control form-control-sm">
                                     <option value="">Tất cả mã giảm giá</option>
@@ -71,10 +71,10 @@
                             <button type="submit" class="btn btn-primary w-100">Lọc</button>
                         </div>
             </div>
-        </form>
+        </form> --}}
         
         <!-- Kết quả lọc -->
-            <div class="row justify-content-center">
+            {{-- <div class="row justify-content-center">
                 <!-- Tổng doanh thu -->
                 <div class="col-md-4 mb-4">
                     <div class="card text-center border-light shadow-sm p-3" style="border-radius: 20px;">
@@ -101,10 +101,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
 
-        <!-- Revenue by Payment Method -->
+        {{-- <!-- Revenue by Payment Method -->
         <h4 class="mt-5 font-weight-bold text-center text-primary">Doanh thu theo phương thức thanh toán</h4>
         <div class="table-responsive">
             <table class="table table-striped table-hover table-bordered mt-3 shadow-sm">
@@ -125,7 +125,7 @@
                     @endforeach
                 </tbody>
             </table>
-        </div>
+        </div> --}}
 
         <!-- Revenue by Order Status -->
         <h4 class="mt-5 font-weight-bold text-center text-primary">Doanh thu theo trạng thái đơn hàng</h4>

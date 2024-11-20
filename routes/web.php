@@ -114,6 +114,12 @@ Route::get('/contact',[ContactController::class,'contact'])->name('contact');
 
 // đặt hàng
 Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('placeOrder');
+// thanh toán momo
+Route::post('/vnpay-payment', [CheckoutController::class, 'vnpayPayment'])->name('vnpayPayment');
+// callback vnp
+Route::get('/vnpay-callback', [CheckoutController::class, 'vnpayCallback'])->name('vnpayCallback');
+
+
 
 // đặt hàng thành công -> cảm ơn 
 Route::get('/thank-you', [ThanhYouController::class,'thankyou'])->name('thankyou');
@@ -207,11 +213,11 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::get('/delete/{id}',[CouponController::class,'delete'])->name('admin.coupons.delete');
     });
 
-    Route::prefix('statistical')->group(function(){
-        Route::get('/',[StatisticsController::class,'index'])->name('admin.statistical.index');
-        Route::get('/bieudo',[StatisticsController::class,'bieudo'])->name('admin.statistical.bieudo');
+    // Route::prefix('statistical')->group(function(){
+    //     Route::get('/',[StatisticsController::class,'index'])->name('admin.statistical.index');
+    //     Route::get('/bieudo',[StatisticsController::class,'bieudo'])->name('admin.statistical.bieudo');
 
 
-    });
+    // });
 
 });

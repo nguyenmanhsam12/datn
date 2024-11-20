@@ -65,9 +65,17 @@
                                 </div>
                     
                                 <div class="form-group">
-                                    <label for="minimum_order_value">Giá trị đơn hàng</label>
+                                    <label for="minimum_order_value">Giá trị tối thiểu đơn hàng</label>
                                     <input type="number" class="form-control" id="minimum_order_value" name="minimum_order_value" value="{{ old('minimum_order_value') }}" step="0.01" required>
                                     @error('minimum_order_value')
+                                            <div class="text-danger mt-3">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="maximum_discount">Giá trị tối đa đơn hàng</label>
+                                    <input type="number" class="form-control" id="maximum_discount" name="maximum_discount" value="{{ old('maximum_discount') }}" step="0.01" required>
+                                    @error('maximum_discount')
                                             <div class="text-danger mt-3">{{ $message }}</div>
                                     @enderror
                                 </div>

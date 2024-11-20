@@ -34,7 +34,6 @@ class ProductStockUpdated implements ShouldBroadcast
      */
     public function broadcastOn()
     {   
-        Log::debug("updateStock for variant {$this->variantId} with stock {$this->stock}");
         return new Channel('product-' . $this->variantId);
     }
 }

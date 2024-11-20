@@ -283,7 +283,7 @@
                                                             
                                                             <tr>
                                                                 <td>Giảm giá</td>
-                                                                <td class="text-right" style="white-space: nowrap">
+                                                                <td class="text-right" id="text-discount" style="white-space: nowrap">
                                                                     {{ number_format(session('discount', 0), 0, ',', '.') . ' VNĐ' }}
                                                                 </td>
                                                             </tr>
@@ -299,7 +299,7 @@
                                                                         <input class="border" type="text" id="discount_code" name="discount_code" style="width: 100%;" placeholder="Nhập mã giảm giá">
                                                                     </td>
                                                                     <td>
-                                                                        <button class="" type="button">Áp dụng</button>
+                                                                        <button class="border p-2 text-white" id="button-coupon" style="background-color:#434343;" type="button">Áp dụng</button>
                                                                     </td>
                                                                 </tr>
                                                             @endif
@@ -317,18 +317,7 @@
                                                 <div class="payment-method mt-60 pl-20">
                                                     <h4 class="title-1 title-border text-uppercase mb-30">Phương thức thanh
                                                         toán</h4>
-                                                    {{-- <div class="payment-accordion">
-                                                        <div class="payment-option">
-                                                            <input type="radio" id="online-payment" name="payment-method"
-                                                                value="online" checked>
-                                                            <label for="online-payment">Thanh toán online</label>
-                                                        </div>
-                                                        <div class="payment-option">
-                                                            <input type="radio" id="cash-on-delivery"
-                                                                name="payment-method" value="cash">
-                                                            <label for="cash-on-delivery">Thanh toán khi nhận hàng</label>
-                                                        </div>
-                                                    </div> --}}
+            
                                                     <div class="form-group">
                                                         <select name="payment_method" class="form-control"
                                                             id="payment_method">
@@ -488,7 +477,9 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.message) {
+                    if (data.vnpay) {
+                        window.location.href = data.vnpay;
+                    }  else{
                         Swal.fire({
                                 title: 'Đặt hàng thành công!',
                                 text: 'Đơn hàng của bạn đã được tạo thành công.',
@@ -500,8 +491,8 @@
                                     window.location.href = '{{ route('home') }}';
                                 }, 5000);
                             });
-                    };
-                    // Xử lý dữ liệu trả về
+                    }
+                   
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -514,5 +505,59 @@
                     });
                 });
         });
+    </script>
+    {{-- mã giảm giá trong trang thanh toán--}}
+    <script>
+        document.addEventListener('DOMContentLoaded',function(){
+
+            function formatPrice(price) {
+                // Chuyển giá trị thành chuỗi và loại bỏ các ký tự không phải là số
+                let formattedPrice = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                // Thêm đuôi "VNĐ"
+                return formattedPrice + " VNĐ";
+            }
+
+            document.getElementById('button-coupon').addEventListener('click',function(){
+                var coupon = document.getElementById('discount_code').value;
+
+                if (coupon) {
+                    // Gửi mã giảm giá đến backend thông qua AJAX
+                    fetch('{{ route('applyCoupon') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                code: coupon
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Cập nhật thông báo và tổng tiền sau giảm giá
+                                document.getElementById('text-discount').textContent = formatPrice(data.discount);
+                                document.getElementById('total_amount').textContent = formatPrice(data.new_total); 
+                                location.reload();
+
+                            } else {
+                                // Hiển thị lỗi nếu mã giảm giá không hợp lệ
+                                // document.getElementById('couponCode').value = '';
+                                // coupon_message.textContent = data.error;
+                                // coupon_message.classList.remove('text-success');
+                                // coupon_message.classList.add('text-danger');
+                                // coupon_message.style.display = 'block';
+                                alert('Lỗi');
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                } else {
+                    console.error('Vui lòng nhập mã giảm giá');
+                }
+            });
+        });
+
+        
     </script>
 @endpush

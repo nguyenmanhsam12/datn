@@ -26,6 +26,7 @@ class UpdateCouponRequest extends FormRequest
             'discount_type' => 'required|in:percentage,fixed', // Loại giảm giá phải là 'percentage' hoặc 'fixed'
             'discount_value' => 'required|numeric|min:0', // Giá trị giảm giá phải là số và không nhỏ hơn 0
             'minimum_order_value' => 'required|numeric|min:0', // Giá trị tối thiểu của đơn hàng phải là số và không nhỏ hơn 0
+            'maximum_discount' => 'required|numeric|min:0',
             'end_date' => 'required|date|after_or_equal:today', // Ngày hết hạn phải là ngày hợp lệ và không nhỏ hơn ngày hiện tại
         ];
     }
