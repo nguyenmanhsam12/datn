@@ -20,7 +20,7 @@ class Order extends Model
     }
 
     public function orderAddress(){
-        return $this->hasOne(OrderAddress::class);
+        return $this->hasOne(OrderAddress::class,'order_id');
     }
     
     public function payment(){

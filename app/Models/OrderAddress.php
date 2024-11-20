@@ -14,6 +14,10 @@ class OrderAddress extends Model
     protected $fillable = ['order_id','recipient_name','recipient_email','address_order','city','province','ward','phone_number',
         'recipient_name','recipient_email',
     ];
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'order_id');
+    }
 
     
 }
