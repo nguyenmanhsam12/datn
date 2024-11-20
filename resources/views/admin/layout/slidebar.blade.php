@@ -227,7 +227,7 @@
                     </ul>
                 </li>
                 {{-- thống kê --}}
-                <li class="nav-item ">
+                {{-- <li class="nav-item ">
                     <a href="#" class="nav-link ">
                         <i class="nav-icon fas fa-gift"></i>
                         <p>
@@ -237,17 +237,17 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{route('admin.statistical.bieudo')}}" class="nav-link">
+                            {{-- <a href="{{route('admin.statistical.bieudo')}}" class="nav-link">
                                 <p>Biểu đồ</p>
-                            </a>
-                            <a href="{{route('admin.statistical.index')}}" class="nav-link">
+                            </a> --}}
+                            {{-- <a href="{{route('admin.statistical.index')}}" class="nav-link">
                                 <p>Thống kê tổng quan</p>
                             </a>
                            
                         </li>
                         
                     </ul>
-                </li>
+                </li> --}}
 
             </ul>
         </nav>

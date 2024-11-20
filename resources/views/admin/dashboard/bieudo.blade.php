@@ -31,9 +31,21 @@
             <div class="card text-center" style="background-color: #f06292; color: white;">
                 <div class="card-body">
                     <h5 class="card-title">
-                        <i class="fas fa-box"></i> Tổng số sản phẩm
+                        <i class="fas fa-box"></i>Số sản phẩm
                     </h5>
                     <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $totalProducts }}</p>
+                </div>
+            </div>
+        </div>
+
+           <!-- Ratings -->
+           <div class="col-md-3">
+            <div class="card text-center" style="background-color: #ffb74d; color: white;">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-star"></i> Tổng doanh thu
+                    </h5>
+                    <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ number_format($doanhThu, 2) }}VND</p>
                 </div>
             </div>
         </div>
@@ -43,24 +55,54 @@
             <div class="card text-center" style="background-color: #64b5f6; color: white;">
                 <div class="card-body">
                     <h5 class="card-title">
-                        <i class="fas fa-user-shield"></i> Tổng số Admins
+                        <i class="fas fa-user-shield"></i> Quản trị viên
                     </h5>
                     <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $totalAdmins }}</p>
                 </div>
             </div>
         </div>
-
-        <!-- Ratings -->
         <div class="col-md-3">
-            <div class="card text-center" style="background-color: #ffb74d; color: white;">
+            <div class="card text-center" style="background-color: #64b5f6; color: white;">
                 <div class="card-body">
                     <h5 class="card-title">
-                        <i class="fas fa-star"></i> Đánh giá
+                        <i class="fas fa-user-shield"></i> Số danh mục
                     </h5>
-                    <p class="card-text" style="font-size: 24px; font-weight: bold;">--</p>
+                    <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $totalCategories }}</p>
                 </div>
             </div>
         </div>
+        <div class="col-md-3">
+            <div class="card text-center" style="background-color: #64b5f6; color: white;">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-user-shield"></i> Mã giảm giá còn hạn
+                    </h5>
+                    <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $expiredCouponsCount }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center" style="background-color: #64b5f6; color: white;">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-user-shield"></i> Mã giảm giá hết hạn
+                    </h5>
+                    <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $activeCouponsCount }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center" style="background-color: #64b5f6; color: white;">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-user-shield"></i> Đánh giá
+                    </h5>
+                    <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $activeCouponsCount }}</p>
+                </div>
+            </div>
+        </div>
+
+     
     </div>
 </div>
         <!-- Form lọc -->
@@ -121,13 +163,13 @@
     <div class="row mt-4 justify-content-center" id="statistics">
         <div class="col-md-3 mb-3">
             <div class="stat-card p-3 text-center bg-primary text-white rounded">
-                <h4>Tổng doanh thu</h4>
+                <h4>Tổng giá trị</h4>
                 <p id="totalRevenue" class="stat-value">{{ number_format($totalRevenue, 2) }} VND</p>
             </div>
         </div>
         <div class="col-md-3 mb-3">
             <div class="stat-card p-3 text-center bg-success text-white rounded">
-                <h4>Tổng số đơn hàng</h4>
+                <h4>Số đơn hàng</h4>
                 <p id="totalOrders" class="stat-value">{{ $totalOrders }}</p>
             </div>
         </div>
@@ -174,6 +216,33 @@
                         </div>
                     </div>
                 </div>
+                <!-- Biểu đồ tồn kho -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card p-4 border" style="height: 450px;">
+            <h3 class="text-center">Biểu đồ tồn kho theo sản phẩm biến thể</h3>
+            <canvas id="inventoryChart" width="650" height="350"></canvas>
+        </div>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card p-4 border" style="height: 450px;">
+            <h3 class="text-center">Doanh thu sản phẩm</h3>
+            <canvas id="huhu" width="650" height="350"></canvas>
+        </div>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card p-4 border" style="height: 450px;">
+            <h3 class="text-center">Doanh thu sản phẩm theo các tỉnh</h3>
+            <canvas id="revenueSalesChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+
             </div>
 
             {{-- Script for charts --}}
@@ -270,13 +339,190 @@
                         }
                     }
                 });
+
+
+
+
+//bieu do
+                var productNames = @json($inventoryData->pluck('product_name'));
+
+// Cắt ngắn tên sản phẩm nếu tên quá dài (Ví dụ cắt dài hơn 20 ký tự)
+// productNames = productNames.map(function(name) {
+//     return name.length > 20 ? name.substring(0, 0) + '...' : name;
+// });
+    var stockQuantities = @json($inventoryData->pluck('stock'));
+
+    var ctx = document.getElementById('inventoryChart').getContext('2d');
+    var inventoryChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: productNames,  // Tên sản phẩm
+            datasets: [{
+                label: 'Số lượng tồn kho',
+                data: stockQuantities,  // Số lượng tồn kho
+                backgroundColor: [
+                // 'rgba(75, 192, 192, 0.5)',  // Màu cột đầu tiên
+                'rgba(255 106 106)',  // Màu cột thứ hai
+                'rgba(153, 190, 255, 0.5)',  // Màu cột thứ ba
+                // 'rgba(255, 159, 64, 0.5)',   // Màu cột thứ tư
+                // Thêm màu cho các cột tiếp theo nếu cần
+            ],
+            
+                borderColor: 'rgba(255 255 0)',  // Màu viền
+                borderWidth: 2,
+                pointBackgroundColor: 'rgba(255 106 106)',  // Màu nền của dấu chấm
+            pointRadius: 4,  // Kích thước của dấu chấm
+            pointBorderWidth: 3,  // Độ dày viền của dấu chấm
+            }],
+        },
+        
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                display: false,  // Ẩn trục X (không hiển thị tên sản phẩm)
+            },
+                
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+//bieu do
+ // Dữ liệu từ controller
+ var productNames = @json($productNames);  // Tên sản phẩm
+    var quantities = @json($quantities);      // Số lượng sản phẩm đã bán
+    var revenues = @json($revenues);          // Doanh thu từ sản phẩm
+
+    var ctx = document.getElementById('huhu').getContext('2d');
+    var revenueChart = new Chart(ctx, {
+        type: 'bar', // Biểu đồ cột
+        data: {
+            labels: productNames, // Tên sản phẩm
+            datasets: [{
+                label: 'Số lượng đã bán',
+                data: quantities, // Số lượng sản phẩm bán được
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',  // Màu sắc cột Số lượng đã bán
+                borderColor: 'rgba(75, 192, 192, 1)',        // Màu viền cột Số lượng đã bán
+                borderWidth: 1
+            }, {
+                label: 'Doanh thu (VND)', 
+                data: revenues,   // Doanh thu từ các sản phẩm
+                backgroundColor: 'rgba(255, 159, 64, 0.6)',  // Màu sắc cột Doanh thu
+                borderColor: 'rgba(255, 159, 64, 1)',        // Màu viền cột Doanh thu
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                display: false,  // Ẩn trục X (không hiển thị tên sản phẩm)
+            },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            // Định dạng số liệu theo kiểu VND
+                            return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+
+
+    //tỉnh
+      // Lấy dữ liệu từ server (dữ liệu đã được truyền qua Blade)
+      var provinces = @json($revenueAndSalesData->pluck('province'));  // Tỉnh/thành phố
+    var salesData = @json($revenueAndSalesData->pluck('total_sales'));  // Số lượng bán
+    var revenueData = @json($revenueAndSalesData->pluck('total_revenue'));  // Doanh thu
+
+    // Khởi tạo biểu đồ
+    var ctx = document.getElementById('revenueSalesChart').getContext('2d');
+    var revenueSalesChart = new Chart(ctx, {
+        type: 'bar',  // Mặc định là 'bar' cho cột
+        data: {
+            labels: provinces,  // Tên tỉnh/thành phố
+            datasets: [{
+                label: 'Số lượng bán',  // Chú thích cho biểu đồ cột
+                data: salesData,  // Dữ liệu số lượng bán
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',  // Màu nền của cột
+                borderColor: 'rgba(255, 99, 132, 1)',  // Màu viền cột
+                borderWidth: 1,
+                // Tùy chọn này để cột không bị đè lên nhau khi có cả đường
+                yAxisID: 'y1'  // Sử dụng trục y thứ hai cho cột
+            },
+            {
+                label: 'Doanh thu',  // Chú thích cho biểu đồ đường
+                data: revenueData,  // Dữ liệu doanh thu
+                type: 'line',  // Đặt kiểu là đường
+                fill: false,  // Không tô màu dưới đường
+                borderColor: 'rgba(75, 192, 192, 1)',  // Màu của đường
+                borderWidth: 2,
+                tension: 0.4,  // Độ cong của đường
+                yAxisID: 'y2'  // Sử dụng trục y thứ hai cho đường
+            }
+            ],
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    
+                    beginAtZero: true,  // Trục X bắt đầu từ 0
+                    title: {
+                        display: true,
+                        text: 'Tỉnh/Thành phố'  // Tên trục X
+                    }
+                },
+                y: {
+                    beginAtZero: true,  // Trục Y bắt đầu từ 0
+                    title: {
+                        display: true,
+                        
+                    },
+                    ticks: {
+                        display: false  // Ẩn chú thích số liệu bên trái
+                    }
+                    
+                },
+                // Thêm một trục y thứ hai cho doanh thu
+                y2: {
+                    beginAtZero: true,  // Trục Y thứ hai bắt đầu từ 0
+                    title: {
+                        display: true,
+                      
+                    },
+                    position: 'right',  // Đặt trục Y thứ hai ở bên phải
+                    ticks: {
+                        
+                        callback: function(value) {
+                            return value.toLocaleString();  // Định dạng số liệu
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',  // Vị trí của legend
+                }
+            }
+        }
+    });
+
             </script>
+            
 
         </div>
     </section>
 
     </div>
-
+{{-- 
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-10 offset-md-2">
@@ -310,11 +556,11 @@
         </div>
     </div>
 </div>
-
+--}}
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-10 offset-md-2">
-            <h3 class="text-center mb-4" style="font-weight: bold; color: #4caf50;">Top 5 Sản phẩm bán chạy</h3>
+            <h3 class="text-center mb-4" style="font-weight: bold; color: #4caf50;">Sản phẩm bán chạy</h3>
             <div class="card shadow-md" style="background-color: #ffffff;">
                 <div class="card-body">
                     <table class="table table-bordered table-hover">
@@ -337,7 +583,45 @@
             </div>
         </div>
     </div>
+</div> 
+
+
+
+{{-- ton kho --}}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-10 offset-md-2">
+            <h3 class="text-center mb-4" style="font-weight: bold; color: #4caf50;">Số lượng tồn kho</h3>
+            <div class="card shadow-md" style="background-color: #ffffff;">
+                <div class="card-body">
+           
+                    <table class="table table-bordered table-hover">
+                        <thead style="background-color: #4caf50; color: white;">
+                            <tr>
+                                <th>Tên sản phẩm</th>
+                      
+
+                                <th>Tồn kho</th>
+                           
+                               
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($sanPham as $item)
+                            <tr>
+                                <td>{{ $item->product->name }}</td>
+                                <td>{{ $item->total_stock }}</td> <!-- Hiển thị tổng tồn kho -->
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+  
 </div>
+
 
 
 
