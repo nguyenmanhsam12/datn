@@ -20,6 +20,7 @@ use App\Http\Controllers\MyAccountController;
 use App\Http\Controllers\OrderAdminController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ThanhYouController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -119,6 +120,9 @@ Route::post('/vnpay-payment', [CheckoutController::class, 'vnpayPayment'])->name
 Route::get('/vnpay-callback', [CheckoutController::class, 'vnpayCallback'])->name('vnpayCallback');
 
 
+
+// đặt hàng thành công -> cảm ơn 
+Route::get('/thank-you', [ThanhYouController::class,'thankyou'])->name('thankyou');
 
 // lấy sản phẩm theo danh mục
 Route::get('/getProductsByCategory/{category_id}', [HomeController::class, 'getProductsByCategory'])->name('getProductsByCategory');
