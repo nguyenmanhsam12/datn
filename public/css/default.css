@@ -258,8 +258,8 @@
 ----------------------------------------------------- */
 input[type="text"],
 input[type="password"] {
-  background: #f6f6f6;
-  border: medium none;
+  /* background: #f6f6f6;
+  border: medium none; */
   box-shadow: none;
   /* color: #999; */
   height: 40px;

@@ -10,6 +10,7 @@ use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ComplanintsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ProductController;
@@ -123,6 +124,7 @@ Route::get('/vnpay-callback', [CheckoutController::class, 'vnpayCallback'])->nam
 Route::post('/payment-retry', [CheckoutController::class, 'retryPayment'])->name('retryPayment');
 
 // khiếu nại
+Route::get('/complaint',[ComplanintsController::class, 'complaints'])->name('complaints');
 
 // Route::get('/', [ComplanintsController::class, 'vnpayCallback'])->name('vnpayCallback');
 
