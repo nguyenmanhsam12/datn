@@ -8,6 +8,55 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+
+        /* Banner Video Container */
+        .banner-video-area {
+            background-image: url('img/banner/banner-video.jpg');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            height: 400px;
+            /* Cố định chiều cao cho banner */
+        }
+
+        /* Content trong banner */
+        .banner-video-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            width: 100%;
+            max-width: 80%;
+            z-index: 1;
+        }
+
+        /* Nút Play */
+        .play-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 60px;
+            color: white;
+        }
+
+        /* Tiêu đề */
+        .banner-title {
+            margin-top: 20px;
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Mô tả */
+        .banner-description {
+            margin-top: 10px;
+            font-size: 18px;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+        }
     </style>
 @endpush
 
@@ -87,6 +136,44 @@
     </div>
     <!-- PRODUCT-AREA END -->
 
+    <div class="banner-video">
+        <div class="container">
+            <div class="banner-video-area">
+                <div class="banner-video-content">
+                    <!-- Nút Play -->
+                    <button class="play-button" data-bs-toggle="modal" data-bs-target="#videoModal">
+                        <i class="zmdi zmdi-play-circle"></i>
+                    </button>
+                    <!-- Title -->
+                    <h2 class="banner-title">Khám Phá Video Sản Phẩm</h2>
+                    <p class="banner-description">Hãy nhấn vào để xem chi tiết</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Video Modal -->
+    <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="videoModalLabel">Nike Shoes Ad Motion Graphics: A Visual Masterpiece</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="ratio ratio-16x9">
+                        <iframe src="https://www.youtube.com/embed/G02E6LaZLYU?si=oZ1dsWynbpxddMaw"
+                            title="Nike Shoes Ad Motion Graphics: A Visual Masterpiece" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
 
@@ -96,7 +183,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="section-title text-center">
-                        <h2 class="title-border">Sản phẩm</h2>
+                        <h2 class="title-border">Sản phẩm phổ biến</h2>
                     </div>
                 </div>
             </div>
@@ -316,5 +403,16 @@
             // Khởi tạo tooltips
             $('[data-bs-toggle="tooltip"]').tooltip();
         });
+
+        
     </script>
+    <script>
+        // Tắt video khi modal đóng
+        var videoModal = document.getElementById('videoModal');
+        videoModal.addEventListener('hidden.bs.modal', function () {
+            var iframe = videoModal.querySelector('iframe');
+            iframe.src = iframe.src;  // Reset src để dừng video
+        });
+    </script>
+    
 @endpush

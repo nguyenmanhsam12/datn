@@ -41,6 +41,22 @@ Route::get('/register',[AuthController::class,'register'])->name('register');
 Route::post('/postlogin',[AuthController::class,'postlogin'])->name('postlogin');
 Route::post('/postRegister',[AuthController::class,'postRegister'])->name('postRegister');
 
+
+// quen mk
+Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request'); 
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+
+//otp
+Route::get('password/otp', [AuthController::class, 'showOtpForm'])->name('password.otp');
+Route::post('password/otp', [AuthController::class, 'verifyOtp'])->name('password.verifyOtp');
+
+// ko otp
+// Route::get('reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
+// Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+
+
+
+
 Route::get('/logout',[AuthController::class,'logout'])->name('logout');
 
 Route::get('/cart',[CartController::class,'cart'])->name('cart');
@@ -53,6 +69,7 @@ Route::get('/getCartItemCount',[CartController::class,'getCartItemCount'])->name
 Route::put('/cart/increase-quantity', [CartController::class, 'increaseQuantity'])->name('increaseQuantity');
 Route::put('/cart/decrease-quantity', [CartController::class, 'decreaseQuantity'])->name('decreaseQuantity');
 Route::put('/updateQuantity', [CartController::class, 'updateQuantity'])->name('updateQuantity');
+
 
 
 // xóa giỏ hàng 
@@ -71,6 +88,13 @@ Route::post('/selectCity',[CheckoutController::class,'selectCity'])->name('selec
 
 Route::get('/my-account',[MyAccountController::class,'myAccount'])->name('myAccount');
 Route::get('/checkout',[CheckoutController::class,'checkout'])->name('checkout');
+// xác nhận đã nhận hàng 
+Route::post('/order/confirm', [MyAccountController::class, 'confirmOrder'])->name('confirmOrder');
+// xác nhận hủy đơn hàng
+Route::post('/cancelOrder', [MyAccountController::class, 'cancelOrder'])->name('cancelOrder');
+
+
+
 
 // cửa hàng
 Route::get('/shop', [ShopController::class, 'shop'])->name('shop');

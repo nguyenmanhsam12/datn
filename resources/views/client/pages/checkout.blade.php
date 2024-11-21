@@ -292,15 +292,17 @@
                                                                 <td class="text-right" style="white-space: nowrap">
                                                                     {{ number_format($shipping, 0, ',', '.') . ' VNĐ' }}</td>
                                                             </tr>
-                                                            <tr>
-                                                                <td >
-                                                                    <label for="discount_code" style="white-space: nowrap">Mã giảm giá (nếu có)</label>
-                                                                    <input class="border" type="text" id="discount_code" name="discount_code" style="width: 100%;" placeholder="Nhập mã giảm giá">
-                                                                </td>
-                                                                <td>
-                                                                    <button class="" type="button">Áp dụng</button>
-                                                                </td>
-                                                            </tr>
+                                                            @if (!session()->has('coupon_id'))
+                                                                <tr>
+                                                                    <td >
+                                                                        <label for="discount_code" style="white-space: nowrap">Mã giảm giá (nếu có)</label>
+                                                                        <input class="border" type="text" id="discount_code" name="discount_code" style="width: 100%;" placeholder="Nhập mã giảm giá">
+                                                                    </td>
+                                                                    <td>
+                                                                        <button class="" type="button">Áp dụng</button>
+                                                                    </td>
+                                                                </tr>
+                                                            @endif
                                                             <tr>
                                                                 <td>Tổng đơn hàng</td>
                                                                 <td class="text-right" style="white-space: nowrap"

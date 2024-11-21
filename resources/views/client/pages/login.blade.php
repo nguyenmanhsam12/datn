@@ -35,32 +35,6 @@
         /* Thêm bóng cho input khi focus */
     }
 
-    .form-register .button-register {
-        background-color: #007bff;
-        /* Nền xanh */
-        color: white;
-        /* Màu chữ trắng */
-        border: none;
-        /* Không có viền */
-        padding: 10px 20px;
-        border-radius: 5px;
-        width: 100%;
-        /* Làm cho nút đăng ký rộng đầy đủ */
-        cursor: pointer;
-        /* transition: background-color 0.3s ease, border 0.3s ease, color 0.3s ease; */
-        /* Thêm border và color cho transition */
-    }
-
-    .form-register .button-register:hover {
-        background-color: transparent !important;
-        /* Đổi nền thành trong suốt */
-        border: 2px solid #007bff;
-        /* Thêm viền xanh */
-        color: #007bff;
-        /* Đổi màu chữ thành xanh */
-    }
-
-    
 </style>
 @endpush
 
@@ -118,9 +92,13 @@
 
                             
 
-                            <button type="submit" class="btn btn-primary button-register">Đăng Nhập</button>
+                            <button type="submit" class="button-one submit-button w-100" data-text="Đăng Nhập">Đăng Nhập</button>
                             <p class="text-gray mt-3">Bạn chưa có tài khoản? <a href="{{ route('register') }}"
                                     class="text-primary">Đăng ký tại đây</a></p>
+
+
+                                    <p class="text-gray mt-3">Bạn đã  <a href="{{ route('password.request') }}"
+                                        class="text-primary">Quên mật khẩu</a></p>
                         </div>
                     </div>
                 </div>

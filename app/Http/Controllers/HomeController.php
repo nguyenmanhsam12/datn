@@ -39,7 +39,7 @@ class HomeController extends Controller
         
         // Lấy giá nhỏ nhất từ các biến thể
         $minPrice = $productDetail->variants->min('price');
-
+        
 
 
         // sp liên quan

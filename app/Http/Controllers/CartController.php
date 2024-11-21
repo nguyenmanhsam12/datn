@@ -345,15 +345,26 @@ class CartController extends Controller
         // Tìm CartItem và lấy product_variant_id
         $cartItem = CartItems::with('variants')->findOrFail($cartItemId);
 
+        // Lưu lại số lượng ban đầu trước khi giảm
+        $originalQuantity = $cartItem->quantity;
+
         // Kiểm tra nếu số lượng lớn hơn 1 thì mới giảm
         if ($cartItem->quantity > 1) {
             $cartItem->quantity -= 1;
+
             // Tính lại thành tiền cho sản phẩm
             $total_price = 0;
             $total_price = $cartItem->variants->price * $cartItem->quantity;
             $cartItem->save();
+        }else {
+            // Nếu không thể giảm số lượng, trả về lỗi
+            return response()->json([
+                'error' => 'Số lượng sản phẩm không thể giảm thêm.',
+            ], 400);
         }
 
+        
+        // đếm lại toàn bộ số lượng có trong giỏ hàng
         $cartItems = CartItems::where('cart_id',$cartItem->cart_id)->get();
         $quantityCartIcon  = $cartItems->sum('quantity');
 
@@ -374,8 +385,18 @@ class CartController extends Controller
                     $discount = $coupon->discount_value;
                 }
             } else {
-                // Nếu tổng tiền không đủ điều kiện, bỏ giảm giá
-                session()->forget(['discount', 'coupon_id']);
+
+                // Khôi phục lại số lượng cũ nếu điều kiện không thỏa mãn
+                $cartItem->quantity = $originalQuantity;
+                $cartItem->save(); // Cập nhật lại cơ sở dữ liệu với số lượng ban đầu
+
+                return response()->json([
+                    'error' => 'Tổng đơn hàng không đủ điều kiện áp dụng mã giảm giá.',
+                    'quantity' => $cartItem->quantity, // Trả lại số lượng ban đầu
+                    'totalPrice' => $total_price,
+                    'quantityCartIcon' => $quantityCartIcon,
+                    'totalCartPrice' => $totalCartPrice,
+                ], 400);
             }
         }
 
@@ -394,7 +415,8 @@ class CartController extends Controller
             'quantity' => $cartItem->quantity,
             'totalPrice' => $total_price,
             'quantityCartIcon' => $quantityCartIcon,
-            'totalCartPrice' => $totalCartPrice,
+            'total' => $totalCartPrice,
+            'totalCartPrice' => $finalTotalPrice,
             'discount'=>$discount,
         ]);
     }
@@ -508,7 +530,6 @@ class CartController extends Controller
         // Kiểm tra tổng tiền có đủ để áp dụng mã giảm giá không
         if ($totalAmount <= 0 || $totalAmount < $coupon->minimum_order_value) {
             return response()->json([
-                'success' => false,
                 'error' => 'Tổng giỏ hàng không đủ để áp dụng mã giảm giá!'
             ]);
         }

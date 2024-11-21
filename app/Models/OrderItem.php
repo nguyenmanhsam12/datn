@@ -17,7 +17,7 @@ class OrderItem extends Model
         return $this->belongsTo(ProductVariants::class, 'product_variant_id');
     }
     public function product()
-{
-    return $this->productVariant->product();  // Lấy sản phẩm từ productVariant
-}
+    {
+        return $this->productVariant->product();  // Lấy sản phẩm từ productVariant
+    }
 }

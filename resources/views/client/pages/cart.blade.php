@@ -135,6 +135,17 @@
             white-space: nowrap;
         }
 
+        .error-mess {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            color: red;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+            white-space: nowrap;
+        }
+
         .payment-details .table tr td:first-child {
             text-align: left;
         }
@@ -170,7 +181,7 @@
                 <div class="col-12">
                     <div class="shopping-cart">
                         <!-- Continue Shopping Link -->
-                        <div class="shopping__notice mt-4 mb-4">
+                        {{-- <div class="shopping__notice mt-4 mb-4">
                             <h6 class="notice__title">
                                 <p>Chỉ cần thêm <strong>200.000 VND</strong> nữa để được miễn phí vận chuyển!</p>
                             </h6>
@@ -178,7 +189,7 @@
                                 <div>Tiếp tục mua sắm</div>
                                 <div><i class="zmdi zmdi-arrow-right"></i></div>
                             </a>
-                        </div>
+                        </div> --}}
 
                         <!-- Cart Table -->
                         <div class="shop-cart-table">
@@ -220,6 +231,7 @@
                                                         <input type="text" value="{{ $item['quantity'] }}"
                                                             class="cart-plus-minus-box" min="1">
                                                         <span class="error-message"></span>
+                                                        <span class="error-mess"></span>
                                                         <button type="button" class="increase-quantity">+</button>
                                                     </div>
                                                 </td>
@@ -386,11 +398,7 @@
                     const csrfToken = document.querySelector('meta[name="csrf-token"]')
                         .getAttribute('content');
 
-                    const errorMessage = cartItem.querySelector(
-                    '.error-message'); // Thẻ hiển thị lỗi
-                    errorMessage.style.display = 'none'; // Ẩn thông báo lỗi
-
-
+                
                     fetch('{{ route('decreaseQuantity') }}', {
                             method: 'PUT',
                             headers: {
@@ -403,16 +411,15 @@
                         })
                         .then(response => response.json())
                         .then(data => {
-                            if (data.quantity) {
+                            if (data.error) {
+                                alert(data.error);
+                            } else {
                                 quantity.value = data.quantity;
                                 itemTotalPrice.innerText = formatPrice(data.totalPrice);
                                 updateCartIconQuantity(data.quantityCartIcon);
-                                totalAmount.textContent = formatPrice(data.totalCartPrice);
+                                totalAmount.textContent = formatPrice(data.total);
                                 totalItems.textContent = formatPrice(data.totalCartPrice);
                                 document.querySelector('.text-end').textContent = formatPrice(data.discount);
-
-                            } else {
-                                alert('Error decreasing quantity or minimum quantity reached.');
                             }
                         })
                         .catch(error => console.error('Error:', error));
@@ -559,13 +566,19 @@
                             if (data.success) {
                                 // Cập nhật thông báo và tổng tiền sau giảm giá
                                 coupon_message.innerText = data.message;
+                                coupon_message.classList.remove('text-danger');
+                                coupon_message.classList.add('text-success');
                                 coupon_message.style.display = 'block';
                                 document.querySelector('.text-end').textContent = formatPrice(data.discount);
                                 document.querySelector('.total-items').textContent = formatPrice(data.new_total);    
                                 location.reload();
                             } else {
                                 // Hiển thị lỗi nếu mã giảm giá không hợp lệ
-                                coupon_message.textContent = data.message;
+                                document.getElementById('couponCode').value = '';
+                                coupon_message.textContent = data.error;
+                                coupon_message.classList.remove('text-success');
+                                coupon_message.classList.add('text-danger');
+                                coupon_message.style.display = 'block';
                             }
                         })
                         .catch(error => console.error('Error:', error));
@@ -576,9 +589,9 @@
                 }
             });
 
+            // xóa mã giảm giá
             document.getElementById('cancelCoupon')?.addEventListener('click', function() {
 
-                
                 fetch('{{ route('removeCoupon') }}', {
                     method: 'POST',
                     headers: {

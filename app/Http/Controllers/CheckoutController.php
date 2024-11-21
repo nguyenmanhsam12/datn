@@ -18,6 +18,7 @@ use App\Models\OrderAddress;
 use App\Models\OrderItem;
 use App\Models\ProductVariants;
 use Illuminate\Support\Facades\Mail;
+use App\Events\ProductStockUpdated;
 
 class CheckoutController extends Controller
 {   
@@ -44,6 +45,10 @@ class CheckoutController extends Controller
 
         // Tìm giỏ hàng của người dùng
         $cart = Cart::where('user_id', $user->id)->first();
+        
+        if(!$cart){
+            return redirect()->route('shop')->with('error','Vui lòng chọn sản phẩm trước khi thanh toán');
+        }
 
         $cartItems = CartItems::with('variants.product','variants.size')->where('cart_id',$cart->id)->get();
         
@@ -179,9 +184,17 @@ class CheckoutController extends Controller
                 // giảm số lượng khi đặt hàng
                 // decrement hàm có trong orm của laravel dùng để làm giảm 1 cột cụ thể trong bảng
                 $productVariant = ProductVariants::find($item->product_variant_id);
+
+                if ($productVariant->stock < $item->quantity) {
+                    return response()->json(['message' => 'Số lượng sản phẩm không đủ.'], 400);
+                }
+
                 $productVariant->decrement('stock', $item->quantity);
+                $productVariant->selled = $item->quantity;
                 $productVariant->save();
 
+                // Phát sự kiện cập nhật tồn kho
+                broadcast(new ProductStockUpdated($productVariant->id, $productVariant->stock));
 
                 OrderItem::create([
                     'order_id' => $order->id,

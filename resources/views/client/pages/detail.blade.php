@@ -81,6 +81,12 @@
             border-radius: 5px;
             width: 25%;
         }
+
+        /* comment */
+        .pro-reviewer img{
+            border-radius: 50%;
+            border: 1px solid #6c757d;
+        }
     </style>
 @endpush
 
@@ -137,7 +143,9 @@
                             <div class="product-description">
                                 <p>{!! $productDetail->description !!}</p>
                             </div>
+                            <div class="product-stock">
 
+                            </div>
 
                             <!-- Size start -->
                             <div class="size-filter single-pro-size mb-35 clearfix">
@@ -146,8 +154,7 @@
                                     @foreach ($productDetail->variants as $variant)
                                         <li>
                                             <a href="#" class="size-option p-1" data-variant-id="{{ $variant->id }}"
-                                                data-price = "{{ $variant->price }}"
-                                                >
+                                                data-price = "{{ $variant->price }}" data-stock = "{{ $variant->stock }}">
                                                 {{ $variant->size->name }}
                                             </a>
                                         </li>
@@ -187,33 +194,22 @@
                     <div class="col-md-3 col-12">
                         <!-- Nav tabs -->
                         <ul class="single-pro-tab-menu  nav">
-                            <li class="nav-item"><button class="nav-link" data-bs-target="#description"
+                            <li class="nav-item"><button class="nav-link active" data-bs-target="#description"
                                     data-bs-toggle="tab">Mô tả</button></li>
-                            <li class="nav-item"><button class="nav-link active" data-bs-target="#reviews"
+                            <li class="nav-item"><button class="nav-link " data-bs-target="#reviews"
                                     data-bs-toggle="tab">Đánh giá</button></li>
-                            <li class="nav-item"><button class="nav-link" data-bs-target="#information"
-                                    data-bs-toggle="tab">Thông tin</button></li>
-
                         </ul>
                     </div>
                     <div class="col-md-9 col-12">
                         <!-- Tab panes -->
                         <div class="tab-content">
-                            <div class="tab-pane" id="description">
+                            <div class="tab-pane active" id="description">
                                 <div class="pro-tab-info pro-description">
-                                    <h3 class="tab-title title-border mb-30">dummy Product name</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer accumsan egestas
-                                        elese ifend. Phasellus a felis at est bibendum feugiat ut eget eni Praesent et
-                                        messages in con sectetur posuere dolor non.</p>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer accumsan egestas
-                                        elese ifend. Phasellus a felis at est bibendum feugiat ut eget eni Praesent et
-                                        messages in con sectetur posuere dolor non.</p>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer accumsan egestas
-                                        elese ifend. Phasellus a felis at est bibendum feugiat ut eget eni Praesent et
-                                        messages in con sectetur posuere dolor non.</p>
+                                    <h3 class="tab-title title-border mb-30">Mô tả sản phẩm</h3>
+                                    <div>{!! $productDetail->description_text !!}</div>
                                 </div>
                             </div>
-                            <div class="tab-pane active" id="reviews">
+                            <div class="tab-pane " id="reviews">
                                 <div class="pro-tab-info pro-reviews">
                                     <div class="customer-review mb-60">
                                         <h3 class="tab-title title-border mb-30">Đánh giá của khách hàng</h3>
@@ -311,7 +307,7 @@
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <textarea class="custom-textarea" name="message" placeholder="Đánh giá của bạn..." required></textarea>
-                                                        <button type="submit" class="button-one submit-button mt-20">Gửi
+                                                        <button type="submit" data-text="Gửi đánh giá" class="button-one submit-button mt-20">Gửi
                                                             đánh giá</button>
                                                     </div>
                                                 </div>
@@ -320,22 +316,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="tab-pane" id="information">
-                                <div class="pro-tab-info pro-information">
-                                    <h3 class="tab-title title-border mb-30">Product information</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer accumsan egestas
-                                        elese ifend. Phasellus a felis at est bibendum feugiat ut eget eni Praesent et
-                                        messages in con sectetur posuere dolor non.</p>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer accumsan egestas
-                                        elese ifend. Phasellus a felis at est bibendum feugiat ut eget eni Praesent et
-                                        messages in con sectetur posuere dolor non.</p>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer accumsan egestas
-                                        elese ifend. Phasellus a felis at est bibendum feugiat ut eget eni Praesent et
-                                        messages in con sectetur posuere dolor non.</p>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
                 </div>
@@ -349,11 +329,15 @@
 @endsection
 
 @push('script')
-    <script>
+    <script type="module">
         document.addEventListener('DOMContentLoaded', function() {
             // Lấy tất cả các nút size
             const sizeOptions = document.querySelectorAll('.size-option');
             const priceElement = document.querySelector('.pro-price');
+            const stockElement = document.querySelector('.product-stock');
+
+            // Biến lưu variantId hiện tại để tránh đăng ký kênh lặp
+            let currentVariantId = null;
 
             // Kiểm tra sự tồn tại của sizeOptions và priceElement
             if (!sizeOptions.length || !priceElement) {
@@ -385,6 +369,38 @@
                 // Lấy giá từ data attribute và cập nhật
                 const price = this.getAttribute('data-price');
                 updatePrice(price);
+                const stock = this.getAttribute('data-stock');
+                stockElement.textContent = `Số lượng : ${stock}`
+                const variantId = this.getAttribute('data-variant-id');
+
+                // Kiểm tra nếu có variantId và xử lý lắng nghe sự kiện
+                if (variantId) {
+                    // Nếu variantId thay đổi, hủy đăng ký kênh cũ và đăng ký kênh mới
+                    if (currentVariantId !== variantId) {
+                        // Hủy kênh cũ nếu đã đăng ký
+                        if (currentVariantId) {
+                            Echo.leave(`product-${currentVariantId}`);
+                        }
+
+                        // Cập nhật variantId hiện tại
+                        currentVariantId = variantId;
+                        
+
+                        // Đăng ký kênh mới để lắng nghe sự kiện
+                        Echo.channel(`product-${currentVariantId}`)
+                            .listen('ProductStockUpdated', (event) => {
+                                console.log('Stock update received: ', event);
+
+                                // Cập nhật số lượng tồn kho nếu sự kiện trùng variant
+                                if (event.variantId == currentVariantId) {
+                                    stockElement.textContent = `Số lượng: ${event.stock}`;
+                                    console.log(stockElement);
+                                }
+                            });
+                    }
+                }
+
+
             }
 
             // Thêm event listener cho tất cả các nút size
@@ -393,7 +409,7 @@
             });
 
         });
-    </script>
+    </script>   
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -423,7 +439,7 @@
 
                 const variantId = selectedOption.getAttribute('data-variant-id');
                 const quantity = parseInt(quantityInput.value);
-                if(quantity < 1){
+                if (quantity < 1) {
                     alert('Số lượng phải lớn hơn 0');
                     return;
                 }
@@ -444,12 +460,12 @@
                     .then(data => {
 
                         console.log(data);
-                        
 
-                        if(data.error){
+
+                        if (data.error) {
                             toastr.error(data.error); // Hiển thị lỗi yêu cầu đăng nhập bằng toastr
                             return;
-                        }   
+                        }
 
                         if (data.message) {
                             Swal.fire({
@@ -475,13 +491,31 @@
                                 cartCountElement.textContent = data.cartItemCount;
                             }
                         }
-                        
+
                     })
                     .catch(error => {
                         console.error('Lỗi:', error);
                         alert('Có lỗi xảy ra, vui lòng thử lại.');
                     });
             });
+        });
+    </script>
+
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lắng nghe sự kiện từ kênh 'product-{id}'
+            const stockElement = document.querySelector('.product-stock');
+            const variantId = stockElement.getAttribute('data-variant-id'); // Lấy variantId của sản phẩm hiện tại
+
+            if (variantId) {
+                Echo.channel(`product-${variantId}`)
+                    .listen('ProductStockUpdated', (event) => {
+                        console.log('Stock update received: ', event);
+
+                        // Cập nhật số lượng tồn kho
+                        stockElement.textContent = `Số lượng: ${event.stock}`;
+                    });
+            }
         });
     </script>
 @endpush
