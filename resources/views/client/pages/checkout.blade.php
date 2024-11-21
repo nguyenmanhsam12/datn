@@ -488,8 +488,8 @@
                             })
                             .then(() => {
                                 setTimeout(() => {
-                                    window.location.href = '{{ route('home') }}';
-                                }, 5000);
+                                    window.location.href = '{{ route('thankyou') }}';
+                                }, 3000);
                             });
                     }
                    

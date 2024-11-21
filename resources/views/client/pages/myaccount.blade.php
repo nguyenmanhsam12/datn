@@ -208,6 +208,24 @@
                                     </h6>
                                     <p class="order-status " data-status= "{{ $or->status_id }}">
                                         {{ $or->orderStatus->name }}</p>
+                                    <p class="payment-status">
+                                            @switch($or->payment_status)
+                                                @case('pending')
+                                                    <span class="badge bg-warning">Đang chờ thanh toán</span>
+                                                    @break
+                                                @case('paid')
+                                                    <span class="badge bg-success">Đã thanh toán</span>
+                                                    @break
+                                                @case('failed')
+                                                    <span class="badge bg-danger">Thanh toán thất bại</span>
+                                                    @break
+                                                @default
+                                                    <span class="badge bg-secondary">Không rõ trạng thái</span>
+                                            @endswitch
+                                    </p>
+                                    <p class="payment-method">
+                                        <span class="badge bg-secondary">{{ $or->payment->name }}</span>
+                                    </p>       
                                 </div>
                                 <div class="order-body">
                                     @foreach ($or->cartItems as $item)
@@ -287,6 +305,9 @@
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#orderModal{{ $or->id }}"
                                                     >Xem Chi Tiết</button>
+                                                    @if ($or->payment_status == 'pending' && $or->payment_method_id == 2)
+                                                        <button class="btn btn-secondary retry-payment-btn" data-order-id="{{ $or->id }}">Thanh toán lại</button>                                                        
+                                                    @endif
                                                 @endif
 
 
@@ -595,6 +616,41 @@
                 });
             });
         });
+
+        // nút thanh toán lại
+        document.addEventListener("DOMContentLoaded", () => {
+            const retryButtons = document.querySelectorAll(".retry-payment-btn");
+
+            retryButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const orderId = this.getAttribute('data-order-id');
+                    
+
+                    fetch('{{ route('retryPayment') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({ order_id: orderId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.vnpay) {
+                            // Điều hướng đến URL thanh toán VNPAY
+                            window.location.href = data.vnpay;
+                        } else {
+                            alert(data.message || "Đã xảy ra lỗi, vui lòng thử lại.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("Không thể thực hiện thanh toán lại, vui lòng thử lại.");
+                    });
+                });
+            });
+        });
+
     </script>
 
     <script type="module">
@@ -675,4 +731,7 @@
                 }
             });
     </script>
+
+
+
 @endpush

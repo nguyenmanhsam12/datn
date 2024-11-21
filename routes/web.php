@@ -119,6 +119,8 @@ Route::post('/vnpay-payment', [CheckoutController::class, 'vnpayPayment'])->name
 // callback vnp
 Route::get('/vnpay-callback', [CheckoutController::class, 'vnpayCallback'])->name('vnpayCallback');
 
+// thanh toán lại
+Route::post('/payment-retry', [CheckoutController::class, 'retryPayment'])->name('retryPayment');
 
 
 // đặt hàng thành công -> cảm ơn 

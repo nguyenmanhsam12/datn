@@ -30,8 +30,21 @@
                             <p><strong>Mã Đơn hàng:</strong> #{{ $order->id }}</p>
                             <p><strong>Ngày Đặt hàng:</strong> {{ $order->created_at }}</p>
                             <p><strong>Hình Thức Thanh Toán:</strong> {{ $order->payment->name }}</p>
-                            <p><strong>Trạng thái:</strong>
+                            <p><strong>Trạng thái đơn hàng:</strong>
                                 <span class="badge badge-warning text-white">{{ $order->orderStatus->name }}</span>
+                            </p>
+                            <p><strong>Trạng thái thanh toán:</strong>
+                                <span class="badge badge-warning text-white">
+                                    @if ($order->payment_status == 'pending')
+                                    Chưa thanh toán
+                                    @elseif($order->payment_status == 'paid')
+                                        Đã thanh toán
+                                    @elseif($order->payment_status == 'failed')
+                                        Thanh toán thất bại
+                                    @elseif($order->payment_status == 'canceled')
+                                        Thanh toán bị hủy bỏ
+                                    @endif
+                                </span>
                             </p>
                         </div>
                         <div class="col-md-6">
@@ -44,6 +57,15 @@
                                 {{ $order->orderAddress->city }},
                                 {{ $order->orderAddress->province }}
                             </p>
+                            <p><strong>Phí ship:</strong> 
+                                {{ number_format($order->shipping_fee,0,',','.').' VNĐ' }}
+                            </p>
+                            @if ($order->discount_amount > 0)
+                                <p><strong>Giảm giá:</strong> 
+                                    {{ number_format($order->discount_amount,0,',','.').' VNĐ' }}
+                                </p>
+                            @endif
+                        
                         </div>
                     </div>
                 </div>
@@ -80,7 +102,7 @@
                         
                             <tr>
                                 <td colspan="3" class="text-right"><strong>Tổng cộng</strong></td>
-                                <td><strong>{{ number_format($order->total_amount,0,',','.').' VNĐ' }}</strong></td>
+                                <td><strong>{{ number_format($finalTotal,0,',','.').' VNĐ' }}</strong></td>
                             </tr>
                         </tbody>
                     </table>
@@ -88,7 +110,7 @@
             </div>
 
             <!-- Cập nhật trạng thái đơn hàng -->
-            <div class="card mb-4">
+            {{-- <div class="card mb-4">
                 <div class="card-header">
                     <strong>Cập nhật Trạng thái Đơn hàng</strong>
                 </div>
@@ -108,7 +130,7 @@
                         <button type="submit" class="btn btn-primary">Cập nhật</button>
                     </form>
                 </div>
-            </div>
+            </div> --}}
     </div>
     </section>
 @endsection

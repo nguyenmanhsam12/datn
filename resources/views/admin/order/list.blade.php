@@ -26,11 +26,12 @@
             <table class="table table-bordered mt-4">
                 <thead class="thead-light">
                     <tr>
-                        <th>#</th>
+                        <th>Mã đơn hàng</th>
                         <th>Khách Hàng</th>
+                        <th>Trạng thái thanh toán</th>
                         <th>Tổng Tiền</th>
                         <th>Hình thức thanh toán</th>
-                        <th>Ngày Đặt</th>
+                        {{-- <th>Ngày Đặt</th> --}}
                         <th>Trạng Thái</th>
                         <th>Hành Động</th>
                     </tr>
@@ -38,12 +39,26 @@
                 <tbody>
                     <!-- Mẫu đơn hàng -->
                     @foreach ($orders as $key => $order)
+                        @php
+                            $finalTotal = $order->total_amount + $order->shipping_fee + $order->discount_amount;
+                        @endphp
                         <tr>
-                            <td>{{ $key + 1 }}</td>
+                            <td>{{ $order->id }}</td>
                             <td>{{ $order->user->name }}</td>
-                            <td>{{ number_format($order->total_amount, 0, ',', '.') . ' VNĐ' }}</td>
+                            <td>
+                                @if ($order->payment_status == 'pending')
+                                    Chưa thanh toán
+                                @elseif($order->payment_status == 'paid')
+                                    Đã thanh toán
+                                @elseif($order->payment_status == 'failed')
+                                    Thanh toán thất bại
+                                @elseif($order->payment_status == 'canceled')
+                                    Thanh toán bị hủy bỏ
+                                @endif
+                            </td>
+                            <td>{{ number_format($finalTotal, 0, ',', '.') . ' VNĐ' }}</td>
                             <td>{{ $order->payment->name }}</td>
-                            <td>{{ $order->created_at }}</td>
+                            {{-- <td>{{ $order->created_at }}</td> --}}
                             <td>
                                 <select class="form-control update-status" data-order-id="{{ $order->id }}">
                                     @foreach ($order_status as $status)
@@ -110,8 +125,6 @@
                                 dropdown.querySelectorAll('option').forEach(option => {
                                     option.disabled = parseInt(option.value) < newStatus;
                                 });
-
-                                
                             }
                             if(data.error){
                                 alert(data.error);

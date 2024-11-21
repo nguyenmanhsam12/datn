@@ -322,12 +322,13 @@ class CheckoutController extends Controller
             
             // Lấy đơn hàng từ mã giao dịch
             $order = Order::find($vnp_TxnRef);
-            $transaction = Transactions::where('order_id', $order->id)->first();
+            $transaction = Transactions::where('order_id', $order->id)->first();    
 
             // Kiểm tra trạng thái thanh toán của VNPAY
             if ($vnp_TransactionStatus == '00') {
                 // Thanh toán thành công
                 $order->payment_status = 'paid';
+                $order->status_id = 1;
                 $status = 'success';  // Trạng thái giao dịch thành công
                 // Cập nhật trạng thái thanh toán trong bảng transactions ngay lập tức
                 if ($transaction) {
@@ -338,27 +339,44 @@ class CheckoutController extends Controller
                 }
             } else {
                 // Thanh toán thất bại
-                $order->payment_status = 'failed';
-                $status = 'failed';  // Trạng thái giao dịch thất bại
+                $order->payment_status = 'pending';
+                $order->status_id = '6';
+                $status = 'pending';  // Trạng thái giao dịch thất bại
                 if($transaction){
                     $transaction->status = $status;
                     $transaction->transaction_id = $data['vnp_TransactionNo'];
                     $transaction->payment_date = $data['vnp_PayDate'];
                     $transaction->save();
                 }
+                $order->save();
+
+                return redirect()->route('home');
             }
 
             // Lưu thay đổi vào đơn hàng
             $order->save();
 
             // Điều hướng người dùng tới trang thành công
-            return redirect()->route('home');
+            return redirect()->route('thankyou');
         } catch (\Exception $e) {
             return response()->json(['message' => 'Có lỗi xảy ra: ' . $e->getMessage()], 500);
         }
     }
 
-   
+    public function retryPayment(Request $request){
+
+        $order = Order::findOrFail($request->order_id);
+
+        // Kiểm tra trạng thái thanh toán và đơn hàng
+        if ($order->payment_status === 'pending' && $order->status_id === 6 && $order->payment_method_id === 2) {
+            // tổng đơn hàng
+            $newTotal = $order->total_amount + $order->shipping_fee + $order->discount_amount;
+            // Tạo liên kết thanh toán VNPAY
+            return $this->vnpayPayment($newTotal,$order->id);
+        }
+
+        return response()->json(['message' => 'Không thể thực hiện thanh toán lại'], 400);
+    }
 
 
 }
