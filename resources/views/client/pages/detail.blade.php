@@ -11,6 +11,11 @@
 
 
     <style>
+        input[type="text"] {
+        background: #f6f6f6;
+        border: medium none;
+        }
+
         .size-option {
             display: inline-block;
             width: 100px;

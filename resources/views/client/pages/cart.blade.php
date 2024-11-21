@@ -5,6 +5,11 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
+        input[type="text"] {
+            background: #f6f6f6;
+            border: medium none;
+        }
+
         .shopping__notice {
             display: block;
             text-align: center;
