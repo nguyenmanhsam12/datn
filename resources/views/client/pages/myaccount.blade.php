@@ -107,32 +107,27 @@
 
         .order-status[data-status="1"] {
             color: #FFC107;
-            /* Đang chờ xử lý */
         }
 
         .order-status[data-status="2"] {
             color: #17A2B8;
-            /* Đã xác nhận */
         }
 
         .order-status[data-status="3"] {
             color: #007BFF;
-            /* Đang vận chuyển */
         }
 
         .order-status[data-status="4"] {
             color: #28A745;
-            /* Đang giao hàng */
         }
 
         .order-status[data-status="5"] {
             color: #28A745;
-            /* Hoàn tất */
         }
 
         .order-status[data-status="6"] {
             color: #DC3545;
-            /* Đã hủy */
+            
         }
 
         .button-group button {
@@ -206,26 +201,15 @@
                                 <div class="order-header">
                                     <h6 class="order-id">Đơn Hàng #{{ $or->id }}
                                     </h6>
-                                    <p class="order-status " data-status= "{{ $or->status_id }}">
-                                        {{ $or->orderStatus->name }}</p>
-                                    <p class="payment-status">
-                                            @switch($or->payment_status)
-                                                @case('pending')
-                                                    <span class="badge bg-warning">Đang chờ thanh toán</span>
-                                                    @break
-                                                @case('paid')
-                                                    <span class="badge bg-success">Đã thanh toán</span>
-                                                    @break
-                                                @case('failed')
-                                                    <span class="badge bg-danger">Thanh toán thất bại</span>
-                                                    @break
-                                                @default
-                                                    <span class="badge bg-secondary">Không rõ trạng thái</span>
-                                            @endswitch
-                                    </p>
-                                    <p class="payment-method">
-                                        <span class="badge bg-secondary">{{ $or->payment->name }}</span>
-                                    </p>       
+                                    
+                                    <div>
+                                            <p class="order-status" data-status= "{{ $or->status_id }}">
+                                            {{ $or->orderStatus->name }}</p>
+                                            
+                                                
+                                    </div>
+                                    
+                                        
                                 </div>
                                 <div class="order-body">
                                     @foreach ($or->cartItems as $item)
@@ -340,7 +324,29 @@
                                                                 @endforeach
                                                             </ul>
                                                             <p><strong>Phí vận chuyển:</strong>
-                                                                {{ number_format($or->shipping_fee, 0, ',', '.') }} VNĐ</p>
+                                                            {{ number_format($or->shipping_fee, 0, ',', '.') }} VNĐ</p>
+                                                                <div class="payment-status">
+                                                                    Trạng thái thanh toán
+                                                                    @switch($or->payment_status)
+                                                                        @case('pending')
+                                                                            <span class="badge bg-warning">Đang chờ thanh toán</span>
+                                                                            @break
+                                                                        @case('paid')
+                                                                            <span class="badge bg-success">Đã thanh toán</span>
+                                                                            @break
+                                                                        @case('failed')
+                                                                            <span class="badge bg-danger">Thanh toán thất bại</span>
+                                                                            @break
+                                                                        @default
+                                                                            <span class="badge bg-secondary">Không rõ trạng thái</span>
+                                                                    @endswitch
+                                                                </div>
+                                                        
+                                                            
+                                                                <div class="payment-method">
+                                                                    Phương thức thanh toán:
+                                                                    <span class="badge bg-secondary">{{ $or->payment->name }}</span>
+                                                                </div>  
                                                             <p><strong>Tổng tiền:</strong>
                                                                 {{ number_format($or->total_amount, 0, ',', '.') }} VNĐ</p>
                                                         </div>

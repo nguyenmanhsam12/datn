@@ -122,6 +122,10 @@ Route::get('/vnpay-callback', [CheckoutController::class, 'vnpayCallback'])->nam
 // thanh toán lại
 Route::post('/payment-retry', [CheckoutController::class, 'retryPayment'])->name('retryPayment');
 
+// khiếu nại
+
+// Route::get('/', [ComplanintsController::class, 'vnpayCallback'])->name('vnpayCallback');
+
 
 // đặt hàng thành công -> cảm ơn 
 Route::get('/thank-you', [ThanhYouController::class,'thankyou'])->name('thankyou');
