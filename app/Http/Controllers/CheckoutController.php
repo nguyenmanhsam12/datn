@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Events\ProductStockUpdated;
 use App\Models\Coupon;
 use App\Models\Transactions;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
@@ -237,6 +238,22 @@ class CheckoutController extends Controller
                 return $this->vnpayPayment($newTotal,$order->id);
             }
 
+            if ($data['payment_method'] == 3) { //Thanh toán momo
+                $newTotal = $order->total_amount + $order->shipping_fee;
+                
+                // Tạo bản ghi thanh toán trong transactions khi có giao dịch thanh toán
+                Transactions::create([
+                    'order_id' => $order->id,
+                ]);
+
+                // Gọi hàm xử lý thanh toán momo
+                $payUrl = $this->momoPayment($newTotal,$order->id);
+                return response()->json([
+                    'message' => 'Liên kết thanh toán đã được tạo thành công.',
+                    'momo' => $payUrl,
+                ]);
+            }
+
 
             // Trả về thông báo thành công
             return response()->json(
@@ -312,6 +329,7 @@ class CheckoutController extends Controller
 
     }
 
+    // retrun thông tin khi vnpay thanh toán thành công
     public function vnpayCallback(Request $request)
     {
         try {
@@ -363,6 +381,7 @@ class CheckoutController extends Controller
         }
     }
 
+    // thanh toán lại của vnpay
     public function retryPayment(Request $request){
 
         $order = Order::findOrFail($request->order_id);
@@ -375,8 +394,148 @@ class CheckoutController extends Controller
             return $this->vnpayPayment($newTotal,$order->id);
         }
 
+        if ($order->payment_status === 'pending' && $order->status_id === 6 && $order->payment_method_id === 3) {
+            // tổng đơn hàng
+            $newTotal = $order->total_amount + $order->shipping_fee + $order->discount_amount;
+                // Tạo liên kết thanh toán momo
+                $payUrl = $this->momoPayment($newTotal,$order->id);
+                return response()->json([
+                    'message' => 'Liên kết thanh toán đã được tạo thành công.',
+                    'momo' => $payUrl,
+                ]);
+        }
+
         return response()->json(['message' => 'Không thể thực hiện thanh toán lại'], 400);
     }
 
+    // hàm của thanh toán momo
+    public function execPostRequest($url, $data)
+    {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($data))
+        );
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        //execute post
+        $result = curl_exec($ch);
+        //close connection
+        curl_close($ch);
+        return $result;
+    }
+
+    public function momoPayment($newTotal,$id){
+        $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
+        $partnerCode = 'MOMOBKUN20180529';
+        $accessKey = 'klm05TvNBzhg7h7j';
+        $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
+        $orderInfo = "Thanh toán qua MoMo";
+        $amount = $newTotal;
+        $orderId = $id.'_'.time();
+        $redirectUrl = route('momoCallback');
+        $ipnUrl = route('momoCallback');
+        $extraData = "";
+
+
+        
+            $partnerCode = $partnerCode;
+            $accessKey = $accessKey;
+            $serectkey = $secretKey;
+            $orderId = $orderId;
+            $orderInfo = $orderInfo;
+            $amount = $amount;
+            $ipnUrl = $ipnUrl;
+            $redirectUrl = $redirectUrl;
+            $extraData = $extraData;
+
+            $requestId = time() . "";
+            $requestType = "payWithATM";
+            // $extraData = ($_POST["extraData"] ? $_POST["extraData"] : "");
+            //before sign HMAC SHA256 signature
+            $rawHash = "accessKey=" . $accessKey . "&amount=" . $amount . "&extraData=" . $extraData . "&ipnUrl=" . $ipnUrl . "&orderId=" . $orderId . "&orderInfo=" . $orderInfo . "&partnerCode=" . $partnerCode . "&redirectUrl=" . $redirectUrl . "&requestId=" . $requestId . "&requestType=" . $requestType;
+            $signature = hash_hmac("sha256", $rawHash, $serectkey);
+            $data = array('partnerCode' => $partnerCode,
+                'partnerName' => "Test",
+                "storeId" => "MomoTestStore",
+                'requestId' => $requestId,
+                'amount' => $amount,
+                'orderId' => $orderId,
+                'orderInfo' => $orderInfo,
+                'redirectUrl' => $redirectUrl,
+                'ipnUrl' => $ipnUrl,
+                'lang' => 'vi',
+                'extraData' => $extraData,
+                'requestType' => $requestType,
+                'signature' => $signature);
+            $result = $this->execPostRequest($endpoint, json_encode($data));
+            $jsonResult = json_decode($result, true);  // decode json
+
+            Log::info('MoMo Response: ', $jsonResult);
+
+
+            //Just a example, please check more in there
+
+            // Kiểm tra phản hồi từ MoMo
+            if (isset($jsonResult['payUrl'])) {
+                return $jsonResult['payUrl']; // Trả về URL thanh toán
+            } else {
+                throw new \Exception('Không thể tạo liên kết thanh toán MoMo.');
+            }
+        
+    }
+
+    public function momoCallback(Request $request){
+        try {
+            $data = $request->all();
+
+            $orderId = $data['orderId'];
+            $orderId = explode("_",$orderId);
+              
+            // Lấy đơn hàng từ mã giao dịch
+            $order = Order::find($orderId[0]);
+            $transaction = Transactions::where('order_id', $order->id)->first();    
+
+            // Kiểm tra trạng thái thanh toán của VNPAY
+            if ($data['resultCode'] == '0') {
+                // Thanh toán thành công
+                $order->payment_status = 'paid';
+                $order->status_id = 1;
+                $status = 'success';  // Trạng thái giao dịch thành công
+                // Cập nhật trạng thái thanh toán trong bảng transactions ngay lập tức
+                if ($transaction) {
+                    $transaction->status = $status;
+                    $transaction->transaction_id = $data['transId'];
+                    $transaction->payment_date = Carbon::now();
+                    $transaction->save();
+                }
+            } else {
+                // Thanh toán thất bại
+                $order->payment_status = 'pending';
+                $order->status_id = '6';
+                $status = 'pending';  // Trạng thái giao dịch thất bại
+                if($transaction){
+                    $transaction->status = $status;
+                    $transaction->transaction_id = $data['transId'];
+                    $transaction->payment_date = Carbon::now();
+                    $transaction->save();
+                }
+                $order->save();
+
+                return redirect()->route('home');
+            }
+
+            // Lưu thay đổi vào đơn hàng
+            $order->save();
+
+            // Điều hướng người dùng tới trang thành công
+            return redirect()->route('thankyou');
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Có lỗi xảy ra: ' . $e->getMessage()], 500);
+        }
+    }   
 
 }

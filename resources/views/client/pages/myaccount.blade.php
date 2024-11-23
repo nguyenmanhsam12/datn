@@ -204,9 +204,7 @@
                                     
                                     <div>
                                             <p class="order-status" data-status= "{{ $or->status_id }}">
-                                            {{ $or->orderStatus->name }}</p>
-                                            
-                                                
+                                            {{ $or->orderStatus->name }}</p>    
                                     </div>
                                     
                                         
@@ -277,12 +275,17 @@
 
                                                 <!-- Nút Khiếu nại cho trạng thái "Hoàn tất" -->
                                                 @if ($or->status_id == 5)
-                                                    <button class="btn btn-success"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#orderModal{{ $or->id }}"
-                                                    >Xem Chi Tiết</button>
-                                                    <button class="btn btn-warning">Khiếu Nại</button>
-                                                @endif
+                                                    
+                                                        <button class="btn btn-success"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#orderModal{{ $or->id }}"
+                                                        >Xem Chi Tiết</button>
+                                                       
+                                                            
+                                                        <a class="btn btn-warning" href="{{ route('complaints',['orderId'=> $or->id ]) }}">Khiếu Nại</a>                        
+                                        
+                                                    
+                                                @endif  
 
                                                 @if ($or->status_id == 6)
                                                     <button class="btn btn-success"
@@ -290,6 +293,10 @@
                                                     data-bs-target="#orderModal{{ $or->id }}"
                                                     >Xem Chi Tiết</button>
                                                     @if ($or->payment_status == 'pending' && $or->payment_method_id == 2)
+                                                        <button class="btn btn-secondary retry-payment-btn" data-order-id="{{ $or->id }}">Thanh toán lại</button>                                                        
+                                                    @endif
+
+                                                    @if ($or->payment_status == 'pending' && $or->payment_method_id == 3)
                                                         <button class="btn btn-secondary retry-payment-btn" data-order-id="{{ $or->id }}">Thanh toán lại</button>                                                        
                                                     @endif
                                                 @endif
@@ -384,6 +391,7 @@
             </div>
         </div>
     </div>
+    
 @endsection
 
 @push('script')
@@ -645,7 +653,10 @@
                         if (data.vnpay) {
                             // Điều hướng đến URL thanh toán VNPAY
                             window.location.href = data.vnpay;
-                        } else {
+                        } else if(data.momo){
+                            // Điều hướng đến URL thanh toán VNPAY
+                            window.location.href = data.momo;
+                        }else {
                             alert(data.message || "Đã xảy ra lỗi, vui lòng thử lại.");
                         }
                     })
@@ -656,6 +667,9 @@
                 });
             });
         });
+
+        // nút khiếu lại
+        
 
     </script>
 
