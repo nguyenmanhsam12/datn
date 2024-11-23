@@ -39,7 +39,7 @@
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped projects">
+                    <table class="table table-striped projects" id="list_variant">
                         <thead>
                             <tr>
                                 <th>
@@ -77,3 +77,11 @@
         <!-- /.content -->
     </div>
 @endsection
+
+
+@push('script')
+    <script>
+        let table = new DataTable('#list_variant');
+
+    </script>
+@endpush

@@ -23,7 +23,7 @@
         <section class="content">
 
             <!-- Bảng đơn hàng -->
-            <table class="table table-bordered mt-4">
+            <table class="table table-bordered mt-4" id="list_order">
                 <thead class="thead-light">
                     <tr>
                         <th>Mã đơn hàng</th>
@@ -141,5 +141,11 @@
                 });
             });
         });
+    </script>
+@endpush
+
+@push('script')
+    <script>
+        let table = new DataTable('#list_order');
     </script>
 @endpush

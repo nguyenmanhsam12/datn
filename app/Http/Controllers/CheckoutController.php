@@ -143,7 +143,10 @@ class CheckoutController extends Controller
     public function placeOrder(PlaceOrderRequest $request)
     {
         try {
+            Log::info('test đặt hàng',$request->all());
             $data = $request->validated();
+
+            Log::info('Dữ liệu yêu cầu đặt hàng:', $data);
 
             // Tạo đơn hàng
             // Lấy thông tin giỏ hàng của người dùng
@@ -381,7 +384,7 @@ class CheckoutController extends Controller
         }
     }
 
-    // thanh toán lại của vnpay
+    // thanh toán lại của vnpay , momo
     public function retryPayment(Request $request){
 
         $order = Order::findOrFail($request->order_id);

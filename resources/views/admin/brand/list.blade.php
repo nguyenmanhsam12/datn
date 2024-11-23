@@ -1,5 +1,7 @@
 @extends('admin.layout.default')
 
+
+
 @section('content')
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -39,7 +41,7 @@
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped projects">
+                    <table class="table table-striped projects" id="list_brand">
                         <thead>
                             <tr>
                                 <th>
@@ -71,3 +73,10 @@
         <!-- /.content -->
     </div>
 @endsection
+
+@push('script')
+    <script>
+        let table = new DataTable('#list_brand');
+
+    </script>
+@endpush

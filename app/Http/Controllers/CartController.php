@@ -77,15 +77,14 @@ class CartController extends Controller
         $totalAmount = $cartItems->sum('total_price');
 
 
-
         // Lưu tổng giỏ hàng vào session
         session(['totalAmount' => $totalAmount]);
 
         // giá trị của tổng đơn hàng
-        $newTotal = session('newTotal', $totalAmount);
+        // $newTotal = session('newTotal', $totalAmount);
 
 
-        return view('client.pages.cart', compact('cart', 'cartItems', 'newTotal'));
+        return view('client.pages.cart', compact('cart', 'cartItems'));
     }
 
     // thêm giỏ hàng

@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -26,5 +27,20 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    public function render($request, Throwable $exception)
+    {
+        // Kiểm tra yêu cầu từ giao diện web có phải là AJAX (gọi từ fetch, axios, v.v.)
+        // Kiểm tra loại ngoại lệ là ValidationException
+        if($request->wantsJson()){
+            if ($exception instanceof ValidationException) {
+                return response()->json([
+                    'errors' => $exception->errors(),
+                ], 400); // Trả về mã lỗi 400
+            }    
+        }
+
+        return parent::render($request, $exception);
     }
 }

@@ -38,7 +38,7 @@
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Tên thương hiệu</label>
                                     <input type="text" class="form-control" id="exampleInputEmail1"
-                                        placeholder="nhập thương hiệu"name="name">
+                                        placeholder="nhập thương hiệu" name="name">
                                         @error('name')
                                             <div class="text-danger mt-3">{{ $message }}</div>
                                         @enderror

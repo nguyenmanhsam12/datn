@@ -77,6 +77,9 @@
                                                 <label class="form-check-label" for="role-{{ $role->id }}">{{ $role->name }}</label>
                                             </div>
                                         @endforeach
+                                        @error('role_id')
+                                            <div class="text-danger mt-3">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
 

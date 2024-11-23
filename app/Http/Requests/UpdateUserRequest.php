@@ -26,7 +26,7 @@ class UpdateUserRequest extends FormRequest
 
         return [
             'name' => 'required|string|max:255', // Tên người dùng bắt buộc và không vượt quá 255 ký tự
-            'email' => ['required','email',Rule::unique('users')->ignore($userId)], 
+            'email' => ['required','email',Rule::unique('users')->ignore($userId)],
             'phone_number' => 'nullable|digits_between:10,15', // Số điện thoại có thể null và không vượt quá 15 ký tự
             'password' => 'nullable|string|min:6', // Mật khẩu có thể null, nếu có thì phải có ít nhất 6 ký tự và xác nhận
             'role_id' => 'required|array', // Vai trò bắt buộc và phải là một mảng
