@@ -204,18 +204,24 @@
                                                         <input type="text" placeholder="Tên của bạn..."
                                                             value="{{ $user->name }}" name="recipient_name"
                                                             id="recipient_name">
+                                                        <div id="recipient_name_error" class="text-danger error-message" style="display: none;"></div>
+
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="">Email</label>
                                                         <input type="email" placeholder="Email của bạn..."
                                                             value="{{ $user->email }}" name="recipient_email"
                                                             id="recipient_email">
+                                                            <div id="recipient_email_error" class="text-danger error-message" style="display: none;"></div>
+
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="">Số điện thoại</label>
                                                         <input type="tel" placeholder="Số điện thoại..."
                                                             value="{{ $user->phone_number }}" name="phone_number"
                                                             id="phone_number">
+                                                            <div id="recipient_phone_number_error" class="text-danger error-message" style="display: none;"></div>
+
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="">Tỉnh/Thành phố</label>
@@ -229,6 +235,8 @@
                                                                 </option>
                                                             @endforeach
                                                         </select>
+                                                        <div id="recipient_province_error" class="text-danger error-message" style="display: none;"></div>
+
                                                     </div>
 
                                                     <div class="form-group">
@@ -238,16 +246,22 @@
                                                             <option value="">Quận / Huyện</option>
 
                                                         </select>
+                                                        <div id="recipient_city_error" class="text-danger error-message" style="display: none;"></div>
+
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="">Xã / Phường</label>
                                                         <select class="custom-select mb-15" name="ward" id="ward">
                                                             <option value="">Xã / Phường</option>
                                                         </select>
+                                                        <div id="recipient_ward_error" class="text-danger error-message" style="display: none;"></div>
+
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="">Địa chỉ</label>
                                                         <textarea class="custom-textarea" name="address_order" id="address_order" placeholder="Địa chỉ của bạn..."></textarea>
+                                                        <div id="recipient_address_order_error" class="text-danger error-message" style="display: none;"></div>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -327,6 +341,8 @@
                                                                 </option>
                                                             @endforeach
                                                         </select>
+                                                        <div id="recipient_payment_method_error" class="text-danger error-message" style="display: none;"></div>
+
                                                     </div>
                                                     <button class="submit-button button-one mt-15 col-12"
                                                         data-text="Thanh Toán" type="submit">Thanh
@@ -446,6 +462,8 @@
         document.getElementById('orderForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Ngăn chặn việc gửi form mặc định
 
+            const errorMessages = document.querySelectorAll('.error-message');
+            errorMessages.forEach((message) => message.style.display = 'none' );
 
             const recipient_name = document.getElementById('recipient_name').value;
             const recipient_email = document.getElementById('recipient_email').value;
@@ -462,6 +480,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json', // Thêm dòng này
                         'X-CSRF-TOKEN': csrfToken
                     },
                     body: JSON.stringify({
@@ -475,40 +494,70 @@
                         payment_method: payment_method,
                     }),
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.vnpay) {
-                        window.location.href = data.vnpay;
-                    } else if(data.momo){
-                        console.log(data.momo);
-                        window.location.href = data.momo;
-                    }else{
-                        Swal.fire({
-                                title: 'Đặt hàng thành công!',
-                                text: 'Đơn hàng của bạn đã được tạo thành công.',
-                                icon: 'success',
-                                confirmButtonText: 'OK'
-                            })
-                            .then(() => {
-                                setTimeout(() => {
-                                    window.location.href = '{{ route('thankyou') }}';
-                                }, 3000);
-                            });
+                .then(response => {
+                    if(!response.ok){
+                        return response.json();
                     }
-                   
+                    return response.json(); // Nếu phản hồi thành công, tiếp tục với dữ liệu JSON
+                })
+                .then(data => {
+
+                    // xử lí lỗi
+                      // Kiểm tra nếu có lỗi
+                    if (data.errors) {
+                        Object.keys(data.errors).forEach(field => {
+                            console.log(field);
+                            
+                            const errorElement = document.getElementById(`recipient_${field}_error`);
+                            if (errorElement) {
+                                errorElement.innerText = data.errors[field][0];
+                                errorElement.style.display = 'block';
+                            }else{
+                                errorElement.style.display = 'none';
+                            }
+                        });
+                        Swal.fire({
+                            title: 'Đặt hàng thất bại',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    } else if (data.vnpay) {
+                        // Nếu có đường dẫn vnpay, chuyển hướng đến đó
+                        window.location.href = data.vnpay;
+                    } else if (data.momo) {
+                        // Nếu có đường dẫn momo, chuyển hướng đến đó
+                        window.location.href = data.momo;
+                    } else {
+                        // Nếu không có lỗi, đặt hàng thành công
+                        Swal.fire({
+                            title: 'Đặt hàng thành công!',
+                            text: 'Đơn hàng của bạn đã được tạo thành công.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            setTimeout(() => {
+                                window.location.href = '{{ route('thankyou') }}';
+                            }, 3000);
+                        });
+                    }
+
+            
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    // Hiển thị thông báo lỗi SweetAlert
-                    Swal.fire({
-                        title: 'Đặt hàng thất bại',
-                        text: 'Đã có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
+                    
+                        // Xử lý các lỗi khác
+                        console.error('Error:', error);
+                        Swal.fire({
+                            title: 'Đặt hàng thất bại',
+                            text: 'Đã có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    
                 });
         });
-    </script>
+    </script>   
+
     {{-- mã giảm giá trong trang thanh toán--}}
     <script>
         document.addEventListener('DOMContentLoaded',function(){

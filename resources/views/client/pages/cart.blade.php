@@ -298,10 +298,11 @@
                                         <tr>
                                             <td><strong>Tổng đơn hàng</strong></td>
                                             <td>
-                                                <strong
-                                                    class="total-items">{{ number_format($newTotal, 0, ',', '.').' VNĐ' }}
-                                                
-                                                </strong>
+                                        
+                                                    <strong
+                                                        class="total-items">{{ number_format(session('newTotal',0), 0, ',', '.').' VNĐ' }}
+                                                    </strong>
+                                                    
                                             </td>
                                         </tr>
                                     </table>

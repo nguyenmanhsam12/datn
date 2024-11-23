@@ -36,7 +36,7 @@
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped projects">
+                    <table class="table table-striped projects" id="list_complaints">
                         <thead>
                             <tr>
                                 <th>
@@ -91,6 +91,11 @@
 @endsection
 
 @push('script')
+
+    <script>
+        let table = new DataTable('#list_complaints');
+    </script>
+
     {{-- cập nhật trạng thái khiếu nại --}}
     <script>
         document.addEventListener('DOMContentLoaded', () => {
