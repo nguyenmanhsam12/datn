@@ -479,7 +479,10 @@
                 .then(data => {
                     if (data.vnpay) {
                         window.location.href = data.vnpay;
-                    }  else{
+                    } else if(data.momo){
+                        console.log(data.momo);
+                        window.location.href = data.momo;
+                    }else{
                         Swal.fire({
                                 title: 'Đặt hàng thành công!',
                                 text: 'Đơn hàng của bạn đã được tạo thành công.',

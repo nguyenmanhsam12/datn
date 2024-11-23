@@ -115,18 +115,24 @@ Route::get('/contact',[ContactController::class,'contact'])->name('contact');
 
 // đặt hàng
 Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('placeOrder');
-// thanh toán momo
-Route::post('/vnpay-payment', [CheckoutController::class, 'vnpayPayment'])->name('vnpayPayment');
+
+
+// Route::post('/vnpay-payment', [CheckoutController::class, 'vnpayPayment'])->name('vnpayPayment');
+
 // callback vnp
 Route::get('/vnpay-callback', [CheckoutController::class, 'vnpayCallback'])->name('vnpayCallback');
+// callback momo
+Route::get('/momo-callback', [CheckoutController::class, 'momoCallback'])->name('momoCallback');
 
-// thanh toán lại
+// thanh toán lại vnpay
 Route::post('/payment-retry', [CheckoutController::class, 'retryPayment'])->name('retryPayment');
 
-// khiếu nại
-Route::get('/complaint',[ComplanintsController::class, 'complaints'])->name('complaints');
 
-// Route::get('/', [ComplanintsController::class, 'vnpayCallback'])->name('vnpayCallback');
+
+// khiếu nại
+Route::get('/complaint/{orderId}',[ComplanintsController::class, 'complaints'])->name('complaints');
+// gửi khiếu nại
+Route::post('/complaintStore', [ComplanintsController::class, 'complaintStore'])->name('complaintStore');
 
 
 // đặt hàng thành công -> cảm ơn 
@@ -219,6 +225,13 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::get('/edit/{id}',[CouponController::class,'edit'])->name('admin.coupons.edit');
         Route::put('/update/{id}',[CouponController::class,'update'])->name('admin.coupons.update');
         Route::get('/delete/{id}',[CouponController::class,'delete'])->name('admin.coupons.delete');
+    });
+
+    Route::prefix('comlaints')->group(function(){
+        Route::get('/',[ComplanintsController::class,'index'])->name('admin.comlaints.index');
+        Route::get('/detailComplaints/{id}',[ComplanintsController::class,'detailComplaints'])->name('admin.comlaints.detailComplaints');
+        Route::put('/admin/comlaints/update-status', [ComplanintsController::class, 'updateStatus'])->name('admin.comlaints.updateStatus');
+
     });
 
     // Route::prefix('statistical')->group(function(){
