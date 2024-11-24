@@ -44,8 +44,9 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function roles(){
-        return $this->belongsToMany(Role::class,'role_user', 'user_id', 'role_id');
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
     }
 
     // Optional: helper function to check if user has a specific role
@@ -53,11 +54,14 @@ class User extends Authenticatable
     {
         return $this->roles()->where('name', $roleName)->exists();
     }
-    
-        public function isAdmin()
+
+    public function isAdmin()
     {
-        return $this->roles->contains('name', 'admin');  // Kiểm tra nếu user có vai trò 'admin'
+        return $this->roles->contains('name', 'admin'); // Kiểm tra nếu user có vai trò 'admin'
     }
-    
-    
+
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class, 'user_id');
+    }
 }

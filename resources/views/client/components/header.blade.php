@@ -20,7 +20,7 @@
 
                                         <li><a href="{{ route('myAccount') }}">Tài khoản của tôi</a></li>
 
-                                        <li><a href="">Yêu thích</a></li>
+                                        <li><a href="{{ route('wishlist') }}">Yêu thích</a></li>
                                         
                                         
 
@@ -33,7 +33,7 @@
                                 <li><a href="#">Tài khoản</a><i class="zmdi zmdi-chevron-down"></i>
                                     <ul>
                                         <li><a href="{{ route('myAccount') }}">Tài khoản của tôi</a></li>
-                                        <li><a href="wishlist.html">Yêu thích</a></li>
+                                        <li><a href="{{ route('wishlist') }}">Yêu thích</a></li>
                                         <li><a href="{{ route('checkout') }}">Thanh toán</a></li>
                                         <li><a href="{{ route('login') }}">Đăng nhập</a></li>
                                         <li><a href="{{ route('register') }}">Đăng Ký</a></li>

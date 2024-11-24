@@ -87,8 +87,16 @@
                                         <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}"><img
                                                 src="{{ $pr->image }}" alt="" /></a>
                                         <div class="product-action clearfix">
-                                            <a href="#" data-bs-toggle="tooltip" data-bs-placement="top"
-                                                title="Wishlist"><i class="zmdi zmdi-favorite-outline"></i></a>
+                                            <a href="">
+                                                <form action="{{ route('wishlist.add') }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="product_id" value="{{ $pr->id }}">
+                                                    <button type="submit" class="btn btn-link" data-bs-toggle="tooltip"
+                                                        data-bs-placement="top" title="Wishlist">
+                                                        <i class="zmdi zmdi-favorite-outline"></i>
+                                                    </button>
+                                                </form>
+                                            </a>
                                             <a href="#" data-bs-toggle="modal" data-bs-target="#productModal"
                                                 title="Quick View"><i class="zmdi zmdi-zoom-in"></i></a>
                                             <a href="#" data-bs-toggle="tooltip" data-bs-placement="top"
@@ -396,16 +404,13 @@
             // Khởi tạo tooltips
             $('[data-bs-toggle="tooltip"]').tooltip();
         });
-
-        
     </script>
     <script>
         // Tắt video khi modal đóng
         var videoModal = document.getElementById('videoModal');
-        videoModal.addEventListener('hidden.bs.modal', function () {
+        videoModal.addEventListener('hidden.bs.modal', function() {
             var iframe = videoModal.querySelector('iframe');
-            iframe.src = iframe.src;  // Reset src để dừng video
+            iframe.src = iframe.src; // Reset src để dừng video
         });
     </script>
-    
 @endpush
