@@ -22,6 +22,7 @@ use App\Http\Controllers\OrderAdminController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ThanhYouController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -139,10 +140,17 @@ Route::get('/getProductsByCategory/{category_id}', [HomeController::class, 'getP
 Route::get('/getDetailProduct/{slug}',[HomeController::class,'getDetailProduct'])->name('getDetailProduct');
 
 
+Route::post('/submit-review', [HomeController::class, 'submitReview'])->name('submitReview');
+Route::delete('/delete-review/{id}', [HomeController::class, 'deleteReview'])->name('deleteReview');
+// Route::post('/submit-review', [MyAccountController::class, 'submitReview'])->name('submitReview');
+
+
 
 Route::prefix('admin')->middleware('checkadmin')->group(function(){
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('reviews', [ReviewController::class, 'index'])->name('admin.reviews.index');
+    Route::delete('reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
    
 
     Route::prefix('user')->group(function(){
