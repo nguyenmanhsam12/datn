@@ -185,6 +185,11 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
+
+                    <div id="order-summary" style="display: none;">
+                        <!-- Thông tin đơn hàng sẽ được điền vào đây -->
+                    </div>
+
                     <div class="shopping-cart">
 
                         <!-- Tab panes -->
@@ -204,7 +209,7 @@
                                                         <input type="text" placeholder="Tên của bạn..."
                                                             value="{{ $user->name }}" name="recipient_name"
                                                             id="recipient_name">
-                                                        <div id="recipient_name_error" class="text-danger error-message" style="display: none;"></div>
+                                                        <div id="recipient_recipient_name_error" class="text-danger mb-3 error-message" style="display: none;"></div>
 
                                                     </div>
                                                     <div class="form-group">
@@ -212,7 +217,7 @@
                                                         <input type="email" placeholder="Email của bạn..."
                                                             value="{{ $user->email }}" name="recipient_email"
                                                             id="recipient_email">
-                                                            <div id="recipient_email_error" class="text-danger error-message" style="display: none;"></div>
+                                                            <div id="recipient_recipient_email_error" class="text-danger mb-3 error-message" style="display: none;"></div>
 
                                                     </div>
                                                     <div class="form-group">
@@ -220,7 +225,7 @@
                                                         <input type="tel" placeholder="Số điện thoại..."
                                                             value="{{ $user->phone_number }}" name="phone_number"
                                                             id="phone_number">
-                                                            <div id="recipient_phone_number_error" class="text-danger error-message" style="display: none;"></div>
+                                                            <div id="recipient_phone_number_error" class="text-danger mb-3 error-message" style="display: none;"></div>
 
                                                     </div>
                                                     <div class="form-group">
@@ -235,7 +240,7 @@
                                                                 </option>
                                                             @endforeach
                                                         </select>
-                                                        <div id="recipient_province_error" class="text-danger error-message" style="display: none;"></div>
+                                                        <div id="recipient_province_error" class="text-danger mb-3 error-message" style="display: none;"></div>
 
                                                     </div>
 
@@ -246,7 +251,7 @@
                                                             <option value="">Quận / Huyện</option>
 
                                                         </select>
-                                                        <div id="recipient_city_error" class="text-danger error-message" style="display: none;"></div>
+                                                        <div id="recipient_city_error" class="text-danger mb-3 error-message" style="display: none;"></div>
 
                                                     </div>
                                                     <div class="form-group">
@@ -254,13 +259,13 @@
                                                         <select class="custom-select mb-15" name="ward" id="ward">
                                                             <option value="">Xã / Phường</option>
                                                         </select>
-                                                        <div id="recipient_ward_error" class="text-danger error-message" style="display: none;"></div>
+                                                        <div id="recipient_ward_error" class="text-danger mb-3 error-message" style="display: none;"></div>
 
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="">Địa chỉ</label>
                                                         <textarea class="custom-textarea" name="address_order" id="address_order" placeholder="Địa chỉ của bạn..."></textarea>
-                                                        <div id="recipient_address_order_error" class="text-danger error-message" style="display: none;"></div>
+                                                        <div id="recipient_address_order_error" class="text-danger mb-3 error-message" style="display: none;"></div>
 
                                                     </div>
                                                 </div>
@@ -306,6 +311,7 @@
                                                                 <td class="text-right" style="white-space: nowrap">
                                                                     {{ number_format($shipping, 0, ',', '.') . ' VNĐ' }}</td>
                                                             </tr>
+                                                            
                                                             @if (!session()->has('coupon_id'))
                                                                 <tr>
                                                                     <td >
@@ -341,7 +347,7 @@
                                                                 </option>
                                                             @endforeach
                                                         </select>
-                                                        <div id="recipient_payment_method_error" class="text-danger error-message" style="display: none;"></div>
+                                                        <div id="recipient_payment_method_error" class="text-danger mb-3 error-message" style="display: none;"></div>
 
                                                     </div>
                                                     <button class="submit-button button-one mt-15 col-12"
@@ -458,7 +464,7 @@
     </script>
 
     {{-- đặt hàng --}}
-    <script>
+    <script>    
         document.getElementById('orderForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Ngăn chặn việc gửi form mặc định
 
@@ -475,6 +481,8 @@
             const payment_method = document.getElementById('payment_method').value;
 
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // alert(recipient_email)
 
             fetch('{{ route('placeOrder') }}', {
                     method: 'POST',
@@ -556,6 +564,17 @@
                     
                 });
         });
+
+        document.querySelectorAll('input, select, textarea').forEach((input) => {
+            input.addEventListener('input', function () {
+                const errorElement = document.getElementById(`recipient_${input.id}_error`);
+                if (errorElement) {
+                    errorElement.style.display = 'none';
+                }
+            });
+        });
+
+      
     </script>   
 
     {{-- mã giảm giá trong trang thanh toán--}}
@@ -569,7 +588,7 @@
                 return formattedPrice + " VNĐ";
             }
 
-            document.getElementById('button-coupon').addEventListener('click',function(){
+            document.getElementById('button-coupon')?.addEventListener('click',function(){
                 var coupon = document.getElementById('discount_code').value;
 
                 if (coupon) {
@@ -612,4 +631,28 @@
 
         
     </script>
+
+    <script>
+        // lắng nghe sự kiện cho nút back
+        document.addEventListener('popstate', function(event) {
+            // Ngừng hành động mặc định (chuyển trang)
+            event.preventDefault();
+
+            console.log("Sự kiện popstate đã xảy ra");
+
+            // Gửi yêu cầu AJAX để lấy thông tin đơn hàng từ Laravel session
+            fetch('{{ route('getOrderSummary') }}')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                   
+                })
+                .catch(error => {
+                    console.error('Lỗi khi lấy dữ liệu đơn hàng:', error);
+                });
+        });
+
+    </script>
+
+
 @endpush

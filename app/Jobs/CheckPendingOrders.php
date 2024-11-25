@@ -35,6 +35,8 @@ class CheckPendingOrders implements ShouldQueue
 
             // Lấy các đơn hàng có trạng thái 'pending' và được tạo từ hơn 5 phút trước
             $orders = Order::where('payment_status', 'pending')
+                           ->where('status_id',1)
+                           ->where('payment_method_id','!=',1)
                            ->where('created_at', '<', $timeLimit)
                            ->get();
         
@@ -44,7 +46,9 @@ class CheckPendingOrders implements ShouldQueue
                 Log::info("Order ID: {$order->id} is pending and older than 5 minutes. Updating status...");
 
                 // Cập nhật trạng thái của đơn hàng
-                $order->payment_status = 'canceled'; 
+                $order->payment_status = 'canceled';
+                $order->status_id = 6;
+                 
 
                 $transaction = $order->transaction;
                 if ($transaction) {
