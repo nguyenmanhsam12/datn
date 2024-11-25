@@ -246,6 +246,27 @@
                 </li>
 
 
+                       {{-- Đánh giá --}}
+                       <li class="nav-item ">
+                        <a href="#" class="nav-link ">
+                            <i class="nav-icon fas fa-gift"></i>
+                            <p>
+                                Đánh giá
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{route('admin.reviews.index')}}" class="nav-link">
+                                    <p>Danh Sách Đánh Giá</p>
+                                </a>
+                                
+                            </li>
+                        </ul>
+                    </li>
+    
+
+
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

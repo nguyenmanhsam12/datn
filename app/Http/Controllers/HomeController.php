@@ -6,6 +6,9 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\CartItems;
+use App\Models\Review;
+use App\Models\Order;
+use App\Models\OrderStatus;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -48,8 +51,87 @@ class HomeController extends Controller
             ->take(4)   //lấy  4 sp
             ->get();
         
-        return view('client.pages.detail',compact('productDetail','relatedProduct','minPrice'));
+       // danh gia
+       $product = Product::with('reviews.user')->where('slug', $slug)->firstOrFail();
+       // Kiểm tra nếu không tìm thấy sản phẩm
+       if (!$product) {
+          return redirect()->route('home')->with('error', 'Sản phẩm không tồn tại');
+      }
+      $reviews = Review::where('product_id', $product->id)->with('user')->get();
+  
+    
+      $user = Auth::user();
+      $userHasPurchased = false;
+    
+      $productSlug = Product::where('slug', $slug)->first();
+      
+      if (!$productSlug) {
+          return redirect()->back()->with('error', 'Sản phẩm không tồn tại');
+      }
+      
+    if($user){
+      $order = Order::where('user_id', $user->id)
+          ->where('status_id', 5) 
+          ->whereHas('orderItems', function ($query) use ($productSlug) {
+              $query->where('product_name', $productSlug->name); 
+          })
+          ->first(); 
+      
+      
+      $userHasPurchased = $order !== null;
     }
 
-    
-}
+   //  dd($userHasPurchased); 
+          return view('client.pages.detail',compact('productDetail','relatedProduct','minPrice','product', 'reviews', 'userHasPurchased'));
+      }
+     public function submitReview(Request $request)
+  {
+      $product = Product::findOrFail($request->product_id);
+      $request->validate([
+          'product_id' => 'required|exists:products,id',
+          'rating' => 'nullable|integer|between:1,5', 
+          'message' => 'nullable|string|max:1000',   
+      ], [
+          'rating.required_without' => 'Bạn phải chọn ít nhất một trong hai: Đánh giá sao hoặc đánh giá văn bản.',
+          'message.required_without' => 'Bạn phải chọn ít nhất một trong hai: Đánh giá sao hoặc đánh giá văn bản.',
+      ]);
+        if (!$request->rating && !$request->message) {
+          return response()->json([
+              'status' => 'error',
+              'message' => 'Vui lòng chọn ít nhất một hình thức đánh giá (sao hoặc văn bản).'
+          ]);
+      }
+  
+      $review = new Review();
+      $review->user_id = auth()->id(); 
+      $review->product_id = $request->product_id;
+      $review->rating = $request->rating;
+      $review->message = $request->message;
+      $review->save();
+      
+  
+      return response()->json([
+          'status' => 'success',
+          'message' => 'Đánh giá đã được gửi thành công!'
+      ]);
+  }
+      public function deleteReview($id)
+      {
+          $review = Review::findOrFail($id);
+      
+          if ($review->user_id !== Auth::id()) {
+              return response()->json([
+                  'status' => 'error',
+                  'message' => 'Bạn không có quyền xóa đánh giá này.'
+              ]);
+          }
+      
+          $review->delete();
+      
+          return response()->json([
+              'status' => 'success',
+              'message' => 'Đánh giá đã được xóa thành công!'
+          ]);
+      }   
+  }
+  
