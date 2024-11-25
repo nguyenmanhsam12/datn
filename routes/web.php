@@ -142,7 +142,7 @@ Route::get('/getDetailProduct/{slug}',[HomeController::class,'getDetailProduct']
 
 Route::post('/submit-review', [HomeController::class, 'submitReview'])->name('submitReview');
 Route::delete('/delete-review/{id}', [HomeController::class, 'deleteReview'])->name('deleteReview');
-// Route::post('/submit-review', [MyAccountController::class, 'submitReview'])->name('submitReview');
+Route::post('/submit-review-kh', [MyAccountController::class, 'submitReview'])->name('submitReview-kh');
 
 
 

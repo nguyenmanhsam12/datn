@@ -279,7 +279,7 @@
     <p id="flash-message-text"></p>
 </div>
 
-{{-- @if($userHasPurchased) --}}
+@if($userHasPurchased)
                                     <div class="leave-review">
                                         <h3 class="tab-title title-border mb-30">Để lại đánh giá của bạn</h3>
                                         <div class="your-rating mb-30">
@@ -306,9 +306,9 @@
                                             </form>
                                         </div>
                                     </div>
-                                    {{-- @else
+                                    @else
                                    
-                                @endif --}}
+                                @endif
                                 </div>
                             </div>
                             

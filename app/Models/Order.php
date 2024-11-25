@@ -46,4 +46,8 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class, 'order_id'); // Quan hệ với bảng `order_items`
     }
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class); // Kiểm tra rằng Order có nhiều OrderItem
+    }
 }

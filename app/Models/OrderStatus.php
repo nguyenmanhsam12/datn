@@ -17,4 +17,5 @@ class OrderStatus extends Model
       {
           return $this->hasMany(Order::class, 'status_id');
       }
+      
 }

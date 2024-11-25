@@ -176,42 +176,6 @@
     resize: vertical;
 }
 
-/* Style cho các sao đánh giá */
-.stars-rating {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 200px;
-    margin: 5px 0;
-}
-
-.star {
-    font-size: 30px;
-    color: #ccc;
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
-
-.star:hover,
-.star.selected {
-    color: #f39c12;
-}
-
-/* Style cho nút gửi đánh giá */
-.btn-submit {
-    background-color: #f39c12;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.btn-submit:hover {
-    background-color: #e67e22;
-}
 
 
      
@@ -368,11 +332,6 @@
                                                     >Xem Chi Tiết</button>
                                                     <button class="btn btn-warning">Khiếu Nại</button>
                                                 @endif
-                                                   <!-- Nút đánh giá nếu trạng thái đơn hàng là "Hoàn tất" -->
-                                                @if ($or->status_id == 7)
-                                                    <button class="btn btn-primary review-order" data-order-id="{{ $or->id }}" onclick="showReviewForm({{ $or->id }})">Đánh Giá</button>
-                                                  @endif
-
 
                                                 @if ($or->status_id == 6)
                                                     <button class="btn btn-success"
@@ -386,30 +345,6 @@
 
 
                                             </div>
-                                            {{-- <div class="review-form-container" id="review-form-container-{{ $or->id }}" style="display: none;">
-                                                <form action="{{ route('submitReview') }}" method="POST" id="reviewForm-{{ $or->id }}">
-                                                    @csrf
-                                                    <input type="hidden" name="order_id" value="{{ $or->id }}">
-                                            
-                                                    <div class="form-group">
-                                                        <label for="rating-{{ $or->id }}" class="form-label">Đánh giá:</label>
-                                                        <div class="stars-rating">
-                                                            <span class="star" data-value="1">&#9733;</span>
-                                                            <span class="star" data-value="2">&#9733;</span>
-                                                            <span class="star" data-value="3">&#9733;</span>
-                                                            <span class="star" data-value="4">&#9733;</span>
-                                                            <span class="star" data-value="5">&#9733;</span>
-                                                        </div>
-                                                        <input type="hidden" name="rating" id="rating-{{ $or->id }}" required>
-                                                    </div>   <div class="form-group">
-                                                        <label for="message-{{ $or->id }}" class="form-label">Nhận xét:</label>
-                                                        <textarea name="message" id="message-{{ $or->id }}" placeholder="Viết nhận xét của bạn..." required></textarea>
-                                                    </div>
-                                                    
-                                                    <button type="submit" class="btn btn-submit">Gửi Đánh Giá</button>
-                                                </form>
-                                            </div> --}}
-                                        
                                         
 
                                         </div>
@@ -510,48 +445,6 @@
 
 
 @endsection
-{{-- <script>
-    // Xử lý chọn sao
-    document.querySelectorAll('.stars-rating .star').forEach(star => {
-        star.addEventListener('click', function() {
-            const rating = this.getAttribute('data-value');
-            
-            // Cập nhật giá trị rating vào input hidden
-            document.getElementById('rating-{{ $or->id }}').value = rating;
-
-            // Cập nhật màu sắc các ngôi sao đã chọn
-            document.querySelectorAll('.stars-rating .star').forEach(starElement => {
-                if (parseInt(starElement.getAttribute('data-value')) <= rating) {
-                    starElement.classList.add('selected');
-                } else {
-                    starElement.classList.remove('selected');
-                }
-            });
-        });
-    });
-
-    // Hiển thị form khi người dùng nhấn "Đánh giá"
-    function showReviewForm(orderId) {
-        document.getElementById(`review-form-container-${orderId}`).style.display = 'block';
-    }
-
-    // Đảm bảo gửi form đúng cách
-    document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            // Kiểm tra xem rating đã được chọn chưa
-            const rating = document.getElementById(`rating-{{ $or->id }}`).value;
-            if (!rating) {
-                alert('Vui lòng chọn một đánh giá sao');
-                return;
-            }
-
-            // Nếu đã chọn rating, gửi form
-            this.submit();
-        });
-    });
-</script> --}}
 @push('script')
     <script type="module">
         // Switching between Account and Orders sections

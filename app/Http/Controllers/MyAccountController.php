@@ -102,25 +102,6 @@ class MyAccountController extends Controller
             'newStatus' => $order->status_id,
             'statusName' => $order->orderStatus->name,
         ]);
-    }
-    // public function submitReview(Request $request)
-    // {
-    //     $request->validate([
-    //         'product_id' => 'required|exists:products,id',
-    //         'rating' => 'required|integer|between:1,5',
-    //         'message' => 'nullable|string|max:1000',
-    //     ]);
-    
-    //     $review = new Review();
-    //     $review->user_id = auth()->id();
-    //     $review->product_id = $request->product_id;
-    //     $review->rating = $request->rating;
-    //     $review->message = $request->message;
-    //     $review->save();
-    
-    //     return redirect()->back()->with('success', 'Đánh giá đã được gửi thành công!');
-    // }
-    
-    
+    } 
     
 }
