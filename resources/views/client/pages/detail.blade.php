@@ -92,6 +92,22 @@
             border-radius: 50%;
             border: 1px solid #6c757d;
         }
+        .flash-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #28a745; /* Màu xanh cho thành công */
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+            display: none;
+        }
+            
+        .flash-message.error {
+            background-color: #dc3545; /* Màu đỏ cho lỗi */
+        }
     </style>
 @endpush
 
@@ -214,113 +230,93 @@
                                     <div>{!! $productDetail->description_text !!}</div>
                                 </div>
                             </div>
-                            <div class="tab-pane " id="reviews">
+                            <div class="tab-pane" id="reviews">
                                 <div class="pro-tab-info pro-reviews">
                                     <div class="customer-review mb-60">
                                         <h3 class="tab-title title-border mb-30">Đánh giá của khách hàng</h3>
                                         <ul class="product-comments clearfix">
-                                            <li class="mb-30">
-                                                <div class="pro-reviewer">
-                                                    <img src="{{ asset('img/reviewer/1.webp') }}" alt="" />
-                                                </div>
-                                                <div class="pro-reviewer-comment">
-                                                    <div class="fix">
-                                                        <div class="floatleft mbl-center">
-                                                            <h5 class="text-uppercase mb-0"><strong>Gerald Barnes</strong>
-                                                            </h5>
-                                                            <p class="reply-date">27 Jun, 2022 at 2:30pm</p>
-                                                        </div>
-                                                        <div class="comment-reply floatright">
-                                                            <a href="#"><i class="zmdi zmdi-mail-reply"></i></a>
-                                                            <a href="#"><i class="zmdi zmdi-close"></i></a>
-                                                        </div>
+                                            @foreach($reviews as $review) <!-- Hiển thị các đánh giá từ cơ sở dữ liệu -->
+                                                <li class="mb-30">
+                                                    <div class="pro-reviewer">
+                                                        <img src="{{ asset('img/reviewer/1.webp') }}" alt="" />
                                                     </div>
-                                                    <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing
-                                                        elit. Integer accumsan egestas elese ifend. Phasellus a felis at est
-                                                        bibendum feugiat ut eget eni Praesent et messages in con sectetur
-                                                        posuere dolor non.</p>
-                                                </div>
-                                            </li>
-                                            <li class="threaded-comments">
-                                                <div class="pro-reviewer">
-                                                    <img src="{{ asset('img/reviewer/2.webp') }}" alt="" />
-                                                </div>
-                                                <div class="pro-reviewer-comment">
-                                                    <div class="fix">
-                                                        <div class="floatleft mbl-center">
-                                                            <h5 class="text-uppercase mb-0"><strong>Jane Doe</strong></h5>
-                                                            <p class="reply-date">28 Jun, 2022 at 3:45pm</p>
+                                                    
+                                                    <div class="pro-reviewer-comment">
+                                                        <div class="fix">
+                                                            <div class="floatleft mbl-center">
+                                                                <h5 class="text-uppercase mb-0"><strong>{{ $review->user->name }}</strong></h5>
+                                                                <p class="reply-date">{{ $review->created_at->format('d M, Y \a\t H:i') }}</p>
+                                                            </div>
+                                                            <div class="comment-reply floatright">
+                                                                <!-- Optional Reply / Delete Buttons -->
+                                                                @if(auth()->id() == $review->user_id) <!-- Nếu là người dùng đang đăng nhập -->
+                                                                <form method="POST" action="{{ route('deleteReview', $review->id) }}" class="delete-review-form" style="display: inline;">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="btn-delete" title="Xóa đánh giá">
+                                                                        <i class="zmdi zmdi-close"></i>
+                                                                    </button>
+                                                                </form>
+                                                                
+                                                                
+                                                                @endif
+                                                            </div>
                                                         </div>
-                                                        <div class="comment-reply floatright">
-                                                            <a href="#"><i class="zmdi zmdi-mail-reply"></i></a>
-                                                            <a href="#"><i class="zmdi zmdi-close"></i></a>
+                                                        <div class="stars">
+                                                            @for($i = 1; $i <= 5; $i++)
+                                                                <i class="zmdi {{ $i <= $review->rating ? 'zmdi-star' : 'zmdi-star-outline' }}"></i>
+                                                            @endfor
                                                         </div>
+                                                        <p class="mb-0">{{ $review->message }}</p>
                                                     </div>
-                                                    <p class="mb-0">Phasellus a felis at est bibendum feugiat ut eget
-                                                        eni. Praesent et messages in consectetur posuere dolor non.</p>
-                                                </div>
-                                            </li>
+                                                </li>
+                                            @endforeach
                                         </ul>
                                     </div>
+                                    <!-- Phần tử thông báo -->
+<div id="flash-message" style="display: none;" class="flash-message">
+    <p id="flash-message-text"></p>
+</div>
+
+
+@if($userHasPurchased)
+
+
+    
+
                                     <div class="leave-review">
                                         <h3 class="tab-title title-border mb-30">Để lại đánh giá của bạn</h3>
                                         <div class="your-rating mb-30">
                                             <p class="mb-10"><strong>Đánh giá của bạn</strong></p>
-                                            <span>
-                                                <a href="#"><i class="zmdi zmdi-star-outline"></i></a>
-                                            </span>
-                                            <span class="separator">|</span>
-                                            <span>
-                                                <a href="#"><i class="zmdi zmdi-star-outline"></i></a>
-                                                <a href="#"><i class="zmdi zmdi-star-outline"></i></a>
-                                            </span>
-                                            <span class="separator">|</span>
-                                            <span>
-                                                <a href="#"><i class="zmdi zmdi-star-outline"></i></a>
-                                                <a href="#"><i class="zmdi zmdi-star-outline"></i></a>
-                                                <a href="#"><i class="zmdi zmdi-star-outline"></i></a>
-                                            </span>
-                                            <span class="separator">|</span>
-                                            <span>
-                                                <a href="#"><i class="zmdi zmdi-star-outline"></i></a>
-                                                <a href="#"><i class="zmdi zmdi-star-outline"></i></a>
-                                                <a href="#"><i class="zmdi zmdi-star-outline"></i></a>
-                                                <a href="#"><i class="zmdi zmdi-star-outline"></i></a>
-                                            </span>
-                                            <span class="separator">|</span>
-                                            <span>
-                                                <a href="#"><i class="zmdi zmdi-star-outline"></i></a>
-                                                <a href="#"><i class="zmdi zmdi-star-outline"></i></a>
-                                                <a href="#"><i class="zmdi zmdi-star-outline"></i></a>
-                                                <a href="#"><i class="zmdi zmdi-star-outline"></i></a>
-                                                <a href="#"><i class="zmdi zmdi-star-outline"></i></a>
+                                            <span class="stars">
+                                                <a href="javascript:void(0);" class="star" data-star="1"><i class="zmdi zmdi-star-outline"></i></a>
+                                                <a href="javascript:void(0);" class="star" data-star="2"><i class="zmdi zmdi-star-outline"></i></a>
+                                                <a href="javascript:void(0);" class="star" data-star="3"><i class="zmdi zmdi-star-outline"></i></a>
+                                                <a href="javascript:void(0);" class="star" data-star="4"><i class="zmdi zmdi-star-outline"></i></a>
+                                                <a href="javascript:void(0);" class="star" data-star="5"><i class="zmdi zmdi-star-outline"></i></a>
                                             </span>
                                         </div>
                                         <div class="reply-box">
-                                            <form method="POST">
+                                            <form id="review-form" method="POST" action="{{ route('submitReview', ['slug' => $product->slug]) }}">
                                                 @csrf
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <input type="text" placeholder="Tên của bạn..." name="name"
-                                                            required />
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <input type="text" placeholder="Chủ đề..." name="subject"
-                                                            required />
-                                                    </div>
-                                                </div>
+                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                                <input type="hidden" name="rating" id="rating" value="1"> <!-- Giữ giá trị sao chọn -->
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <textarea class="custom-textarea" name="message" placeholder="Đánh giá của bạn..." required></textarea>
-                                                        <button type="submit" data-text="Gửi đánh giá" class="button-one submit-button mt-20">Gửi
-                                                            đánh giá</button>
+                                                        <textarea class="custom-textarea" name="message" placeholder="Đánh giá của bạn..." ></textarea>
+                                                        <button type="submit" data-text="Gửi đánh giá" class="button-one submit-button mt-20">Gửi đánh giá</button>
                                                     </div>
                                                 </div>
                                             </form>
                                         </div>
                                     </div>
+                                    @else
+                                   
+                                @endif
+                            
                                 </div>
                             </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -522,5 +518,138 @@
                     });
             }
         });
+
+       
+        $(document).ready(function() {
+    // Xử lý sự kiện click khi chọn sao đánh giá
+    $('.star').click(function() {
+        var starValue = $(this).data('star');
+        $('#rating').val(starValue); // Cập nhật giá trị hidden input rating
+        // Cập nhật giao diện sao đã chọn
+        $('.star').each(function(index) {
+            if (index < starValue) {
+                $(this).find('i').removeClass('zmdi-star-outline').addClass('zmdi-star');
+            } else {
+                $(this).find('i').removeClass('zmdi-star').addClass('zmdi-star-outline');
+            }
+        });
+    });
+
+    // Xử lý submit form đánh giá bằng AJAX
+    $('#review-form').submit(function(e) {
+        e.preventDefault(); // Ngừng hành động mặc định của form (tải lại trang)
+
+        var form = $(this); // Lấy form hiện tại
+        var url = form.attr('action'); // Lấy URL action của form
+        var data = form.serialize(); // Lấy tất cả dữ liệu trong form
+
+        // Gửi yêu cầu AJAX để gửi đánh giá
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: data, // Dữ liệu gửi đi
+            success: function(response) {
+                if (response.status === 'success') {
+                    // Hiển thị thông báo thành công
+                    showFlashMessage(response.message, 'success');
+                    // Làm sạch textarea sau khi gửi thành công
+                    $('textarea[name="message"]').val('');
+                    // Reset sao đánh giá
+                    $('.star i').removeClass('zmdi-star').addClass('zmdi-star-outline');
+
+                    // Thêm đánh giá mới vào danh sách
+                    var newReview = `
+                        <li class="mb-30">
+                            <div class="pro-reviewer-comment">
+                                <div class="fix">
+                                    <div class="floatleft mbl-center">
+                                        <h5 class="text-uppercase mb-0"><strong>${response.user_name}</strong></h5>
+                                        <p class="reply-date">${response.date}</p>
+                                    </div>
+                                </div>
+                                <div class="stars">
+                                    ${getStars(response.rating)}
+                                </div>
+                                <p class="mb-0">${response.message}</p>
+                            </div>
+                        </li>
+                    `;
+                    // Thêm đánh giá vào danh sách đánh giá
+                    $('#reviews-list').prepend(newReview);
+                } else {
+                    // Hiển thị thông báo lỗi
+                    showFlashMessage(response.message, 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                // Hiển thị thông báo lỗi nếu có lỗi
+                showFlashMessage('Có lỗi xảy ra, vui lòng thử lại!', 'error');
+            }
+        });
+    });
+
+    // Hàm hiển thị thông báo
+    function showFlashMessage(message, type) {
+        var flashMessage = $('#flash-message');
+        var flashMessageText = $('#flash-message-text');
+
+        flashMessageText.text(message);
+
+        // Đặt màu sắc cho thông báo dựa trên loại (thành công hay lỗi)
+        if (type === 'success') {
+            flashMessage.removeClass('error').addClass('success');
+        } else {
+            flashMessage.removeClass('success').addClass('error');
+        }
+
+        // Hiển thị thông báo
+        flashMessage.fadeIn();
+
+        // Ẩn thông báo sau 3 giây
+        setTimeout(function() {
+            flashMessage.fadeOut();
+        }, 3000);
+    }
+
+    // Hàm để tạo sao đánh giá
+    function getStars(rating) {
+        var stars = '';
+        for (var i = 1; i <= 5; i++) {
+            stars += i <= rating ? '<i class="zmdi zmdi-star"></i>' : '<i class="zmdi zmdi-star-outline"></i>';
+        }
+        return stars;
+    }
+});
+
+
+$(document).ready(function() {
+    // Lắng nghe sự kiện submit của form xóa
+    $('.delete-review-form').submit(function(e) {
+        e.preventDefault(); // Ngừng hành động mặc định của form (tải lại trang)
+
+        var form = $(this); // Lấy form hiện tại
+        var url = form.attr('action'); // Lấy URL action của form
+
+        // Gửi yêu cầu AJAX
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: form.serialize(), // Lấy tất cả dữ liệu trong form
+            success: function(response) {
+                if(response.status == 'success') {
+                    form.closest('li').remove(); // Xóa đánh giá từ danh sách hiển thị
+                    alert('Đánh giá đã được xóa!');
+                } else {
+                    alert('Có lỗi xảy ra khi xóa đánh giá!');
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Có lỗi xảy ra, vui lòng thử lại!');
+            }
+        });
+    });
+});
+
+
     </script>
 @endpush
