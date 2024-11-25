@@ -127,7 +127,9 @@ Route::get('/momo-callback', [CheckoutController::class, 'momoCallback'])->name(
 // thanh toán lại vnpay
 Route::post('/payment-retry', [CheckoutController::class, 'retryPayment'])->name('retryPayment');
 
-
+// Định nghĩa route cho API lấy thông tin đơn hàng
+// router này sẽ xử lí khi người dùng back lại giao diện
+Route::get('/order-summary', [CheckoutController::class, 'getOrderSummary'])->name('getOrderSummary');
 
 // khiếu nại
 Route::get('/complaint/{orderId}',[ComplanintsController::class, 'complaints'])->name('complaints');

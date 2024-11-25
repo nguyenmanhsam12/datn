@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Jobs\AutoConfirmOrder;
 use App\Jobs\CheckPendingOrders;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -17,6 +18,8 @@ class Kernel extends ConsoleKernel
         
         // Quét các đơn hàng chưa thanh toán mỗi phút
         $schedule->job(new CheckPendingOrders)->everyMinute();
+        $schedule->job(new AutoConfirmOrder)->everyMinute();
+        
     }
 
     /**
