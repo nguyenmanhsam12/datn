@@ -300,7 +300,12 @@
                                             <td>
                                         
                                                     <strong
-                                                        class="total-items">{{ number_format(session('newTotal',0), 0, ',', '.').' VNĐ' }}
+                                                        class="total-items">
+                                                        @if(session()->has('newTotal'))
+                                                            {{ number_format(session('newTotal', 0), 0, ',', '.').' VNĐ' }}
+                                                        @else
+                                                            {{ number_format($finalTotal,0,',','.').' VNĐ' }}
+                                                        @endif
                                                     </strong>
                                                     
                                             </td>
@@ -627,10 +632,10 @@
     <script>
 
             function formatPrice(price) {
-                            // Chuyển giá trị thành chuỗi và loại bỏ các ký tự không phải là số
-                            let formattedPrice = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                            // Thêm đuôi "VNĐ"
-                            return formattedPrice + " VNĐ";
+                // Chuyển giá trị thành chuỗi và loại bỏ các ký tự không phải là số
+                let formattedPrice = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                // Thêm đuôi "VNĐ"
+                return formattedPrice + " VNĐ";
             }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -677,7 +682,10 @@
 
                                     updateCartIconQuantity(data .newQuantityCart); // Cập nhật số lượng trên biểu tượng giỏ hàng
                                     // Cập nhật tổng tiền và tổng số đơn hàng
-                                    updateTotals(data.newTotalAmount, data.newTotalAmount);
+                                    data.newTotalAmount, data.newTotalAmount
+                                    
+                                    document.querySelector('.total-amount').textContent = formatPrice(data.newTotalAmount);
+                                    document.querySelector('.total-items').textContent = formatPrice(data.newTotalAmount);
                                     document.querySelector('.text-end').textContent = formatPrice(data.discount);
 
                                     // Hiển thị thông báo thành công
@@ -711,22 +719,7 @@
                 cartCount.textContent = newQuantityCart
             }
 
-            function updateTotals(newTotalAmount, newTotalItems) {
-                // Cập nhật tổng tiền
-                const totalAmountElement = document.querySelector('.total-amount');
-                totalAmountElement.textContent = newTotalAmount.toLocaleString('vi-VN', {
-                    style: 'currency',
-                    currency: 'VND'
-                });
-
-                // Cập nhật tổng số đơn hàng
-                const totalItemsElement = document.querySelector('.total-items');
-
-                totalItemsElement.textContent = newTotalItems.toLocaleString('vi-VN', {
-                    style: 'currency',
-                    currency: 'VND'
-                });;
-            }
+            
         });
     </script>
 @endpush

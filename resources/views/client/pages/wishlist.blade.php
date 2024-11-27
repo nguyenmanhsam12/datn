@@ -99,6 +99,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             transition: all 0.5s ease 0s;
+            max-width: 90%;
         }
 
         .spor a {
@@ -231,6 +232,7 @@
             font-weight: bold;
             transition: all 0.3s ease;
         }
+        
     </style>
 @endpush
 @section('content')
@@ -244,7 +246,7 @@
                     </div>
                     <div class="breadcumbs pb-15">
                         <ul>
-                            <li><a href="#">Trang Chủ</a></li>
+                            <li><a href="/">Trang Chủ</a></li>
                             <li><a href="/wishlist">Sản phẩm yêu thích</a></li>
                         </ul>
                     </div>
@@ -257,8 +259,8 @@
 <div class="product-area pt-80 pb-80 product-style-2" style="background-color: rgba(245, 245, 245, 0.7);">
     <div class="container">
         <div class="row">
+            <h2>Danh sách sản phẩm yêu thích</h2>
             <div class="shop-content">
-                <!-- Show the total number of products if wishlist is not empty -->
                 @if($wishlists->count() > 0)
                     <p>Bạn có {{ $wishlists->count() }} sản phẩm yêu thích</p>
                     <div class="tab-content">
@@ -266,7 +268,7 @@
                             <div class="row" id="product-list">
                                 @foreach ($wishlists as $wishlist)
                                     <div class="col-lg-4 col-md-6 col-12">
-                                        <div class="single-product">
+                                        <div class="single-product ">
                                             <div class="product-img">
                                                 <a href="{{ route('getDetailProduct', ['slug' => $wishlist->product->slug]) }}">
                                                     <img src="{{ $wishlist->product->image }}" alt="{{ $wishlist->product->name }}" />
@@ -297,22 +299,56 @@
                                     </div>
                                 @endforeach
                             </div>
-
-                            <!-- Pagination start -->
                             <div class="shop-pagination text-center">
                                 <div class="pagination-wrapper pagination">
                                     {{ $wishlists->links('pagination::bootstrap-4') }}
                                 </div>
                             </div>
-                            <!-- Pagination end -->
                         </div>
                     </div>
                 @else
-                    <!-- If there are no products in the wishlist -->
                     <p>Không có sản phẩm trong danh sách yêu thích.</p>
                 @endif
             </div>
         </div>
+
+        <!-- Thêm danh sách sản phẩm bán chạy -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3>Các sản phẩm có lẽ bạn sẽ thích</h3>
+            </div>
+            @foreach ($topSellingProducts as $product)
+                <div class="col-lg-3 col-md-4 col-6">
+                    <div class="single-product">
+                        <div class="product-img">
+                            <a href="{{ route('getDetailProduct', ['slug' => $product->slug]) }}">
+                                <img src="{{ $product->image }}" alt="{{ $product->name }}" />
+                                <div class="product-action clearfix spor">
+                                    <form action="{{ route('wishlist.add') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $product->id }}"> <!-- Corrected here -->
+                                        <button type="submit" class="btn btn-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
+                                            <i class="zmdi zmdi-favorite-outline"></i>
+                                        </button>
+                                    </form>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#productModal" title="Quick View">
+                                        <i class="zmdi zmdi-zoom-in"></i>
+                                    </a>
+                                    <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Compare">
+                                        <i class="zmdi zmdi-refresh"></i>
+                                    </a>
+                                </div>   
+                            </a>
+                        </div>
+                        <div class="product-info clearfix">
+                            <h4>{{ $product->name }}</h4>
+                            <span>{{ number_format(optional($product->mainVariant)->price, 0, ',', '.') . ' VNĐ' }}</span>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
     </div>
 </div>
+
 @endsection

@@ -7,13 +7,23 @@ use Illuminate\Http\Request;
 
 class WishlistController extends Controller
 {
-        public function index()
-        {
-        
-            $wishlists = auth()->user()->wishlists()->with('product')->paginate(12); 
+    public function index()
+    {
+        $wishlists = auth()->user()->wishlists()->with('product')->paginate(12);
 
-            return view('client.pages.wishlist', compact('wishlists'));
-        }
+        // Lấy danh sách sản phẩm bán chạy, giả định dựa vào số lượng trong bảng order_items
+        \DB::enableQueryLog();
+
+        $topSellingProducts = \App\Models\Product::join('product_variants', 'products.id', '=', 'product_variants.product_id')
+            ->join('order_items', 'product_variants.id', '=', 'order_items.product_variant_id')
+            ->select('products.*', \DB::raw('SUM(order_items.quantity) as total_sold'))
+            ->groupBy('products.id')
+            ->orderByDesc('total_sold')
+            ->take(12)
+            ->get();
+
+        return view('client.pages.wishlist', compact('wishlists', 'topSellingProducts'));
+    }
 
     public function store(Request $request)
     {

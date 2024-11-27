@@ -23,9 +23,33 @@ use App\Models\Coupon;
 use App\Models\Transactions;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class CheckoutController extends Controller
 {
+
+    // Method lấy thông tin đơn hàng từ session
+    // hàm xử lí khi người dùng back lại trang thanh toán
+    public function getOrderSummary()
+    {
+        // Kiểm tra xem có session 'order_id' không
+        if (Session::has('order_id')) {
+            // Lấy thông tin đơn hàng từ session
+            $orderId = Session::get('order_id');
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'đơn hàng đã được tìm thấy.',
+                'orderId' => $orderId,
+            ]);
+        }
+
+        // Trả về lỗi nếu không có session 'order_id'
+        return response()->json([
+            'success' => false,
+            'message' => 'Không có đơn hàng nào trong session.',
+        ]);
+    }
 
     private function calculateShippingFee($total_weight)
     {
@@ -237,6 +261,9 @@ class CheckoutController extends Controller
                     'order_id' => $order->id,
                 ]);
 
+                // Lưu trạng thái đơn hàng vào session
+                session(['order_status' => '1', 'order_id' => $order->id]);
+
                 // Gọi hàm xử lý thanh toán VNPAY
                 return $this->vnpayPayment($newTotal,$order->id);
             }
@@ -356,22 +383,28 @@ class CheckoutController extends Controller
                     $transaction->status = $status;
                     $transaction->transaction_id = $data['vnp_TransactionNo'];
                     $transaction->payment_date = $data['vnp_PayDate'];
+                    $transaction->amount = $data['vnp_Amount'];
+                    $transaction->bank_code = $data['vnp_BankCode'];
+                    $transaction->description = $data['vnp_OrderInfo'];
                     $transaction->save();
                 }
             } else {
                 // Thanh toán thất bại
                 $order->payment_status = 'pending';
-                $order->status_id = '6';
+                $order->status_id = 1;
                 $status = 'pending';  // Trạng thái giao dịch thất bại
                 if($transaction){
                     $transaction->status = $status;
                     $transaction->transaction_id = $data['vnp_TransactionNo'];
                     $transaction->payment_date = $data['vnp_PayDate'];
+                    $transaction->amount = $data['vnp_Amount'];
+                    $transaction->bank_code = $data['vnp_BankCode'];
+                    $transaction->description = $data['vnp_OrderInfo'];
                     $transaction->save();
                 }
                 $order->save();
 
-                return redirect()->route('home');
+                return redirect()->route('shop');
             }
 
             // Lưu thay đổi vào đơn hàng
@@ -390,14 +423,14 @@ class CheckoutController extends Controller
         $order = Order::findOrFail($request->order_id);
 
         // Kiểm tra trạng thái thanh toán và đơn hàng
-        if ($order->payment_status === 'pending' && $order->status_id === 6 && $order->payment_method_id === 2) {
+        if ($order->payment_status === 'pending' && $order->status_id === 1 && $order->payment_method_id === 2) {
             // tổng đơn hàng
             $newTotal = $order->total_amount + $order->shipping_fee + $order->discount_amount;
             // Tạo liên kết thanh toán VNPAY
             return $this->vnpayPayment($newTotal,$order->id);
         }
 
-        if ($order->payment_status === 'pending' && $order->status_id === 6 && $order->payment_method_id === 3) {
+        if ($order->payment_status === 'pending' && $order->status_id === 1 && $order->payment_method_id === 3) {
             // tổng đơn hàng
             $newTotal = $order->total_amount + $order->shipping_fee + $order->discount_amount;
                 // Tạo liên kết thanh toán momo
@@ -513,17 +546,23 @@ class CheckoutController extends Controller
                     $transaction->status = $status;
                     $transaction->transaction_id = $data['transId'];
                     $transaction->payment_date = Carbon::now();
+                    $transaction->amount = $data['amount'];
+                    $transaction->bank_code = $data['payType'];
+                    $transaction->description = $data['orderInfo'];
                     $transaction->save();
                 }
             } else {
                 // Thanh toán thất bại
                 $order->payment_status = 'pending';
-                $order->status_id = '6';
+                $order->status_id = 1;
                 $status = 'pending';  // Trạng thái giao dịch thất bại
                 if($transaction){
                     $transaction->status = $status;
                     $transaction->transaction_id = $data['transId'];
                     $transaction->payment_date = Carbon::now();
+                    $transaction->amount = $data['amount'];
+                    $transaction->bank_code = $data['payType'];
+                    $transaction->description = $data['orderInfo'];
                     $transaction->save();
                 }
                 $order->save();
