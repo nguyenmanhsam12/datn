@@ -60,4 +60,8 @@ class Product extends Model
     {
         return $this->hasMany(Review::class);
     }
+    public function wishlistedBy()
+    {
+        return $this->belongsToMany(User::class, 'wishlists', 'product_id', 'user_id');
+    }
 }

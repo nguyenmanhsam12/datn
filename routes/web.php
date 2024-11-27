@@ -24,6 +24,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ThanhYouController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -99,8 +100,6 @@ Route::post('/cancelOrder', [MyAccountController::class, 'cancelOrder'])->name('
 
 
 // cửa hàng
-// Route::get('/shop',[ShopController::class,'shop'])->name('shop');
-// Route::get('/shop/category/{id}', [ShopController::class, 'showProByCate'])->name('shop.byCategory');
 Route::get('/shop', [ShopController::class, 'shop'])->name('shop');
 Route::get('/shop/category/{categoryId}', [ShopController::class, 'showProByCate'])->name('shop.byCategory');
 
@@ -153,11 +152,11 @@ Route::delete('/delete-review/{id}', [HomeController::class, 'deleteReview'])->n
 
 Route::post('/submit-review-kh', [MyAccountController::class, 'submitReview'])->name('submitReview-kh');
 
-
-
-
-
-
+Route::middleware(['auth'])->group(function () {
+    Route::post('/wishlist/add', [WishlistController::class, 'store'])->name('wishlist.add');
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
+    Route::delete('/wishlist/remove/{id}', [WishlistController::class, 'destroy'])->name('wishlist.remove');
+});
 
 Route::prefix('admin')->middleware('checkadmin')->group(function(){
 

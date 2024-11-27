@@ -87,8 +87,15 @@
                                         <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}"><img
                                                 src="{{ $pr->image }}" alt="" /></a>
                                         <div class="product-action clearfix">
-                                            <a href="#" data-bs-toggle="tooltip" data-bs-placement="top"
-                                                title="Wishlist"><i class="zmdi zmdi-favorite-outline"></i></a>
+                                            <a>
+                                                <form action="{{ route('wishlist.add') }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="product_id" value="{{ $pr->id }}">
+                                                    <button type="submit" class="btn btn-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
+                                                        <i class="zmdi zmdi-favorite-outline"></i>
+                                                    </button>
+                                                </form>
+                                            </a>
                                             <a href="#" data-bs-toggle="modal" data-bs-target="#productModal"
                                                 title="Quick View"><i class="zmdi zmdi-zoom-in"></i></a>
                                             <a href="#" data-bs-toggle="tooltip" data-bs-placement="top"
@@ -340,9 +347,15 @@
                                         <img src="${product.image}" alt="" />
                                     </a>
                                     <div class="product-action clearfix">
-                                        <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
-                                            <i class="zmdi zmdi-favorite-outline"></i>
-                                        </a>
+                                        <a>
+                                                <form action="{{ route('wishlist.add') }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="product_id" value="{{ $pr->id }}">
+                                                    <button type="submit" class="btn btn-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
+                                                        <i class="zmdi zmdi-favorite-outline"></i>
+                                                    </button>
+                                                </form>
+                                            </a>
                                         <a href="#" data-bs-toggle="modal" data-bs-target="#productModal" title="Quick View">
                                             <i class="zmdi zmdi-zoom-in"></i>
                                         </a>
