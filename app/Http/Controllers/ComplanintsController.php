@@ -52,7 +52,62 @@ class ComplanintsController extends Controller
         return redirect()->route('myAccount')->with('success','Đã gửi khiếu nại');
     }
 
-    //admin
+    public function complaintsDetail($orderId){
+        $complaint = Complaints::where('order_id',$orderId)->first();
+        $complaint->attachments = json_decode($complaint->attachments);
+        return view('client.pages.detail_comlaint',compact('complaint'));
+    }
+
+    public function updateComplaintsImage(Request $request , $orderId){
+        
+        $data = $request->only('attachments');
+
+        $complaint = Complaints::where('order_id',$orderId)->first();
+
+        $attachments = json_decode($complaint->attachments,true) ?? [];
+
+        // Kiểm tra xem có file đính kèm mới không
+        if ($request->hasFile('attachments')) {
+            // Xóa toàn bộ ảnh cũ nếu có
+            foreach ($attachments as $img) {
+                if (file_exists(public_path($img))) {
+                    unlink(public_path($img));
+                }
+            }
+
+            $attachments = [];
+
+            // kiểm tra tồn tại và là 1 mảng
+            if (isset($data['attachments']) && is_array($data['attachments'])) {
+                foreach ($data['attachments'] as $image) {
+                    if ($image) {
+
+                        $attach_name = $image->getClientOriginalName();
+
+                        $attach_extension = $image->getClientOriginalExtension();
+
+                        $attach_name_extension = $attach_name . '_' . time() . '_' . $attach_extension;
+
+                        // Di chuyển ảnh phụ và lưu đường dẫn tương đối
+                        $image->move(public_path('complanints_images'), $attach_name_extension);
+                        $attachments[] = 'complanints_images/' . $attach_name_extension; // Đường dẫn tương đối
+                    }
+                }
+            }
+           
+        }
+
+        // Lưu các thay đổi
+        $complaint->attachments = json_encode($attachments);
+        $complaint->save();
+
+        return redirect()->back()->with('success', 'Cập nhật hình ảnh thành công!');
+
+        
+
+    }
+
+    //admin backend
     public function index(){
         $list_complaints = Complaints::orderBy('id','desc')->get();
         return view('admin.comlaints.list',compact('list_complaints'));
@@ -94,6 +149,40 @@ class ComplanintsController extends Controller
             'error' => 'Không tìm thấy khiếu nại!',
         ], 404);
     }
+
+    // cập nhâp form thường
+    public function updateComplaints(Request $request, $id){
+
+        $data = $request->all();
+
+        $complaint = Complaints::findOrFail($id);
+
+        // Các trạng thái hợp lệ theo quy tắc
+        $validStatuses = ['Chờ xử lý', 'Đang xử lý', 'Giải quyết thành công', 'Giải quyết thất bại', 'Đã hủy'];
+    
+        $currentStatus = $complaint->status;
+        $newStatus = $data['status'];
+    
+        // Kiểm tra điều kiện chuyển đổi trạng thái
+        if ($currentStatus === 'Chờ xử lý' && $newStatus === 'Đang xử lý') {
+            $complaint->status = $newStatus;
+            $complaint->response = $data['response'];
+
+        } elseif ($currentStatus === 'Đang xử lý' && in_array($newStatus, ['Giải quyết thành công', 'Giải quyết thất bại', 'Đã hủy'])) {
+            $complaint->status = $newStatus;
+            $complaint->response = $data['response'];
+
+        } else {
+            // Chuyển hướng lại với thông báo lỗi nếu không hợp lệ
+            return redirect()->back()->with('error', 'Cập nhập trạng thái không hợp lệ!');
+        }
+    
+        $complaint->save();
+    
+        // Chuyển hướng lại với thông báo thành công
+        return redirect()->back()->with('success', 'Cập nhật trạng thái thành công!');
+    }
+    
 
 
 

@@ -127,14 +127,21 @@ Route::get('/momo-callback', [CheckoutController::class, 'momoCallback'])->name(
 // thanh toán lại vnpay
 Route::post('/payment-retry', [CheckoutController::class, 'retryPayment'])->name('retryPayment');
 
-// Định nghĩa route cho API lấy thông tin đơn hàng
 // router này sẽ xử lí khi người dùng back lại giao diện
-Route::get('/order-summary', [CheckoutController::class, 'getOrderSummary'])->name('getOrderSummary');
+// Route::get('/checkout-thankyou', [CheckoutController::class, ''])->name('momoCallback');
+
 
 // khiếu nại
 Route::get('/complaint/{orderId}',[ComplanintsController::class, 'complaints'])->name('complaints');
 // gửi khiếu nại
 Route::post('/complaintStore', [ComplanintsController::class, 'complaintStore'])->name('complaintStore');
+// chi tiết khiếu nại
+Route::get('/complaint_detail/{orderId}',[ComplanintsController::class, 'complaintsDetail'])->name('complaintsDetail');
+
+Route::put('/update_complaint_image/{orderId}',[ComplanintsController::class, 'updateComplaintsImage'])->name('updateComplaintsImage');
+
+
+
 
 
 // đặt hàng thành công -> cảm ơn 
@@ -232,6 +239,8 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
     Route::prefix('comlaints')->group(function(){
         Route::get('/',[ComplanintsController::class,'index'])->name('admin.comlaints.index');
         Route::get('/detailComplaints/{id}',[ComplanintsController::class,'detailComplaints'])->name('admin.comlaints.detailComplaints');
+        Route::put('/updateComplaints/{id}',[ComplanintsController::class,'updateComplaints'])->name('admin.comlaints.updateComplaints');
+
         Route::put('/admin/comlaints/update-status', [ComplanintsController::class, 'updateStatus'])->name('admin.comlaints.updateStatus');
 
     });
