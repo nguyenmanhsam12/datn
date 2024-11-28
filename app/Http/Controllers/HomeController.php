@@ -111,9 +111,15 @@ class HomeController extends Controller
       
   
       return response()->json([
-          'status' => 'success',
-          'message' => 'Đánh giá đã được gửi thành công!'
-      ]);
+        'status' => 'success',
+        'message' => 'Đánh giá của bạn đã được gửi!',
+        'user_name' => auth()->user()->name,
+        'date' => now()->format('d M, Y \a\t H:i'),
+        'rating' => $review->rating,
+        'review_message' => $review->message,
+        'id' => $review->id,
+    ]);
+    
   }
       public function deleteReview($id)
       {

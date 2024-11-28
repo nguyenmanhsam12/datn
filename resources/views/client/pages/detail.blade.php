@@ -234,7 +234,7 @@
                                 <div class="pro-tab-info pro-reviews">
                                     <div class="customer-review mb-60">
                                         <h3 class="tab-title title-border mb-30">Đánh giá của khách hàng</h3>
-                                        <ul class="product-comments clearfix">
+                                        <ul class="product-comments clearfix"  id="reviews-list">
                                             @foreach($reviews as $review) <!-- Hiển thị các đánh giá từ cơ sở dữ liệu -->
                                                 <li class="mb-30">
                                                     <div class="pro-reviewer">
@@ -519,7 +519,7 @@
             }
         });
 
-       
+     
         $(document).ready(function() {
     // Xử lý sự kiện click khi chọn sao đánh giá
     $('.star').click(function() {
@@ -535,58 +535,77 @@
         });
     });
 
-    // Xử lý submit form đánh giá bằng AJAX
     $('#review-form').submit(function(e) {
-        e.preventDefault(); // Ngừng hành động mặc định của form (tải lại trang)
+    e.preventDefault(); // Ngừng hành động mặc định của form (tải lại trang)
 
-        var form = $(this); // Lấy form hiện tại
-        var url = form.attr('action'); // Lấy URL action của form
-        var data = form.serialize(); // Lấy tất cả dữ liệu trong form
+    var form = $(this); // Lấy form hiện tại
+    var url = form.attr('action'); // Lấy URL action của form
+    var data = form.serialize(); // Lấy tất cả dữ liệu trong form
 
-        // Gửi yêu cầu AJAX để gửi đánh giá
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: data, // Dữ liệu gửi đi
-            success: function(response) {
-                if (response.status === 'success') {
-                    // Hiển thị thông báo thành công
-                    showFlashMessage(response.message, 'success');
-                    // Làm sạch textarea sau khi gửi thành công
-                    $('textarea[name="message"]').val('');
-                    // Reset sao đánh giá
-                    $('.star i').removeClass('zmdi-star').addClass('zmdi-star-outline');
 
-                    // Thêm đánh giá mới vào danh sách
-                    var newReview = `
-                        <li class="mb-30">
-                            <div class="pro-reviewer-comment">
-                                <div class="fix">
-                                    <div class="floatleft mbl-center">
-                                        <h5 class="text-uppercase mb-0"><strong>${response.user_name}</strong></h5>
-                                        <p class="reply-date">${response.date}</p>
-                                    </div>
+
+    // Gửi yêu cầu AJAX để gửi đánh giá
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: data, // Dữ liệu gửi đi
+        success: function(response) {
+            if (response.status === 'success') {
+                // Hiển thị thông báo thành công
+                showFlashMessage(response.message, 'success');
+                // Làm sạch textarea sau khi gửi thành công
+                $('textarea[name="message"]').val('');
+                // Reset sao đánh giá
+                $('.star i').removeClass('zmdi-star').addClass('zmdi-star-outline');
+
+                // Thêm đánh giá mới vào danh sách
+                var newReview = `
+                    <li class="mb-30" id="review-${response.id}">
+                         <div class="pro-reviewer">
+                                                        <img src="{{ asset('img/reviewer/1.webp') }}" alt="" />
+                                                    </div>
+                        <div class="pro-reviewer-comment">
+                            <div class="fix">
+                                <div class="floatleft mbl-center">
+                                    <h5 class="text-uppercase mb-0"><strong>${response.user_name}</strong></h5>
+                                    <p class="reply-date">${response.date}</p>
                                 </div>
-                                <div class="stars">
-                                    ${getStars(response.rating)}
+                                <div class="comment-reply floatright">
+                                    
+                                    <form method="POST" action="/delete-review/${response.id}" class="delete-review-form" style="display: inline;">
+                                        <input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">
+                                         
+                                     <input type="hidden" name="_method" value="DELETE"> <!-- Dùng để báo Laravel đây là yêu cầu DELETE -->
+                                        <button type="submit" class="btn-delete" title="Xóa đánh giá">
+                                            <i class="zmdi zmdi-close"></i>
+                                        </button>
+                                    </form>
                                 </div>
-                                <p class="mb-0">${response.message}</p>
                             </div>
-                        </li>
-                    `;
-                    // Thêm đánh giá vào danh sách đánh giá
-                    $('#reviews-list').prepend(newReview);
-                } else {
-                    // Hiển thị thông báo lỗi
-                    showFlashMessage(response.message, 'error');
-                }
-            },
-            error: function(xhr, status, error) {
-                // Hiển thị thông báo lỗi nếu có lỗi
-                showFlashMessage('Có lỗi xảy ra, vui lòng thử lại!', 'error');
+                            <div class="stars">
+                                ${getStars(response.rating)}
+                            </div>
+                         <p class="mb-0">${response.review_message ? response.review_message : ''}</p>
+                        </div>
+                    </li>
+                `;
+                // Thêm đánh giá mới vào đầu danh sách đánh giá
+                $('#reviews-list').prepend(newReview);
+
+                // Đăng ký lại sự kiện xóa cho form vừa được thêm
+                attachDeleteReviewHandler();
+            } else {
+                // Hiển thị thông báo lỗi
+                showFlashMessage(response.message, 'error');
             }
-        });
+        },
+        error: function(xhr, status, error) {
+            // Hiển thị thông báo lỗi nếu có lỗi
+            showFlashMessage('Có lỗi xảy ra, vui lòng thử lại!', 'error');
+        }
     });
+});
+
 
     // Hàm hiển thị thông báo
     function showFlashMessage(message, type) {
@@ -636,7 +655,7 @@ $(document).ready(function() {
             url: url,
             data: form.serialize(), // Lấy tất cả dữ liệu trong form
             success: function(response) {
-                if(response.status == 'success') {
+                if(response.status === 'success') {
                     form.closest('li').remove(); // Xóa đánh giá từ danh sách hiển thị
                     alert('Đánh giá đã được xóa!');
                 } else {
@@ -648,6 +667,39 @@ $(document).ready(function() {
             }
         });
     });
+});
+
+function attachDeleteReviewHandler() {
+    $('.delete-review-form').off('submit').on('submit', function(e) {
+        e.preventDefault(); // Ngừng hành động mặc định của form (tải lại trang)
+
+        var form = $(this);
+        var url = form.attr('action');
+
+        // Gửi yêu cầu AJAX
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: form.serialize(),
+            success: function(response) {
+                if (response.status === 'success') {
+                    form.closest('li').remove(); // Xóa đánh giá từ danh sách hiển thị
+                    alert('Đánh giá đã được xóa!');
+                } else {
+                    alert('Có lỗi xảy ra khi xóa đánh giá!');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Lỗi chi tiết: ", xhr.responseText);
+                alert('Có lỗi xảy ra, vui lòng thử lại!');
+            }
+        });
+    });
+}
+
+// Gọi hàm này sau khi DOM đã được tải
+$(document).ready(function() {
+    attachDeleteReviewHandler();
 });
 
 
