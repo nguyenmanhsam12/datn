@@ -40,7 +40,7 @@ class OrderStatusUpdatedEvent implements ShouldBroadcast
             'order_id' => $this->order->id,
             'status_id' => $this->order->status_id
         ]);
-        return new Channel('order');
+        return new PrivateChannel('order.'.$this->order->id);   
     }
 
     public function broadcastWith()

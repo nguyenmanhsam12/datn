@@ -18,9 +18,10 @@ class MyAccountController extends Controller
         }
 
         $status = OrderStatus::all();
-        $order =  Order::with('cartItems', 'orderStatus','orderAddress')
+        $order =  Order::with('cartItems', 'orderStatus','orderAddress','complaint')
             ->where('user_id', $user->id)
             ->get();
+        
         return view('client.pages.myaccount', compact('status', 'order', 'user'));
     }
 

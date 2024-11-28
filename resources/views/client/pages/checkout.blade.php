@@ -186,9 +186,10 @@
             <div class="row">
                 <div class="col-12">
 
-                    <div id="order-summary" style="display: none;">
-                        <!-- Thông tin đơn hàng sẽ được điền vào đây -->
-                    </div>
+                    {{-- đơn hàng đã được đặt --}}
+                    @if(session()->has('order_id'))
+                        <p>123</p>
+                    @endif
 
                     <div class="shopping-cart">
 
@@ -368,7 +369,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>  
 @endsection
 
 
@@ -632,27 +633,7 @@
         
     </script>
 
-    <script>
-        // lắng nghe sự kiện cho nút back
-        document.addEventListener('popstate', function(event) {
-            // Ngừng hành động mặc định (chuyển trang)
-            event.preventDefault();
-
-            console.log("Sự kiện popstate đã xảy ra");
-
-            // Gửi yêu cầu AJAX để lấy thông tin đơn hàng từ Laravel session
-            fetch('{{ route('getOrderSummary') }}')
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                   
-                })
-                .catch(error => {
-                    console.error('Lỗi khi lấy dữ liệu đơn hàng:', error);
-                });
-        });
-
-    </script>
+    
 
 
 @endpush

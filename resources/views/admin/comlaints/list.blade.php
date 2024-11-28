@@ -46,7 +46,7 @@
                                 <th>Lý do khiếu nại</th>
                                 <th>Tên khách hàng</th>
                                 <th>Ngày khiếu nại</th>
-                                <th>Trạng thái</th>
+                                {{-- <th>Trạng thái</th> --}}
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
@@ -58,7 +58,7 @@
                                     <td>{{ $complain->complaint_type }}</td>
                                     <td>{{ $complain->user->name }}</td>
                                     <td>{{ $complain->created_at }}</td>
-                                    <td>
+                                    {{-- <td>
                                         <select class="form-control status_complaints"
                                             data-complaints-id = "{{ $complain->id }}">
                                             <option value="Chờ xử lý"
@@ -70,7 +70,7 @@
                                                 {{ $complain->status == 'Giải quyết thành công' ? 'selected' : '' }}>Giải
                                                 quyết thành công</option>
                                         </select>
-                                    </td>
+                                    </td> --}}
                                     <td>
                                         <a href="{{ route('admin.comlaints.detailComplaints', ['id' => $complain->id]) }}"
                                             class="btn btn-info"> Xem chi tiết
@@ -97,7 +97,7 @@
     </script>
 
     {{-- cập nhật trạng thái khiếu nại --}}
-    <script>
+    {{-- <script>
         document.addEventListener('DOMContentLoaded', () => {
             const statusDropdowns = document.querySelectorAll('.status_complaints');
 
@@ -156,5 +156,5 @@
                 });
             });
         });
-    </script>
+    </script> --}}
 @endpush

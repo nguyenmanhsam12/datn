@@ -89,6 +89,7 @@
         .order__left {
             display: flex;
             align-items: center;
+            flex : 2
         }
 
         .order__left .image {
@@ -96,6 +97,10 @@
         }
 
         .order-details p {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
             margin: 0;
             font-size: 14px;
         }
@@ -275,6 +280,11 @@
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#orderModal{{ $or->id }}"
                                                     >Xem Chi Tiết</button>
+                                                    @if ($or->complaint)
+                                                        <a class="btn btn-warning" href="{{ route('complaintsDetail',['orderId'=> $or->id ]) }}">Xem khiếu nại</a>    
+                                                    @else
+                                                        <a class="btn btn-warning" href="{{ route('complaints',['orderId'=> $or->id ]) }}">Khiếu Nại</a>    
+                                                    @endif    
                                                     <button class="btn btn-primary confirm-order"
                                                         data-order-id="{{ $or->id }}"
                                                         data-status={{ $or->status_id }}>Xác nhận đơn hàng</button>
@@ -282,16 +292,12 @@
 
                                                 <!-- Nút Khiếu nại cho trạng thái "Hoàn tất" -->
                                                 @if ($or->status_id == 5)
-                                                    
+                                            
                                                         <button class="btn btn-success"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#orderModal{{ $or->id }}"
                                                         >Xem Chi Tiết</button>
-                                                       
-                                                            
-                                                        <a class="btn btn-warning" href="{{ route('complaints',['orderId'=> $or->id ]) }}">Khiếu Nại</a>                        
-                                        
-                                                    
+                                          
                                                 @endif  
 
                                                 @if ($or->status_id == 6)
@@ -305,7 +311,7 @@
 
                                             </div>
                                         </div>
-                                        <!-- Modal cho từng đơn hàng -->
+                                        <!-- Modal cho từng đơn hàng , chi tiết đơn hàng -->
                                         <div class="modal fade" id="orderModal{{ $or->id }}" tabindex="-1"
                                             role="dialog" aria-labelledby="orderModalLabel{{ $or->id }}"
                                             aria-hidden="true">
@@ -388,6 +394,9 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        
+                                        
                                     @endforeach
                                 </div>
                             </div>
@@ -480,16 +489,19 @@
                             orderStatus.setAttribute('data-status', data
                                 .newStatus); // Cập nhật mã trạng thái từ server
 
+                             // Ẩn hoặc thay đổi các nút sau khi đơn hàng đã hoàn tất
+                                const confirmButton = orderCard.querySelector('.confirm-order');
+                                if (confirmButton) {
+                                    confirmButton.style.display = 'none'; // Ẩn nút "Xác nhận đơn hàng"
+                                }
+
+                                const complaintButton = orderCard.querySelector('a.btn-warning');
+                                if (complaintButton) {
+                                    complaintButton.style.display = 'none'; // Ẩn nút "Khiếu Nại"
+                                }
+
                             // Chuyển đơn hàng sang tab "Hoàn tất" nếu trạng thái mới là hoàn tất
                             if (data.newStatus === 5) {
-
-                                const button = this; // Lấy chính nút đang được click
-                                button.textContent = 'Khiếu nại'; // Đổi nội dung nút
-                                button.classList.remove('confirm-order'); // Xóa class "confirm-order"
-                                button.classList.add('btn', 'btn-warning');
-                                button.setAttribute('data-status', data
-                                    .newStatus); // Cập nhật trạng thái nút
-
                                 // Tìm tab "Hoàn tất" và chuyển đến đó
                                 const completedTab = document.querySelector(
                                     `.tab-link[data-status="${data.newStatus}"]`);
@@ -689,175 +701,182 @@
 
     <script type="module">
         // Lắng nghe sự kiện từ Laravel Echo
-        Echo.channel('order')
-            .listen('OrderStatusUpdatedEvent', (e) => {
-                console.log(e); // Kiểm tra dữ liệu sự kiện nhận được
 
-                // Lấy thông tin từ sự kiện
-                const orderId = e.order.id;
-                const newStatus = e.order.order_status.name;
-                const newStatusId = e.order.status_id;
+        const orderElement = document.querySelectorAll('.order-card')
+        
+        orderElement.forEach( order => {
+            const orderId = order.getAttribute('data-order-id'); // lấy ra id của từng đơn hàng
+            console.log(orderId);
+            Echo.private(`order.${orderId}`)
+                .listen('OrderStatusUpdatedEvent', (e) => {
+                    console.log(e); // Kiểm tra dữ liệu sự kiện nhận được
 
-
-                // Tìm đơn hàng trong DOM theo `data-order-id`
-                const orderElement = document.querySelector(`.order-card[data-order-id="${orderId}"]`);
-
-                if (orderElement) {
-                    // Cập nhật tên trạng thái đơn hàng
-                    const statusElement = orderElement.querySelector('.order-status');
-
-                    statusElement.textContent = newStatus;
-                    statusElement.setAttribute('data-status', newStatusId); // Cập nhật data-status
+                    // Lấy thông tin từ sự kiện
+                    const orderId = e.order.id;
+                    const newStatus = e.order.order_status.name;
+                    const newStatusId = e.order.status_id;
 
 
-                    // Cập nhật `data-status` với trạng thái mới
-                    orderElement.setAttribute('data-status', newStatusId);
+                    // Tìm đơn hàng trong DOM theo `data-order-id`
+                    const orderElement = document.querySelector(`.order-card[data-order-id="${orderId}"]`);
+
+                    if (orderElement) {
+                        // Cập nhật tên trạng thái đơn hàng
+                        const statusElement = orderElement.querySelector('.order-status');
+
+                        statusElement.textContent = newStatus;
+                        statusElement.setAttribute('data-status', newStatusId); // Cập nhật data-status
+
+
+                        // Cập nhật `data-status` với trạng thái mới
+                        orderElement.setAttribute('data-status', newStatusId);
 
 
 
-                    // Hiển thị và ẩn các nút button theo `newStatusId`
-                    const buttonGroup = orderElement.querySelector('.button-group');
-                    buttonGroup.innerHTML = ''; // Xóa các nút hiện có
+                        // Hiển thị và ẩn các nút button theo `newStatusId`
+                        const buttonGroup = orderElement.querySelector('.button-group');
+                        buttonGroup.innerHTML = ''; // Xóa các nút hiện có
 
-                    // Thêm nút dựa vào trạng thái mới
-                    if (newStatusId === 1) { // Trạng thái "Chờ xử lý"
-                        buttonGroup.innerHTML =
-                            `<button class="btn btn-danger ">Hủy
-                            </button><button class="btn btn-success"
-                            data-bs-toggle="modal"data-bs-target="#orderModal${orderId}">
-                            Xem chi tiết</button>`;
-                                                        
-                    } else if (newStatusId === 2) {
-                        buttonGroup.innerHTML =
-                            `<button class="btn btn-danger">Hủy</button>
-                            <button class="btn btn-success"
+                        // Thêm nút dựa vào trạng thái mới
+                        if (newStatusId === 1) { // Trạng thái "Chờ xử lý"
+                            buttonGroup.innerHTML =
+                                `<button class="btn btn-danger ">Hủy
+                                </button><button class="btn btn-success"
+                                data-bs-toggle="modal"data-bs-target="#orderModal${orderId}">
+                                Xem chi tiết</button>`;
+                                                            
+                        } else if (newStatusId === 2) {
+                            buttonGroup.innerHTML =
+                                `<button class="btn btn-danger">Hủy</button>
+                                <button class="btn btn-success"
+                                data-bs-toggle="modal" data-bs-target="#orderModal${orderId}"
+                                >Xem chi tiết</button>`;
+                        } else if (newStatusId === 3) {
+                            buttonGroup.innerHTML = `<button class="btn btn-success"
                             data-bs-toggle="modal" data-bs-target="#orderModal${orderId}"
                             >Xem chi tiết</button>`;
-                    } else if (newStatusId === 3) {
-                        buttonGroup.innerHTML = `<button class="btn btn-success"
-                        data-bs-toggle="modal" data-bs-target="#orderModal${orderId}"
-                        >Xem chi tiết</button>`;
-                    } else if (newStatusId === 4) {
-                        buttonGroup.innerHTML =
-                            `<button class="btn btn-success"
+                        } else if (newStatusId === 4) {
+                            buttonGroup.innerHTML =
+                                `<button class="btn btn-success"
+                                data-bs-toggle="modal" data-bs-target="#orderModal${orderId}"
+                                >Xem chi tiết</button>
+                                <a class="btn btn-warning" href="{{ route('complaints',['orderId'=> $or->id ]) }}">Khiếu Nại</a>
+                                <button class="btn btn-primary confirm-order"
+                                data-order-id=${orderId}
+                                data-status=${newStatusId}>Xác nhận đơn hàng</button>
+                                `;
+                        } else if (newStatusId === 5) {
+                            buttonGroup.innerHTML =
+                                `<button class="btn btn-success"
+                                data-bs-toggle="modal" data-bs-target="#orderModal${orderId}"
+                                >Xem chi tiết</button>
+                                
+                                `;
+                        } else if(newStatusId === 6){
+                            buttonGroup.innerHTML = `<button class="btn btn-success"
                             data-bs-toggle="modal" data-bs-target="#orderModal${orderId}"
-                            >Xem chi tiết</button>
-                            <button class="btn btn-primary confirm-order"
-                            data-order-id=${orderId}
-                            data-status=${newStatusId}>Xác nhận đơn hàng</button>
-                            `;
-                    } else if (newStatusId === 5) {
-                        buttonGroup.innerHTML =
-                            `<button class="btn btn-success"
-                            data-bs-toggle="modal" data-bs-target="#orderModal${orderId}"
-                            >Xem chi tiết</button>
-                            <a class="btn btn-warning" href="{{ route('complaints',['orderId'=> $or->id ]) }}">Khiếu Nại</a>
-                            `;
-                    } else if(newStatusId === 6){
-                        buttonGroup.innerHTML = `<button class="btn btn-success"
-                        data-bs-toggle="modal" data-bs-target="#orderModal${orderId}"
-                        >Xem chi tiết</button>`;
-                    }
+                            >Xem chi tiết</button>`;
+                        }
 
-                    // Gắn lại sự kiện click cho nút 'Xác nhận đơn hàng'
-                    document.querySelectorAll('.confirm-order').forEach(button => {
-                        button.addEventListener('click', function(e) {
-                            e.preventDefault();
+                        // Gắn lại sự kiện click cho nút 'Xác nhận đơn hàng'
+                        document.querySelectorAll('.confirm-order').forEach(button => {
+                            button.addEventListener('click', function(e) {
+                                e.preventDefault();
 
-                            // Lấy ID đơn hàng từ thuộc tính data-order-id
-                            const orderId = this.getAttribute('data-order-id');
-                            const currentStatus = this.getAttribute(
-                                'data-status'); // Lấy trạng thái hiện tại của đơn hàng
+                                // Lấy ID đơn hàng từ thuộc tính data-order-id
+                                const orderId = this.getAttribute('data-order-id');
+                                const currentStatus = this.getAttribute(
+                                    'data-status'); // Lấy trạng thái hiện tại của đơn hàng
 
-                            // Các tham số cần truyền qua body, bao gồm ID của đơn hàng
-                            const dataToSend = {
-                                orderId: orderId,
-                                currentStatus: currentStatus // Thêm thông tin trạng thái hiện tại nếu cần
-                            };
+                                // Các tham số cần truyền qua body, bao gồm ID của đơn hàng
+                                const dataToSend = {
+                                    orderId: orderId,
+                                    currentStatus: currentStatus // Thêm thông tin trạng thái hiện tại nếu cần
+                                };
 
-                            console.log(dataToSend);
-                            
+                                console.log(dataToSend);
+                                
 
-                            // Gửi yêu cầu POST mà không cần ID trong URL
-                            fetch('{{ route('confirmOrder') }}', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                            .getAttribute('content'),
-                                    },
-                                    body: JSON.stringify(dataToSend) // Truyền tất cả tham số qua body
-                                })
-                                .then(response => {
-                                    // Kiểm tra nếu response không phải là JSON hợp lệ
-                                    if (response.ok) {
-                                        return response.json();  // Chỉ phân tích JSON nếu phản hồi hợp lệ
-                                    } else {
-                                        throw new Error('Network response was not ok');
-                                    }
-                                })
-                                .then(data => {
-                                    if (data.status === 'success') {
-                                            console.log(data);
-                                        // Cập nhật giao diện khi xác nhận thành công
-                                        const orderCard = this.closest('.order-card');
-                                        orderCard.setAttribute('data-status', data.newStatus);
-                                        // tên trạng thái
-                                        const orderStatus = orderCard.querySelector('.order-status');
-                                        // Cập nhật trạng thái hiển thị trong giao diện
-                                        orderStatus.textContent = data.statusName;
-                                        orderStatus.setAttribute('data-status', data
-                                            .newStatus); // Cập nhật mã trạng thái từ server
-
-                                        // Chuyển đơn hàng sang tab "Hoàn tất" nếu trạng thái mới là hoàn tất
-                                        if (data.newStatus === 5) {
-
-                                            const button = this; // Lấy chính nút đang được click
-                                            button.textContent = 'Khiếu nại'; // Đổi nội dung nút
-                                            button.classList.remove('confirm-order'); // Xóa class "confirm-order"
-                                            button.classList.add('btn', 'btn-warning');
-                                            button.setAttribute('data-status', data
-                                                .newStatus); // Cập nhật trạng thái nút
-
-                                            // Tìm tab "Hoàn tất" và chuyển đến đó
-                                            const completedTab = document.querySelector(
-                                                `.tab-link[data-status="${data.newStatus}"]`);
-                                            if (completedTab) {
-                                                // Chuyển sang tab "Hoàn tất"
-                                                document.querySelectorAll('.tab-link').forEach(function(tab) {
-                                                    tab.classList.remove('active');
-                                                });
-                                                completedTab.classList.add('active');
-
-                                                // Ẩn/hiện các đơn hàng theo trạng thái
-                                                const orders = document.querySelectorAll('.order-card');
-                                                orders.forEach(function(order) {
-                                                    if (order.getAttribute('data-status') === '5') {
-                                                        order.style.display = 'block';
-
-                                                    } else {
-                                                        order.style.display = 'none';
-                                                    }
-                                                });
-                                            }
+                                // Gửi yêu cầu POST mà không cần ID trong URL
+                                fetch('{{ route('confirmOrder') }}', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                                .getAttribute('content'),
+                                        },
+                                        body: JSON.stringify(dataToSend) // Truyền tất cả tham số qua body
+                                    })
+                                    .then(response => {
+                                        // Kiểm tra nếu response không phải là JSON hợp lệ
+                                        if (response.ok) {
+                                            return response.json();  // Chỉ phân tích JSON nếu phản hồi hợp lệ
+                                        } else {
+                                            throw new Error('Network response was not ok');
                                         }
+                                    })
+                                    .then(data => {
+                                        if (data.status === 'success') {
+                                                console.log(data);
+                                            // Cập nhật giao diện khi xác nhận thành công
+                                            const orderCard = this.closest('.order-card');
+                                            orderCard.setAttribute('data-status', data.newStatus);
+                                            // tên trạng thái
+                                            const orderStatus = orderCard.querySelector('.order-status');
+                                            // Cập nhật trạng thái hiển thị trong giao diện
+                                            orderStatus.textContent = data.statusName;
+                                            orderStatus.setAttribute('data-status', data
+                                                .newStatus); // Cập nhật mã trạng thái từ server
+
+                                            // Chuyển đơn hàng sang tab "Hoàn tất" nếu trạng thái mới là hoàn tất
+                                            if (data.newStatus === 5) {
+
+                                                const button = this; // Lấy chính nút đang được click
+                                                button.textContent = 'Khiếu nại'; // Đổi nội dung nút
+                                                button.classList.remove('confirm-order'); // Xóa class "confirm-order"
+                                                button.classList.add('btn', 'btn-warning');
+                                                button.setAttribute('data-status', data
+                                                    .newStatus); // Cập nhật trạng thái nút
+
+                                                // Tìm tab "Hoàn tất" và chuyển đến đó
+                                                const completedTab = document.querySelector(
+                                                    `.tab-link[data-status="${data.newStatus}"]`);
+                                                if (completedTab) {
+                                                    // Chuyển sang tab "Hoàn tất"
+                                                    document.querySelectorAll('.tab-link').forEach(function(tab) {
+                                                        tab.classList.remove('active');
+                                                    });
+                                                    completedTab.classList.add('active');
+
+                                                    // Ẩn/hiện các đơn hàng theo trạng thái
+                                                    const orders = document.querySelectorAll('.order-card');
+                                                    orders.forEach(function(order) {
+                                                        if (order.getAttribute('data-status') === '5') {
+                                                            order.style.display = 'block';
+
+                                                        } else {
+                                                            order.style.display = 'none';
+                                                        }
+                                                    });
+                                                }
+                                            }
 
 
-                                        // Hiển thị thông báo SweetAlert
-                                        Swal.fire({
-                                            icon: 'success',
-                                            title: 'Thành công',
-                                            text: 'Đơn hàng đã được xác nhận và chuyển sang trạng thái hoàn tất!',
-                                            confirmButtonText: 'OK'
-                                        });
-                                    } else {
-                                        alert('Có lỗi xảy ra');
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error:', error);
-                                    // alert('Có lỗi xảy ra trong quá trình xác nhận');
-                                });
+                                            // Hiển thị thông báo SweetAlert
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Thành công',
+                                                text: 'Đơn hàng đã được xác nhận và chuyển sang trạng thái hoàn tất!',
+                                                confirmButtonText: 'OK'
+                                            });
+                                        } else {
+                                            alert('Có lỗi xảy ra');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                        // alert('Có lỗi xảy ra trong quá trình xác nhận');
+                                    });
                         },{once:true}); //sự kiện này chỉ được gọi một lần duy nhất
                     });
 
@@ -871,6 +890,10 @@
                     }
                 }
             });
+
+        })
+
+        
     </script>
 
 

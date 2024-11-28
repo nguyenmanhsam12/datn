@@ -29,88 +29,108 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request){
         
+        try {
+            $validatedData = $request->validated();
 
-        $validatedData = $request->validated();
+            Log::info('list product',$validatedData);
 
-        // Lưu hình ảnh chính
-        $imagePath = '';
-        if (isset($validatedData['image'])) {
+            
 
-            $image_name = $validatedData['image']->getClientOriginalName();
-            $extension = $validatedData['image']->getClientOriginalExtension();
-            $name_extension = $image_name . '_' . time() . '_' . $extension;
-
-            // Di chuyển ảnh và lưu đường dẫn tương đối
-            $validatedData['image']->move(public_path('product_image'), $name_extension);
-
-            $imagePath = '/'.'product_image/' . $name_extension;
-
-        }
-
-        // Lưu các ảnh phụ
-        $gallaryPaths = [];
-        // kiểm tra tồn tại và là 1 mảng
-        if (isset($validatedData['gallary']) && is_array($validatedData['gallary'])) {
-            foreach ($validatedData['gallary'] as $image) {
-                if ($image) {
-
-                    $gallary_name = $image->getClientOriginalName();
-
-                    $gallary_extension = $image->getClientOriginalExtension();
-
-                    $gallary_name_extension = $gallary_name . '_' . time() . '_' . $gallary_extension;
-
-                    // Di chuyển ảnh phụ và lưu đường dẫn tương đối
-                    $image->move(public_path('product_images'), $gallary_name_extension);
-                    $gallaryPaths[] = 'product_images/' . $gallary_name_extension; // Đường dẫn tương đối
+            // Lưu hình ảnh chính
+            $imagePath = '';
+            if (isset($validatedData['image'])) {
+    
+                $image_name = $validatedData['image']->getClientOriginalName();
+                $extension = $validatedData['image']->getClientOriginalExtension();
+                $name_extension = $image_name . '_' . time() . '_' . $extension;
+    
+                // Di chuyển ảnh và lưu đường dẫn tương đối
+                $validatedData['image']->move(public_path('product_image'), $name_extension);
+    
+                $imagePath = '/'.'product_image/' . $name_extension;
+    
+            }
+    
+            // Lưu các ảnh phụ
+            $gallaryPaths = [];
+            // kiểm tra tồn tại và là 1 mảng
+            if (isset($validatedData['gallary']) && is_array($validatedData['gallary'])) {
+                foreach ($validatedData['gallary'] as $image) {
+                    if ($image) {
+    
+                        $gallary_name = $image->getClientOriginalName();
+    
+                        $gallary_extension = $image->getClientOriginalExtension();
+    
+                        $gallary_name_extension = $gallary_name . '_' . time() . '_' . $gallary_extension;
+    
+                        // Di chuyển ảnh phụ và lưu đường dẫn tương đối
+                        $image->move(public_path('product_images'), $gallary_name_extension);
+                        $gallaryPaths[] = 'product_images/' . $gallary_name_extension; // Đường dẫn tương đối
+                    }
                 }
             }
-        }
-
-        // Tạo sản phẩm mới
-        $product = Product::create([
-            'name' => $validatedData['name'],
-            'description' => $validatedData['description'],
-            'description_text' => $validatedData['description_text'],
-            'brand_id' => $validatedData['brand_id'],
-            'category_id' => $validatedData['category_id'],
-            'sku' => $validatedData['sku'],
-            'image' => $imagePath,
-            'gallary' => json_encode($gallaryPaths),
-            'user_id' => 1,
-            
-        ]);
-
-        if (!empty($validatedData['variants'])) {
-            // Lưu các biến thể của sản phẩm
-            foreach ($validatedData['variants'] as $variant) {
-                // Kiểm tra xem biến thể đã tồn tại chưa
-                $existingVariant = ProductVariants::where('product_id', $product->id)
-                    ->where('size_id', $variant['size_id'])
-                    ->first();
-
-                if ($existingVariant) {
-                    Log::warning('Variant already exists', [
+    
+            // Tạo sản phẩm mới
+            $product = Product::create([
+                'name' => $validatedData['name'],
+                'description' => $validatedData['description'],
+                'description_text' => $validatedData['description_text'],
+                'brand_id' => $validatedData['brand_id'],
+                'category_id' => $validatedData['category_id'],
+                'sku' => $validatedData['sku'],
+                'image' => $imagePath,
+                'gallary' => json_encode($gallaryPaths),
+                'user_id' => 1,
+                
+            ]);
+    
+            if (!empty($validatedData['variants'])) {
+                // Lưu các biến thể của sản phẩm
+                foreach ($validatedData['variants'] as $variant) {
+                    // Kiểm tra xem biến thể đã tồn tại chưa
+                    $existingVariant = ProductVariants::where('product_id', $product->id)
+                        ->where('size_id', $variant['size_id'])
+                        ->first();
+    
+                    if ($existingVariant) {
+                        Log::warning('Variant already exists', [
+                            'product_id' => $product->id,
+                            'size_id' => $variant['size_id'],
+                            'price' => $variant['price'],
+                            'weight' => $variant['weight'],
+    
+                        ]);
+                    }
+    
+                    // Tạo biến thể mới
+                    ProductVariants::create([
                         'product_id' => $product->id,
                         'size_id' => $variant['size_id'],
+                        'stock' => $variant['stock'],
                         'price' => $variant['price'],
                         'weight' => $variant['weight'],
-
                     ]);
-                }
 
-                // Tạo biến thể mới
-                ProductVariants::create([
-                    'product_id' => $product->id,
-                    'size_id' => $variant['size_id'],
-                    'stock' => $variant['stock'],
-                    'price' => $variant['price'],
-                    'weight' => $variant['weight'],
-                ]);
+                    session()->forget(['product_attributes']);
+                }
             }
+
+            
+    
+            return redirect()->route('admin.product.index')->with('success','Thêm sản phẩm thành công');
+        } catch (\Exception  $e) {
+            // Ghi log lỗi
+            Log::error('Error while storing product', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            // Trả về trang trước với thông báo lỗi
+            return redirect()->back()->withInput()->with('error', 'Đã xảy ra lỗi khi thêm sản phẩm. Vui lòng thử lại.');
         }
 
-        return redirect()->route('admin.product.index')->with('success','Thêm sản phẩm thành công');
+       
 
     }
 

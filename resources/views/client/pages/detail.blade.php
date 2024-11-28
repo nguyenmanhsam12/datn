@@ -164,14 +164,14 @@
                             <div class="product-description">
                                 <p>{!! $productDetail->description !!}</p>
                             </div>
-                            <div class="product-stock">
+                            <div class="product-stock mb-3">
 
                             </div>
 
                             <!-- Size start -->
                             <div class="size-filter single-pro-size mb-35 clearfix">
                                 <ul>
-                                    <li><span class="color-title text-capitalize p-1">size</span></li>
+                                    <li><span class="color-title text-capitalize p-1">size :</span></li>
                                     @foreach ($productDetail->variants as $variant)
                                         <li>
                                             <a href="#" class="size-option p-1" data-variant-id="{{ $variant->id }}"
@@ -372,6 +372,7 @@
                 updatePrice(price);
                 const stock = this.getAttribute('data-stock');
                 stockElement.textContent = `Số lượng : ${stock}`
+                
                 const variantId = this.getAttribute('data-variant-id');
 
                 // Kiểm tra nếu có variantId và xử lý lắng nghe sự kiện

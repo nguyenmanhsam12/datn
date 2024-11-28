@@ -11,40 +11,40 @@
                 <label for="order-id">Mã đơn hàng:</label>
                 <input type="text" name="order_id" class="form-control" value="{{ $order->id }}" readonly>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label for="order-date">Ngày đặt hàng:</label>
                 <input type="date" name="order_date" class="form-control" required>
                 @error('order')
                 <div class="text-danger mt-1">{{ $message }}</div>
                  @enderror
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label for="complaint_type">Lý do khiếu nại:</label>
                 <select name="complaint_type" class="form-control" required>
                     <option value="" disabled selected>Chọn lý do</option>
                     <option value="Hàng bị lỗi">Hàng bị lỗi</option>
-                    <option value="Sản phẩm hư hỏng">Sản phẩm hư hỏng</option>
-                    <option value="Giao hàng chậm">Giao hàng chậm</option>
+                    <option value="Sản phẩm không đúng mô tả">Sản phẩm không đúng mô tả</option>
+                    <option value="Thiếu hàng trong đơn">Thiếu hàng trong đơn</option>
                     <option value="Khác">Khác</option>
                 </select>
                 @error('complaint_type')
                 <div class="text-danger mt-1">{{ $message }}</div>
                  @enderror
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label for="complaint_details">Mô tả chi tiết:</label>
                 <textarea name="complaint_details" class="form-control" rows="5" placeholder="Nhập chi tiết vấn đề"></textarea>
                 @error('complaint_details')
                 <div class="text-danger mt-1">{{ $message }}</div>
                  @enderror
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label for="file">Đính kèm hình ảnh:(Nếu có)</label>
                 <input type="file" id="file" name="attachments[]" class="form-control" accept="image/*" multiple>
                 <div id="preview" class="mt-3 d-flex flex-wrap"></div>
             </div>
             <div class="form-actions text-end mt-4">
-                <button class="btn btn-secondary ">Hủy</button>
+                <a href="{{ route('myAccount') }}" class="btn btn-secondary">Quay lại</a>
                 <button type="submit" class="btn btn-primary">Gửi khiếu nại</button>
             </div>
         </form>

@@ -79,6 +79,7 @@ class CheckoutController extends Controller
             return redirect()->route('shop')->with('error', 'Vui lòng chọn sản phẩm trước khi thanh toán');
         }
 
+        
         $cartItems = CartItems::with('variants.product', 'variants.size')->where('cart_id', $cart->id)->get();
 
         // Tính tổng trọng lượng cho tất cả các sản phẩm trong giỏ hàng
