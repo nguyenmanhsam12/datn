@@ -13,6 +13,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ComplanintsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CouponController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\VariantController;
@@ -23,6 +24,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ThanhYouController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -98,8 +100,6 @@ Route::post('/cancelOrder', [MyAccountController::class, 'cancelOrder'])->name('
 
 
 // cửa hàng
-// Route::get('/shop',[ShopController::class,'shop'])->name('shop');
-// Route::get('/shop/category/{id}', [ShopController::class, 'showProByCate'])->name('shop.byCategory');
 Route::get('/shop', [ShopController::class, 'shop'])->name('shop');
 Route::get('/shop/category/{categoryId}', [ShopController::class, 'showProByCate'])->name('shop.byCategory');
 
@@ -152,12 +152,24 @@ Route::get('/getProductsByCategory/{category_id}', [HomeController::class, 'getP
 
 // lấy chi tiết sp
 Route::get('/getDetailProduct/{slug}',[HomeController::class,'getDetailProduct'])->name('getDetailProduct');
+Route::post('/submit-review', [HomeController::class, 'submitReview'])->name('submitReview');
 
+Route::delete('/delete-review/{id}', [HomeController::class, 'deleteReview'])->name('deleteReview');
+// Route::post('/submit-review', [MyAccountController::class, 'submitReview'])->name('submitReview');
 
+Route::post('/submit-review-kh', [MyAccountController::class, 'submitReview'])->name('submitReview-kh');
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/wishlist/add', [WishlistController::class, 'store'])->name('wishlist.add');
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
+    Route::delete('/wishlist/remove/{id}', [WishlistController::class, 'destroy'])->name('wishlist.remove');
+});
 
 Route::prefix('admin')->middleware('checkadmin')->group(function(){
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('reviews', [ReviewController::class, 'index'])->name('admin.reviews.index');
+    Route::delete('reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
    
 
     Route::prefix('user')->group(function(){

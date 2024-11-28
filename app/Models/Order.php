@@ -43,8 +43,14 @@ class Order extends Model
         return $this->hasOne(Transactions::class,'order_id','id');
     }
 
+
     public function complaint(){
         return $this->hasOne(Complaints::class,'order_id','id');
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class); 
     }
     
 }
