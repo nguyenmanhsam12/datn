@@ -217,33 +217,30 @@
                     </div>
                 </div>
                 <!-- Biểu đồ tồn kho -->
-<div class="row mt-4">
+<!-- <div class="row mt-4">
     <div class="col-md-12">
         <div class="card p-4 border" style="height: 450px;">
-            <h3 class="text-center">Biểu đồ tồn kho theo sản phẩm biến thể</h3>
-            <canvas id="inventoryChart" width="650" height="350"></canvas>
+            <!-- <h3 class="text-center">Biểu đồ tồn kho theo sản phẩm biến thể</h3> -->
+            <!-- <canvas id="inventoryChart" width="650" height="350"></canvas>
         </div>
     </div>
-</div>
-<div class="row mt-4">
+</div> --> 
+<!-- <div class="row mt-4">
     <div class="col-md-12">
         <div class="card p-4 border" style="height: 450px;">
             <h3 class="text-center">Doanh thu sản phẩm</h3>
             <canvas id="huhu" width="650" height="350"></canvas>
         </div>
     </div>
-</div>
-<div class="row mt-4">
+</div> -->
+<div class="row mt-4" >
     <div class="col-md-12">
-        <div class="card p-4 border" style="height: 450px;">
+        <div class="card p-4 border" style="height: 550px; max-width: 100%; margin-left: 150px;">
             <h3 class="text-center">Doanh thu sản phẩm theo các tỉnh</h3>
-            <canvas id="revenueSalesChart" width="400" height="200"></canvas>
+            <canvas id="revenueSalesChart" style="width: 100%; height: 450px;"></canvas>
         </div>
     </div>
 </div>
-
-
-            </div>
 
             {{-- Script for charts --}}
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -350,89 +347,89 @@
 // productNames = productNames.map(function(name) {
 //     return name.length > 20 ? name.substring(0, 0) + '...' : name;
 // });
-    var stockQuantities = @json($inventoryData->pluck('stock'));
+    // var stockQuantities = @json($inventoryData->pluck('stock'));
 
-    var ctx = document.getElementById('inventoryChart').getContext('2d');
-    var inventoryChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: productNames,  // Tên sản phẩm
-            datasets: [{
-                label: 'Số lượng tồn kho',
-                data: stockQuantities,  // Số lượng tồn kho
-                backgroundColor: [
-                // 'rgba(75, 192, 192, 0.5)',  // Màu cột đầu tiên
-                'rgba(255 106 106)',  // Màu cột thứ hai
-                'rgba(153, 190, 255, 0.5)',  // Màu cột thứ ba
-                // 'rgba(255, 159, 64, 0.5)',   // Màu cột thứ tư
-                // Thêm màu cho các cột tiếp theo nếu cần
-            ],
+    // var ctx = document.getElementById('inventoryChart').getContext('2d');
+    // var inventoryChart = new Chart(ctx, {
+    //     type: 'line',
+    //     data: {
+    //         labels: productNames,  // Tên sản phẩm
+    //         datasets: [{
+    //             label: 'Số lượng tồn kho',
+    //             data: stockQuantities,  // Số lượng tồn kho
+    //             backgroundColor: [
+    //             // 'rgba(75, 192, 192, 0.5)',  // Màu cột đầu tiên
+    //             'rgba(255 106 106)',  // Màu cột thứ hai
+    //             'rgba(153, 190, 255, 0.5)',  // Màu cột thứ ba
+    //             // 'rgba(255, 159, 64, 0.5)',   // Màu cột thứ tư
+    //             // Thêm màu cho các cột tiếp theo nếu cần
+    //         ],
             
-                borderColor: 'rgba(255 255 0)',  // Màu viền
-                borderWidth: 2,
-                pointBackgroundColor: 'rgba(255 106 106)',  // Màu nền của dấu chấm
-            pointRadius: 4,  // Kích thước của dấu chấm
-            pointBorderWidth: 3,  // Độ dày viền của dấu chấm
-            }],
-        },
+    //             borderColor: 'rgba(255 255 0)',  // Màu viền
+    //             borderWidth: 2,
+    //             pointBackgroundColor: 'rgba(255 106 106)',  // Màu nền của dấu chấm
+    //         pointRadius: 4,  // Kích thước của dấu chấm
+    //         pointBorderWidth: 3,  // Độ dày viền của dấu chấm
+    //         }],
+    //     },
         
-        options: {
-            responsive: true,
-            scales: {
-                x: {
-                display: false,  // Ẩn trục X (không hiển thị tên sản phẩm)
-            },
+    //     options: {
+    //         responsive: true,
+    //         scales: {
+    //             x: {
+    //             display: false,  // Ẩn trục X (không hiển thị tên sản phẩm)
+    //         },
                 
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
+    //             y: {
+    //                 beginAtZero: true
+    //             }
+    //         }
+    //     }
+    // });
 
 //bieu do
  // Dữ liệu từ controller
- var productNames = @json($productNames);  // Tên sản phẩm
-    var quantities = @json($quantities);      // Số lượng sản phẩm đã bán
-    var revenues = @json($revenues);          // Doanh thu từ sản phẩm
+//  var productNames = @json($productNames);  // Tên sản phẩm
+//     var quantities = @json($quantities);      // Số lượng sản phẩm đã bán
+//     var revenues = @json($revenues);          // Doanh thu từ sản phẩm
 
-    var ctx = document.getElementById('huhu').getContext('2d');
-    var revenueChart = new Chart(ctx, {
-        type: 'bar', // Biểu đồ cột
-        data: {
-            labels: productNames, // Tên sản phẩm
-            datasets: [{
-                label: 'Số lượng đã bán',
-                data: quantities, // Số lượng sản phẩm bán được
-                backgroundColor: 'rgba(75, 192, 192, 0.6)',  // Màu sắc cột Số lượng đã bán
-                borderColor: 'rgba(75, 192, 192, 1)',        // Màu viền cột Số lượng đã bán
-                borderWidth: 1
-            }, {
-                label: 'Doanh thu (VND)', 
-                data: revenues,   // Doanh thu từ các sản phẩm
-                backgroundColor: 'rgba(255, 159, 64, 0.6)',  // Màu sắc cột Doanh thu
-                borderColor: 'rgba(255, 159, 64, 1)',        // Màu viền cột Doanh thu
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                x: {
-                display: false,  // Ẩn trục X (không hiển thị tên sản phẩm)
-            },
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            // Định dạng số liệu theo kiểu VND
-                            return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                        }
-                    }
-                }
-            }
-        }
-    });
+//     var ctx = document.getElementById('huhu').getContext('2d');
+//     var revenueChart = new Chart(ctx, {
+//         type: 'bar', // Biểu đồ cột
+//         data: {
+//             labels: productNames, // Tên sản phẩm
+//             datasets: [{
+//                 label: 'Số lượng đã bán',
+//                 data: quantities, // Số lượng sản phẩm bán được
+//                 backgroundColor: 'rgba(75, 192, 192, 0.6)',  // Màu sắc cột Số lượng đã bán
+//                 borderColor: 'rgba(75, 192, 192, 1)',        // Màu viền cột Số lượng đã bán
+//                 borderWidth: 1
+//             }, {
+//                 label: 'Doanh thu (VND)', 
+//                 data: revenues,   // Doanh thu từ các sản phẩm
+//                 backgroundColor: 'rgba(255, 159, 64, 0.6)',  // Màu sắc cột Doanh thu
+//                 borderColor: 'rgba(255, 159, 64, 1)',        // Màu viền cột Doanh thu
+//                 borderWidth: 1
+//             }]
+//         },
+//         options: {
+//             responsive: true,
+//             scales: {
+//                 x: {
+//                 display: false,  // Ẩn trục X (không hiển thị tên sản phẩm)
+//             },
+//                 y: {
+//                     beginAtZero: true,
+//                     ticks: {
+//                         callback: function(value) {
+//                             // Định dạng số liệu theo kiểu VND
+//                             return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     });
 
 
 
