@@ -12,6 +12,7 @@ use App\Models\Category;
 use App\Models\Payment_Methods;
 use App\Models\ProductVariants;
 use Illuminate\Http\Request;
+use App\Models\Review;
 use Carbon\Carbon;
 use DB;
 
@@ -19,16 +20,16 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+
+$totalReviewsCount = Review::count();
         // Đếm số lượng tổng quan
         $totalOrders = Order::count();
         $totalProducts = Product::count();
-        $totalAdmins = User::whereHas('roles', function ($query) {
-            $query->where('name', 'admin');
-        })->count();
+        $totalAdmins = User::count();
 
-        // Tính tổng doanh thu cho các đơn hàng đã hoàn tất
+        // Tính tổng doanh thu cho các đơn hàng Hoàn tất
         $doanhThu = Order::whereHas('orderStatus', function ($query) {
-            $query->where('name', 'Đã hoàn tất');
+            $query->where('name', 'Hoàn tất');
         })->sum('total_amount');
 
         // Số lượng mã giảm giá còn hạn và đã hết hạn
@@ -44,7 +45,7 @@ class DashboardController extends Controller
                         DB::raw('SUM(order_items.quantity * order_items.price) as total_revenue'))
     ->join('orders', 'order_items.order_id', '=', 'orders.id')  // Kết nối với bảng orders
     ->join('order_status', 'orders.status_id', '=', 'order_status.id')  // Kết nối với bảng order_status
-    ->where('order_status.name', 'Đã hoàn tất')  // Chỉ tính các đơn hàng có trạng thái "Đã hoàn tất"
+    ->where('order_status.name', 'Hoàn tất')  // Chỉ tính các đơn hàng có trạng thái "Hoàn tất"
     ->groupBy('product_variant_id')
     ->orderByDesc('total_revenue')  // Sắp xếp theo doanh thu giảm dần
     ->get();
@@ -65,7 +66,7 @@ class DashboardController extends Controller
         ->join('order_items', 'orders.id', '=', 'order_items.order_id')  // Join với bảng order_items
         ->join('order_status', 'orders.status_id', '=', 'order_status.id')  // Join với bảng order_status qua status_id
         // Lọc chỉ lấy những đơn hàng có trạng thái 'completed'
-        ->where('order_status.name', 'Đã hoàn tất')  
+        ->where('order_status.name', 'Hoàn tất')  
         ->select('order_address.province', 
                  DB::raw('SUM(order_items.quantity) as total_sales'),
                  DB::raw('SUM(order_items.quantity * order_items.price) as total_revenue'))
@@ -89,8 +90,8 @@ class DashboardController extends Controller
         $revenues = $productSalesData->pluck('total_revenue');
 
         // Lấy khoảng thời gian bắt đầu và kết thúc
-        $startDate = Carbon::parse($request->get('start_date', Carbon::now()->startOfMonth()));
-        $endDate = Carbon::parse($request->get('end_date', Carbon::now()->endOfMonth()));
+        $startDate = Carbon::parse($request->get('start_date', Carbon::now()->startOfMonth()->startOfDay()));
+        $endDate = Carbon::parse($request->get('end_date', Carbon::now()->endOfMonth()->endOfDay()));
 
         // Lọc theo khoảng thời gian, trạng thái, phương thức thanh toán, và mã giảm giá
         $ordersQuery = Order::whereBetween('created_at', [$startDate, $endDate]);
@@ -166,7 +167,7 @@ class DashboardController extends Controller
         $salesData = Order::whereYear('created_at', $year)
         ->whereMonth('created_at', $month)
         ->whereHas('orderStatus', function ($query) {
-            $query->where('name', 'Đã hoàn tất'); // Lọc chỉ lấy đơn hàng đã hoàn tất
+            $query->where('name', 'Hoàn tất'); // Lọc chỉ lấy đơn hàng Hoàn tất
         })
         ->selectRaw('DATE(created_at) as date, SUM(total_amount) as total')
         ->groupBy('date')
@@ -217,6 +218,7 @@ class DashboardController extends Controller
              'revenues',
              'revenueAndSalesData',
              'sanPham',
+             'totalReviewsCount'
             
         ));
     }
