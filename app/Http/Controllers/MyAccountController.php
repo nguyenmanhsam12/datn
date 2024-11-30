@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Brand;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use Illuminate\Http\Request;
@@ -18,11 +20,13 @@ class MyAccountController extends Controller
         }
 
         $status = OrderStatus::all();
+        $list_brand = Brand::orderBy('id','desc')->get();
+        $list_category = Category::orderBy('id','desc')->get();
         $order =  Order::with('cartItems', 'orderStatus','orderAddress','complaint')
             ->where('user_id', $user->id)
             ->get();
         
-        return view('client.pages.myaccount', compact('status', 'order', 'user'));
+        return view('client.pages.myaccount', compact('status', 'order', 'user','list_brand','list_category'));
     }
 
     // nút xác nhận đã nhận hàng

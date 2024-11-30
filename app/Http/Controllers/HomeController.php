@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -19,8 +20,11 @@ class HomeController extends Controller
             ->limit(8)
             ->get();
         $list_category = Category::orderBy('id','asc')->limit(4)->get();
+
+        $list_brand = Brand::orderBy('id','desc')->get();
+        $list_category = Category::orderBy('id','desc')->get();
        
-        return view('client.pages.home',compact('list_product','list_category'));
+        return view('client.pages.home',compact('list_product','list_category','list_brand','list_category'));
     }
 
     public function getProductsByCategory($category_id) {
@@ -43,7 +47,8 @@ class HomeController extends Controller
         // Lấy giá nhỏ nhất từ các biến thể
         $minPrice = $productDetail->variants->min('price');
         
-
+        $list_brand = Brand::orderBy('id','desc')->get();
+        $list_category = Category::orderBy('id','desc')->get();
 
         // sp liên quan
         $relatedProduct = Product::where('category_id',$productDetail->category_id)
@@ -82,7 +87,9 @@ class HomeController extends Controller
     }
 
    //  dd($userHasPurchased); 
-          return view('client.pages.detail',compact('productDetail','relatedProduct','minPrice','product', 'reviews', 'userHasPurchased'));
+          return view('client.pages.detail',compact('productDetail','relatedProduct','minPrice','product', 'reviews', 'userHasPurchased',
+            'list_brand','list_category'
+          ));
       }
      public function submitReview(Request $request)
   {

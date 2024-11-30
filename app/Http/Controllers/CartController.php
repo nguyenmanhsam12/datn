@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
 use App\Models\Cart;
 use App\Models\CartItems;
+use App\Models\Category;
 use App\Models\Coupon;
 use App\Models\ProductVariants;
 use Illuminate\Http\Request;
@@ -36,6 +38,8 @@ class CartController extends Controller
 
         // Tìm giỏ hàng của người dùng
         $cart = Cart::where('user_id', $user->id)->first();
+        $list_brand = Brand::orderBy('id','desc')->get();
+        $list_category = Category::orderBy('id','desc')->get();
 
         // Kiểm tra nếu giỏ hàng không tồn tại
         if (!$cart) {
@@ -84,7 +88,7 @@ class CartController extends Controller
         $finalTotal = $totalAmount;
 
 
-        return view('client.pages.cart', compact('cart', 'cartItems','finalTotal'));
+        return view('client.pages.cart', compact('cart', 'cartItems','finalTotal','list_brand','list_category'));
     }
 
     // thêm giỏ hàng

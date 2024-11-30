@@ -12,12 +12,15 @@ use App\Mail\OtpMail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Mail;
-
+use App\Models\Brand;
+use App\Models\Category;
 
 class AuthController extends Controller
 {
     public function login(){
-        return view('client.pages.login');
+        $list_brand = Brand::orderBy('id','desc')->get();
+        $list_category = Category::orderBy('id','desc')->get();
+        return view('client.pages.login',compact('list_brand','list_category'));
     }
 
     public function postlogin(Request $request){
@@ -43,7 +46,9 @@ class AuthController extends Controller
 
 
     public function register(){
-        return view(('client.pages.register'));
+        $list_brand = Brand::orderBy('id','desc')->get();
+        $list_category = Category::orderBy('id','desc')->get();
+        return view('client.pages.register',compact('list_brand','list_category'));
     }
 
     public function postRegister(RegisterRequest $request){
@@ -66,7 +71,9 @@ class AuthController extends Controller
    
    public function showForgotPasswordForm()
    {
-       return view('client.pages.ForgotPassword');
+        $list_brand = Brand::orderBy('id','desc')->get();
+        $list_category = Category::orderBy('id','desc')->get();
+        return view('client.pages.ForgotPassword',compact('list_brand','list_category'));
    }
 
    //otp

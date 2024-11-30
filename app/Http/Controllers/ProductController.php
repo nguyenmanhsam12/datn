@@ -17,6 +17,9 @@ class ProductController extends Controller
 {
     public function index(){
         $list_product = Product::with('brand','category','user','variants')->orderBy('id','desc')->get();
+
+        // session()->forget('product_attributes');
+
         return view('admin.product.list',compact('list_product'));
     }
 
@@ -112,7 +115,6 @@ class ProductController extends Controller
                         'weight' => $variant['weight'],
                     ]);
 
-                    session()->forget(['product_attributes']);
                 }
             }
 
