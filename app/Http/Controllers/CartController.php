@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
 use App\Models\Cart;
 use App\Models\CartItems;
+use App\Models\Category;
 use App\Models\Coupon;
 use App\Models\ProductVariants;
 use Illuminate\Http\Request;
@@ -36,10 +38,14 @@ class CartController extends Controller
 
         // Tìm giỏ hàng của người dùng
         $cart = Cart::where('user_id', $user->id)->first();
+        $list_brand = Brand::orderBy('id','desc')->get();
+        $list_category = Category::orderBy('id','desc')->get();
 
         // Kiểm tra nếu giỏ hàng không tồn tại
         if (!$cart) {
-            return view('client.pages.cart', ['cartItems' => [], 'totalAmount' => 0]); // Nếu không có giỏ hàng
+            return view('client.pages.cart', ['cartItems' => [],'finalTotal'=>0,'list_brand'=>$list_brand
+                ,'list_category'=>$list_category
+            ]); // Nếu không có giỏ hàng
         }
 
         // Truy vấn trực tiếp vào bảng cartItems và kết hợp với variants và products
@@ -80,11 +86,12 @@ class CartController extends Controller
         session(['totalAmount' => $totalAmount]);
 
         // giá trị của tổng đơn hàng
-        
-        $finalTotal = $totalAmount;
+        if($totalAmount){
+            $finalTotal = $totalAmount;
+        }
+        $finalTotal = 0;
 
-
-        return view('client.pages.cart', compact('cart', 'cartItems','finalTotal'));
+        return view('client.pages.cart', compact('cart', 'cartItems','finalTotal','list_brand','list_category'));
     }
 
     // thêm giỏ hàng

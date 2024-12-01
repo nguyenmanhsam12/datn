@@ -84,23 +84,17 @@
                                 <li class="expand position-static"><a href="{{route('shop')}}">Cửa Hàng</a>
                                     <div class="restrain mega-menu megamenu4">
                                         <span>
-                                            <a class="mega-menu-title" href="">Shop Pages</a>
-                                            <a href="shop-list.html">List View </a>
-                                            <a href="shop.html">Grid View</a>
-                                            <a href="shop-sidebar.html">Shop Sidebar</a>
-                                            <a href="shop-list-right-sidebar.html">Shop List Sidebar</a>
-                                            <a href="shop-grid-right-sidebar.html">Shop Grid Sidebar</a>
-                                            <a href="single-product.html">Single Product</a>
-                                            <a href="single-product-sidebar.html">Single Product Sidebar</a>
+                                            <a class="mega-menu-title" href="">Thương hiệu</a>
+                                            @foreach($list_brand as $br)
+                                                <a href="">{{ $br->name }}</a>
+                                            @endforeach
+                                            
                                         </span>
                                         <span class="block-last">
-                                            <a class="mega-menu-title" href="product-details.html">Shop Page</a>
-                                            <a href="my-account.html">My Account</a>
-                                            <a href="wishlist.html">Wishlist</a>
-                                            <a href="cart.html">Cart </a>
-                                            <a href="checkout.html">Checkout </a>
-                                            <a href="login.html">Login</a>
-                                            <a href="order.html">Order</a>
+                                            <a class="mega-menu-title" href="product-details.html">Danh mục</a>
+                                            @foreach($list_category as $cate)
+                                                <a href="">{{ $cate->name }}</a>
+                                            @endforeach
                                         </span>
                                     </div>
                                 </li>

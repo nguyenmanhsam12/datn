@@ -8,6 +8,8 @@ use App\Models\Cart;
 use App\Models\Province;
 use App\Models\City;
 use App\Models\Ward;
+use App\Models\Category;
+use App\Models\Brand;
 
 use App\Models\Payment_Methods;
 use App\Http\Requests\PlaceOrderRequest;
@@ -107,6 +109,8 @@ class CheckoutController extends Controller
 
         $province = Province::orderBy('matinh', 'asc')->get();
         $payment = Payment_Methods::all();
+        $list_brand = Brand::orderBy('id','desc')->get();
+        $list_category = Category::orderBy('id','desc')->get();
 
         $shipping = $this->calculateShippingFee($total_weight);
         session(['shipping' => $shipping]);
@@ -114,7 +118,9 @@ class CheckoutController extends Controller
         $newTotal = session('newTotal', 0) + $shipping;
 
 
-        return view('client.pages.checkout', compact('cartItems', 'user', 'province', 'payment', 'shipping', 'newTotal'));
+        return view('client.pages.checkout', compact('cartItems', 'user', 'province', 'payment', 'shipping', 'newTotal',
+            'list_brand','list_category'
+        ));
     }
 
     public function selectProvince(Request $request)

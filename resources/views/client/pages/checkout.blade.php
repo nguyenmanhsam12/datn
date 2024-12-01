@@ -186,11 +186,7 @@
             <div class="row">
                 <div class="col-12">
 
-                    {{-- đơn hàng đã được đặt --}}
-                    @if(session()->has('order_id'))
-                        <p>123</p>
-                    @endif
-
+            
                     <div class="shopping-cart">
 
                         <!-- Tab panes -->
@@ -231,14 +227,15 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="">Tỉnh/Thành phố</label>
-                                                        <select class="custom-select mb-15 province choose" name="province"
+                                                        <select class="custom-select mb-15 province " name="province"
                                                             id="province">
                                                             <option value = "">Tỉnh / Thành phố</option>
                                                             @foreach ($province as $pro)
                                                                 <option data-id = "{{ $pro->matinh }}"
-                                                                    value="{{ $pro->name }}">{{ $pro->name }}
-
-                                                                </option>
+                                                                    value="{{ $pro->name }}"
+                                                                    {{ $user->province_id == $pro->matinh ? 'selected' : '' }}
+                                                                    >{{ $pro->name }}
+                                                                </option>   
                                                             @endforeach
                                                         </select>
                                                         <div id="recipient_province_error" class="text-danger mb-3 error-message" style="display: none;"></div>
@@ -247,7 +244,7 @@
 
                                                     <div class="form-group">
                                                         <label for="">Quận / Huyện</label>
-                                                        <select class="custom-select mb-15 city choose" name="city"
+                                                        <select class="custom-select mb-15 " name="city"
                                                             id="city">
                                                             <option value="">Quận / Huyện</option>
 
@@ -265,7 +262,9 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="">Địa chỉ</label>
-                                                        <textarea class="custom-textarea" name="address_order" id="address_order" placeholder="Địa chỉ của bạn..."></textarea>
+                                                        <textarea class="custom-textarea" name="address_order" id="address_order" placeholder="Địa chỉ của bạn...">
+                                                            {{ $user->address }}
+                                                        </textarea>
                                                         <div id="recipient_address_order_error" class="text-danger mb-3 error-message" style="display: none;"></div>
 
                                                     </div>
@@ -381,6 +380,14 @@
             const citySelect = document.getElementById('city');
             const wardSelect = document.getElementById('ward');
 
+            if({{ $user->province_id }}){
+                fetchCities({{ $user->province_id }}, {{ $user->city_id }});
+            }
+
+            if ({{ $user->city_id }}) {
+                fetchWards({{ $user->city_id }}, {{ $user->ward_id }});
+            }
+
             // Khi người dùng chọn tỉnh/thành phố
             provinceSelect.addEventListener('change', function() {
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -390,39 +397,12 @@
                 const formattedProvinceId = provinceId.padStart(2,
                 '0'); // Đảm bảo provinceId có ít nhất 2 chữ số
 
-
-
-
-
                 // Xóa tất cả tùy chọn trong citySelect và wardSelect
                 citySelect.innerHTML = '<option value = "" >Quận / Huyện</option>';
                 wardSelect.innerHTML = '<option value = "" >Xã / Phường</option>';
 
                 if (province) {
-                    // Gọi API để lấy danh sách thành phố dựa vào tỉnh
-                    fetch('{{ route('selectProvince') }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': csrfToken,
-                            },
-                            body: JSON.stringify({
-                                province: formattedProvinceId,
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            data.citys.forEach(city => {
-                                const option = document.createElement('option');
-                                option.dataset.id = city.macity;
-                                option.value = city.name;
-                                option.textContent = city.name;
-                                citySelect.appendChild(option);
-                            });
-                        })
-                        .catch(error => {
-                            console.error('Error fetching cities:', error);
-                        });
+                    fetchCities(formattedProvinceId);
                 }
             });
 
@@ -435,32 +415,66 @@
                 // Xóa tất cả tùy chọn trong wardSelect
                 wardSelect.innerHTML = '<option value="">Xã / Phường</option>'; // Đặt lại tùy chọn phường
                 if (city) {
-                    // Gọi API để lấy danh sách xã/phường dựa vào thành phố
-                    fetch('{{ route('selectCity') }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': csrfToken,
-                            },
-                            body: JSON.stringify({
-                                city: fomatCityId
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            data.wards.forEach(ward => {
-                                const option = document.createElement('option');
-                                option.dataset.id = ward.phuongid;
-                                option.value = ward.name;
-                                option.textContent = ward.name;
-                                wardSelect.appendChild(option);
-                            });
-                        })
-                        .catch(error => {
-                            console.error('Error fetching wards:', error);
-                        });
+                    fetchWards(fomatCityId);
                 }
             });
+
+            // Hàm fetch danh sách city theo province_id
+            function fetchCities(provinceId, selectedCityId = '') {
+                fetch('{{ route('selectProvince') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            province: provinceId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        data.citys.forEach(city => {
+                            const option = document.createElement('option');
+                            option.dataset.id = city.macity
+                            option.value = city.name;
+                            option.textContent = city.name;
+                            if (selectedCityId && city.macity === selectedCityId) {
+                                option.selected = true;
+                            }
+                            citySelect.appendChild(option);
+                        });
+                    });
+            }
+
+            // Hàm fetch danh sách ward theo city_id
+            function fetchWards(cityId, selectedWardId = '') {
+                fetch('{{ route('selectCity') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            city: cityId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        data.wards.forEach(ward => {
+                            const option = document.createElement('option');
+                            option.dataset.id = ward.phuongid;
+                            option.value = ward.name;
+                            option.textContent = ward.name;
+                            if (selectedWardId && ward.phuongid === selectedWardId) {
+                                option.selected = true;
+                            }
+                            wardSelect.appendChild(option);
+                        });
+                    });
+            }
+
+
+           
         });
     </script>
 

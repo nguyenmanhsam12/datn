@@ -74,7 +74,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="section-title text-center">
-                        <h2 class="title-border">Sẩn phẩm mới nhất</h2>
+                        <h2 class="title-border">Sản phẩm mới nhất</h2>
                     </div>
                 </div>
             </div>
@@ -196,7 +196,7 @@
                 <div class="col-lg-12 text-center">
                     <!-- Nav tabs -->
                     <ul class="tab-menu nav">
-                        @foreach ($list_category as $cate)
+                        @foreach ($list_cate as $cate)
                             <li class="nav-item">
                                 <button class="nav-link {{ $loop->first ? 'active' : '' }}"
                                     data-category-id="{{ $cate->id }}" onclick="loadProducts({{ $cate->id }})"
@@ -336,13 +336,15 @@
             $('.tab-menu .nav-link').removeClass('active');
             $(`.tab-menu .nav-link[data-category-id="${categoryId}"]`).addClass('active');
 
-            $.ajax({
+            $.ajax({    
                 url: '/getProductsByCategory/' + categoryId,
                 type: 'GET',
                 beforeSend: function() {
                     $('#product-list').html('<div class="text-center">Loading...</div>');
                 },
                 success: function(response) {
+                    console.log(response)
+
                     let html = '';
 
                     // Khai báo biến đường dẫn trong Blade
@@ -383,7 +385,7 @@
                                         </h4>
                                     </div>
                                     <div class="fix">
-                                        <span class="pro-price floatleft">${formatPrice(product.main_variant.price)}</span>
+                                        <span class="pro-price floatleft">${formatPrice(product?.main_variant.price)}</span>
                                         <span class="pro-rating floatright">
                                             <a href="#"><i class="zmdi zmdi-star"></i></a>
                                             <a href="#"><i class="zmdi zmdi-star"></i></a>

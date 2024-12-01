@@ -98,6 +98,8 @@ Route::post('/order/confirm', [MyAccountController::class, 'confirmOrder'])->nam
 // xác nhận hủy đơn hàng
 Route::post('/cancelOrder', [MyAccountController::class, 'cancelOrder'])->name('cancelOrder');
 
+// cập nhập thông tin người dùng
+Route::post('/update_profile', [MyAccountController::class, 'updateProfile'])->name('updateProfile');
 
 
 

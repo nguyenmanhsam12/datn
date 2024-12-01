@@ -12,8 +12,8 @@
 
     <style>
         input[type="text"] {
-        background: #f6f6f6;
-        border: medium none;
+            background: #f6f6f6;
+            border: medium none;
         }
 
         .size-option {
@@ -88,15 +88,17 @@
         }
 
         /* comment */
-        .pro-reviewer img{
+        .pro-reviewer img {
             border-radius: 50%;
             border: 1px solid #6c757d;
         }
+
         .flash-message {
             position: fixed;
             top: 20px;
             right: 20px;
-            background-color: #28a745; /* Màu xanh cho thành công */
+            background-color: #28a745;
+            /* Màu xanh cho thành công */
             color: white;
             padding: 10px;
             border-radius: 5px;
@@ -104,9 +106,10 @@
             z-index: 9999;
             display: none;
         }
-            
+
         .flash-message.error {
-            background-color: #dc3545; /* Màu đỏ cho lỗi */
+            background-color: #dc3545;
+            /* Màu đỏ cho lỗi */
         }
     </style>
 @endpush
@@ -234,37 +237,44 @@
                                 <div class="pro-tab-info pro-reviews">
                                     <div class="customer-review mb-60">
                                         <h3 class="tab-title title-border mb-30">Đánh giá của khách hàng</h3>
-                                        <ul class="product-comments clearfix"  id="reviews-list">
-                                            @foreach($reviews as $review) <!-- Hiển thị các đánh giá từ cơ sở dữ liệu -->
+                                        <ul class="product-comments clearfix" id="reviews-list">
+                                            @foreach ($reviews as $review)
+                                                <!-- Hiển thị các đánh giá từ cơ sở dữ liệu -->
                                                 <li class="mb-30">
                                                     <div class="pro-reviewer">
                                                         <img src="{{ asset('img/reviewer/1.webp') }}" alt="" />
                                                     </div>
-                                                    
+
                                                     <div class="pro-reviewer-comment">
                                                         <div class="fix">
                                                             <div class="floatleft mbl-center">
-                                                                <h5 class="text-uppercase mb-0"><strong>{{ $review->user->name }}</strong></h5>
-                                                                <p class="reply-date">{{ $review->created_at->format('d M, Y \a\t H:i') }}</p>
+                                                                <h5 class="text-uppercase mb-0">
+                                                                    <strong>{{ $review->user->name }}</strong></h5>
+                                                                <p class="reply-date">
+                                                                    {{ $review->created_at->format('d M, Y \a\t H:i') }}
+                                                                </p>
                                                             </div>
                                                             <div class="comment-reply floatright">
                                                                 <!-- Optional Reply / Delete Buttons -->
-                                                                @if(auth()->id() == $review->user_id) <!-- Nếu là người dùng đang đăng nhập -->
-                                                                <form method="POST" action="{{ route('deleteReview', $review->id) }}" class="delete-review-form" style="display: inline;">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit" class="btn-delete" title="Xóa đánh giá">
-                                                                        <i class="zmdi zmdi-close"></i>
-                                                                    </button>
-                                                                </form>
-                                                                
-                                                                
+                                                                @if (auth()->id() == $review->user_id)
+                                                                    <!-- Nếu là người dùng đang đăng nhập -->
+                                                                    <form method="POST"
+                                                                        action="{{ route('deleteReview', $review->id) }}"
+                                                                        class="delete-review-form" style="display: inline;">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" class="btn-delete"
+                                                                            title="Xóa đánh giá">
+                                                                            <i class="zmdi zmdi-close"></i>
+                                                                        </button>
+                                                                    </form>
                                                                 @endif
                                                             </div>
                                                         </div>
                                                         <div class="stars">
-                                                            @for($i = 1; $i <= 5; $i++)
-                                                                <i class="zmdi {{ $i <= $review->rating ? 'zmdi-star' : 'zmdi-star-outline' }}"></i>
+                                                            @for ($i = 1; $i <= 5; $i++)
+                                                                <i
+                                                                    class="zmdi {{ $i <= $review->rating ? 'zmdi-star' : 'zmdi-star-outline' }}"></i>
                                                             @endfor
                                                         </div>
                                                         <p class="mb-0">{{ $review->message }}</p>
@@ -274,49 +284,53 @@
                                         </ul>
                                     </div>
                                     <!-- Phần tử thông báo -->
-<div id="flash-message" style="display: none;" class="flash-message">
-    <p id="flash-message-text"></p>
-</div>
-
-
-@if($userHasPurchased)
-
-
-    
-
-                                    <div class="leave-review">
-                                        <h3 class="tab-title title-border mb-30">Để lại đánh giá của bạn</h3>
-                                        <div class="your-rating mb-30">
-                                            <p class="mb-10"><strong>Đánh giá của bạn</strong></p>
-                                            <span class="stars">
-                                                <a href="javascript:void(0);" class="star" data-star="1"><i class="zmdi zmdi-star-outline"></i></a>
-                                                <a href="javascript:void(0);" class="star" data-star="2"><i class="zmdi zmdi-star-outline"></i></a>
-                                                <a href="javascript:void(0);" class="star" data-star="3"><i class="zmdi zmdi-star-outline"></i></a>
-                                                <a href="javascript:void(0);" class="star" data-star="4"><i class="zmdi zmdi-star-outline"></i></a>
-                                                <a href="javascript:void(0);" class="star" data-star="5"><i class="zmdi zmdi-star-outline"></i></a>
-                                            </span>
-                                        </div>
-                                        <div class="reply-box">
-                                            <form id="review-form" method="POST" action="{{ route('submitReview', ['slug' => $product->slug]) }}">
-                                                @csrf
-                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                                <input type="hidden" name="rating" id="rating" value="1"> <!-- Giữ giá trị sao chọn -->
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <textarea class="custom-textarea" name="message" placeholder="Đánh giá của bạn..." ></textarea>
-                                                        <button type="submit" data-text="Gửi đánh giá" class="button-one submit-button mt-20">Gửi đánh giá</button>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
+                                    <div id="flash-message" style="display: none;" class="flash-message">
+                                        <p id="flash-message-text"></p>
                                     </div>
+
+
+                                    @if ($userHasPurchased)
+                                        <div class="leave-review">
+                                            <h3 class="tab-title title-border mb-30">Để lại đánh giá của bạn</h3>
+                                            <div class="your-rating mb-30">
+                                                <p class="mb-10"><strong>Đánh giá của bạn</strong></p>
+                                                <span class="stars">
+                                                    <a href="javascript:void(0);" class="star" data-star="1"><i
+                                                            class="zmdi zmdi-star-outline"></i></a>
+                                                    <a href="javascript:void(0);" class="star" data-star="2"><i
+                                                            class="zmdi zmdi-star-outline"></i></a>
+                                                    <a href="javascript:void(0);" class="star" data-star="3"><i
+                                                            class="zmdi zmdi-star-outline"></i></a>
+                                                    <a href="javascript:void(0);" class="star" data-star="4"><i
+                                                            class="zmdi zmdi-star-outline"></i></a>
+                                                    <a href="javascript:void(0);" class="star" data-star="5"><i
+                                                            class="zmdi zmdi-star-outline"></i></a>
+                                                </span>
+                                            </div>
+                                            <div class="reply-box">
+                                                <form id="review-form" method="POST"
+                                                    action="{{ route('submitReview', ['slug' => $product->slug]) }}">
+                                                    @csrf
+                                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                                    <input type="hidden" name="rating" id="rating" value="1">
+                                                    <!-- Giữ giá trị sao chọn -->
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <textarea class="custom-textarea" name="message" placeholder="Đánh giá của bạn..."></textarea>
+                                                            <button type="submit" data-text="Gửi đánh giá"
+                                                                class="button-one submit-button mt-20">Gửi đánh
+                                                                giá</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
                                     @else
-                                   
-                                @endif
-                            
+                                    @endif
+
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>
@@ -324,6 +338,72 @@
             <!-- single-product-tab end -->
             <!-- Related Products Start -->
 
+            {{-- sản phẩm liên quan --}}
+            <div class="row">
+                <div class="col-12">
+                    <div class="section-title text-center">
+                        <h2 class="title-border">Sản phẩm liên quan</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row ">
+                <div class="col-12">
+                    <div class="product-slider arrow-left-right">
+                        <!-- Single-product start -->
+
+                        @foreach ($relatedProduct as $pr)
+                            <div class="single-product">
+                                <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}">
+                                    <div class="product-img">
+                                        <span class="pro-label new-label">new</span>
+                                        <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}"><img
+                                                src="{{ $pr->image }}" alt="" /></a>
+                                        <div class="product-action clearfix">
+                                            <a>
+                                                <form action="{{ route('wishlist.add') }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="product_id" value="{{ $pr->id }}">
+                                                    <button type="submit" class="btn btn-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
+                                                        <i class="zmdi zmdi-favorite-outline"></i>
+                                                    </button>
+                                                </form>
+                                            </a>
+                                            <a href="#" data-bs-toggle="modal" data-bs-target="#productModal"
+                                                title="Quick View"><i class="zmdi zmdi-zoom-in"></i></a>
+                                            <a href="#" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                title="Compare"><i class="zmdi zmdi-refresh"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="product-info clearfix">
+                                        <div class="fix">
+                                            <h4 class="post-title floatleft"><a
+                                                    href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}">{{ $pr->name }}</a>
+                                            </h4>
+                                        </div>
+                                        <div class="fix">
+                                            <span
+                                                class="pro-price floatleft">{{ number_format($pr->mainVariant->price, 0, ',', '.') . ' ' . 'VNĐ' }}</span>
+                                            <span class="pro-rating floatright">
+                                                <a href="#"><i class="zmdi zmdi-star"></i></a>
+                                                <a href="#"><i class="zmdi zmdi-star"></i></a>
+                                                <a href="#"><i class="zmdi zmdi-star"></i></a>
+                                                <a href="#"><i class="zmdi zmdi-star-half"></i></a>
+                                                <a href="#"><i class="zmdi zmdi-star-half"></i></a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+
+                            {{-- modal --}}
+                        @endforeach
+
+                        <!-- Single-product end -->
+
+                    </div>
+                </div>
+            </div>
 
         </div>
     </div>
@@ -372,7 +452,7 @@
                 updatePrice(price);
                 const stock = this.getAttribute('data-stock');
                 stockElement.textContent = `Số lượng : ${stock}`
-                
+
                 const variantId = this.getAttribute('data-variant-id');
 
                 // Kiểm tra nếu có variantId và xử lý lắng nghe sự kiện
@@ -386,7 +466,7 @@
 
                         // Cập nhật variantId hiện tại
                         currentVariantId = variantId;
-                        
+
 
                         // Đăng ký kênh mới để lắng nghe sự kiện
                         Echo.channel(`product-${currentVariantId}`)
@@ -411,7 +491,7 @@
             });
 
         });
-    </script>   
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -520,47 +600,47 @@
             }
         });
 
-     
+
         $(document).ready(function() {
-    // Xử lý sự kiện click khi chọn sao đánh giá
-    $('.star').click(function() {
-        var starValue = $(this).data('star');
-        $('#rating').val(starValue); // Cập nhật giá trị hidden input rating
-        // Cập nhật giao diện sao đã chọn
-        $('.star').each(function(index) {
-            if (index < starValue) {
-                $(this).find('i').removeClass('zmdi-star-outline').addClass('zmdi-star');
-            } else {
-                $(this).find('i').removeClass('zmdi-star').addClass('zmdi-star-outline');
-            }
-        });
-    });
+            // Xử lý sự kiện click khi chọn sao đánh giá
+            $('.star').click(function() {
+                var starValue = $(this).data('star');
+                $('#rating').val(starValue); // Cập nhật giá trị hidden input rating
+                // Cập nhật giao diện sao đã chọn
+                $('.star').each(function(index) {
+                    if (index < starValue) {
+                        $(this).find('i').removeClass('zmdi-star-outline').addClass('zmdi-star');
+                    } else {
+                        $(this).find('i').removeClass('zmdi-star').addClass('zmdi-star-outline');
+                    }
+                });
+            });
 
-    $('#review-form').submit(function(e) {
-    e.preventDefault(); // Ngừng hành động mặc định của form (tải lại trang)
+            $('#review-form').submit(function(e) {
+                e.preventDefault(); // Ngừng hành động mặc định của form (tải lại trang)
 
-    var form = $(this); // Lấy form hiện tại
-    var url = form.attr('action'); // Lấy URL action của form
-    var data = form.serialize(); // Lấy tất cả dữ liệu trong form
+                var form = $(this); // Lấy form hiện tại
+                var url = form.attr('action'); // Lấy URL action của form
+                var data = form.serialize(); // Lấy tất cả dữ liệu trong form
 
 
 
-    // Gửi yêu cầu AJAX để gửi đánh giá
-    $.ajax({
-        type: 'POST',
-        url: url,
-        data: data, // Dữ liệu gửi đi
-        success: function(response) {
-            if (response.status === 'success') {
-                // Hiển thị thông báo thành công
-                showFlashMessage(response.message, 'success');
-                // Làm sạch textarea sau khi gửi thành công
-                $('textarea[name="message"]').val('');
-                // Reset sao đánh giá
-                $('.star i').removeClass('zmdi-star').addClass('zmdi-star-outline');
+                // Gửi yêu cầu AJAX để gửi đánh giá
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: data, // Dữ liệu gửi đi
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            // Hiển thị thông báo thành công
+                            showFlashMessage(response.message, 'success');
+                            // Làm sạch textarea sau khi gửi thành công
+                            $('textarea[name="message"]').val('');
+                            // Reset sao đánh giá
+                            $('.star i').removeClass('zmdi-star').addClass('zmdi-star-outline');
 
-                // Thêm đánh giá mới vào danh sách
-                var newReview = `
+                            // Thêm đánh giá mới vào danh sách
+                            var newReview = `
                     <li class="mb-30" id="review-${response.id}">
                          <div class="pro-reviewer">
                                                         <img src="{{ asset('img/reviewer/1.webp') }}" alt="" />
@@ -590,119 +670,118 @@
                         </div>
                     </li>
                 `;
-                // Thêm đánh giá mới vào đầu danh sách đánh giá
-                $('#reviews-list').prepend(newReview);
+                            // Thêm đánh giá mới vào đầu danh sách đánh giá
+                            $('#reviews-list').prepend(newReview);
 
-                // Đăng ký lại sự kiện xóa cho form vừa được thêm
-                attachDeleteReviewHandler();
-            } else {
-                // Hiển thị thông báo lỗi
-                showFlashMessage(response.message, 'error');
-            }
-        },
-        error: function(xhr, status, error) {
-            // Hiển thị thông báo lỗi nếu có lỗi
-            showFlashMessage('Có lỗi xảy ra, vui lòng thử lại!', 'error');
-        }
-    });
-});
-
-
-    // Hàm hiển thị thông báo
-    function showFlashMessage(message, type) {
-        var flashMessage = $('#flash-message');
-        var flashMessageText = $('#flash-message-text');
-
-        flashMessageText.text(message);
-
-        // Đặt màu sắc cho thông báo dựa trên loại (thành công hay lỗi)
-        if (type === 'success') {
-            flashMessage.removeClass('error').addClass('success');
-        } else {
-            flashMessage.removeClass('success').addClass('error');
-        }
-
-        // Hiển thị thông báo
-        flashMessage.fadeIn();
-
-        // Ẩn thông báo sau 3 giây
-        setTimeout(function() {
-            flashMessage.fadeOut();
-        }, 3000);
-    }
-
-    // Hàm để tạo sao đánh giá
-    function getStars(rating) {
-        var stars = '';
-        for (var i = 1; i <= 5; i++) {
-            stars += i <= rating ? '<i class="zmdi zmdi-star"></i>' : '<i class="zmdi zmdi-star-outline"></i>';
-        }
-        return stars;
-    }
-});
+                            // Đăng ký lại sự kiện xóa cho form vừa được thêm
+                            attachDeleteReviewHandler();
+                        } else {
+                            // Hiển thị thông báo lỗi
+                            showFlashMessage(response.message, 'error');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Hiển thị thông báo lỗi nếu có lỗi
+                        showFlashMessage('Có lỗi xảy ra, vui lòng thử lại!', 'error');
+                    }
+                });
+            });
 
 
-$(document).ready(function() {
-    // Lắng nghe sự kiện submit của form xóa
-    $('.delete-review-form').submit(function(e) {
-        e.preventDefault(); // Ngừng hành động mặc định của form (tải lại trang)
+            // Hàm hiển thị thông báo
+            function showFlashMessage(message, type) {
+                var flashMessage = $('#flash-message');
+                var flashMessageText = $('#flash-message-text');
 
-        var form = $(this); // Lấy form hiện tại
-        var url = form.attr('action'); // Lấy URL action của form
+                flashMessageText.text(message);
 
-        // Gửi yêu cầu AJAX
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: form.serialize(), // Lấy tất cả dữ liệu trong form
-            success: function(response) {
-                if(response.status === 'success') {
-                    form.closest('li').remove(); // Xóa đánh giá từ danh sách hiển thị
-                    alert('Đánh giá đã được xóa!');
+                // Đặt màu sắc cho thông báo dựa trên loại (thành công hay lỗi)
+                if (type === 'success') {
+                    flashMessage.removeClass('error').addClass('success');
                 } else {
-                    alert('Có lỗi xảy ra khi xóa đánh giá!');
+                    flashMessage.removeClass('success').addClass('error');
                 }
-            },
-            error: function(xhr, status, error) {
-                alert('Có lỗi xảy ra, vui lòng thử lại!');
+
+                // Hiển thị thông báo
+                flashMessage.fadeIn();
+
+                // Ẩn thông báo sau 3 giây
+                setTimeout(function() {
+                    flashMessage.fadeOut();
+                }, 3000);
+            }
+
+            // Hàm để tạo sao đánh giá
+            function getStars(rating) {
+                var stars = '';
+                for (var i = 1; i <= 5; i++) {
+                    stars += i <= rating ? '<i class="zmdi zmdi-star"></i>' :
+                        '<i class="zmdi zmdi-star-outline"></i>';
+                }
+                return stars;
             }
         });
-    });
-});
 
-function attachDeleteReviewHandler() {
-    $('.delete-review-form').off('submit').on('submit', function(e) {
-        e.preventDefault(); // Ngừng hành động mặc định của form (tải lại trang)
 
-        var form = $(this);
-        var url = form.attr('action');
+        $(document).ready(function() {
+            // Lắng nghe sự kiện submit của form xóa
+            $('.delete-review-form').submit(function(e) {
+                e.preventDefault(); // Ngừng hành động mặc định của form (tải lại trang)
 
-        // Gửi yêu cầu AJAX
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: form.serialize(),
-            success: function(response) {
-                if (response.status === 'success') {
-                    form.closest('li').remove(); // Xóa đánh giá từ danh sách hiển thị
-                    alert('Đánh giá đã được xóa!');
-                } else {
-                    alert('Có lỗi xảy ra khi xóa đánh giá!');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Lỗi chi tiết: ", xhr.responseText);
-                alert('Có lỗi xảy ra, vui lòng thử lại!');
-            }
+                var form = $(this); // Lấy form hiện tại
+                var url = form.attr('action'); // Lấy URL action của form
+
+                // Gửi yêu cầu AJAX
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: form.serialize(), // Lấy tất cả dữ liệu trong form
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            form.closest('li').remove(); // Xóa đánh giá từ danh sách hiển thị
+                            alert('Đánh giá đã được xóa!');
+                        } else {
+                            alert('Có lỗi xảy ra khi xóa đánh giá!');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Có lỗi xảy ra, vui lòng thử lại!');
+                    }
+                });
+            });
         });
-    });
-}
 
-// Gọi hàm này sau khi DOM đã được tải
-$(document).ready(function() {
-    attachDeleteReviewHandler();
-});
+        function attachDeleteReviewHandler() {
+            $('.delete-review-form').off('submit').on('submit', function(e) {
+                e.preventDefault(); // Ngừng hành động mặc định của form (tải lại trang)
 
+                var form = $(this);
+                var url = form.attr('action');
 
+                // Gửi yêu cầu AJAX
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: form.serialize(),
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            form.closest('li').remove(); // Xóa đánh giá từ danh sách hiển thị
+                            alert('Đánh giá đã được xóa!');
+                        } else {
+                            alert('Có lỗi xảy ra khi xóa đánh giá!');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Lỗi chi tiết: ", xhr.responseText);
+                        alert('Có lỗi xảy ra, vui lòng thử lại!');
+                    }
+                });
+            });
+        }
+
+        // Gọi hàm này sau khi DOM đã được tải
+        $(document).ready(function() {
+            attachDeleteReviewHandler();
+        });
     </script>
 @endpush

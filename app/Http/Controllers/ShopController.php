@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Brand;
 use App\Models\Product;
 use App\Models\Size;
 use Illuminate\Http\Request;
@@ -16,6 +17,9 @@ class ShopController extends Controller
         $priceFilter = $request->input('price'); // Khoảng giá đã chọn
         $searchQuery = $request->input('search'); // Từ khóa tìm kiếm
         $categoryId = $request->input('category_id'); // Danh mục đã chọn
+
+        $list_brand = Brand::orderBy('id','desc')->get();
+        $list_category = Category::orderBy('id','desc')->get();
 
         $list_size = Size::all();
         $list_category = Category::all();
@@ -62,6 +66,8 @@ class ShopController extends Controller
                 'pagination' => $pagination,
             ]);
         }
-        return view('client.pages.shop', compact('list_product', 'list_category', 'list_size', 'searchQuery', 'priceFilter'));
+        return view('client.pages.shop', compact('list_product', 'list_category', 'list_size', 'searchQuery', 'priceFilter'
+            ,'list_brand','list_category'
+        ));
     }
 }

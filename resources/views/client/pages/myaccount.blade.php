@@ -89,7 +89,7 @@
         .order__left {
             display: flex;
             align-items: center;
-            flex : 2
+            flex: 2
         }
 
         .order__left .image {
@@ -132,7 +132,7 @@
 
         .order-status[data-status="6"] {
             color: #DC3545;
-            
+
         }
 
         .button-group button {
@@ -184,8 +184,14 @@
                     <p>Họ và Tên: <strong>{{ $user->name }}</strong></p>
                     <p>Email: <strong>{{ $user->email }}</strong></p>
                     <p>Số Điện Thoại: <strong>{{ $user->phone_number }}</strong></p>
-                    <button class="btn btn-primary">Chỉnh Sửa</button>
-                </div>
+                    <p>Địa chỉ: <strong>{{ $user->address }},
+                        
+                        {{ $user->ward->name }},
+                        {{ $user->city->name }},
+                        {{ $user->province->name }},
+                    </strong></p>
+                    <button class="btn btn-primary" id="editButton">Chỉnh Sửa</button>
+                </div>  
 
                 <!-- Order List Section -->
                 <div class="order-list" id="orderList" style="display: none;">
@@ -206,13 +212,13 @@
                                 <div class="order-header">
                                     <h6 class="order-id">Đơn Hàng #{{ $or->id }}
                                     </h6>
-                                    
+
                                     <div>
-                                            <p class="order-status" data-status= "{{ $or->status_id }}">
-                                            {{ $or->orderStatus->name }}</p>    
+                                        <p class="order-status" data-status= "{{ $or->status_id }}">
+                                            {{ $or->orderStatus->name }}</p>
                                     </div>
-                                    
-                                        
+
+
                                 </div>
                                 <div class="order-body">
                                     @foreach ($or->cartItems as $item)
@@ -243,16 +249,17 @@
                                                     <button
                                                         class="btn btn-danger cancel-order"data-order-id="{{ $or->id }}"
                                                         data-status={{ $or->status_id }}>Hủy</button>
-                                                    <button class="btn btn-success" 
-                                                        data-bs-toggle="modal"
+                                                    <button class="btn btn-success" data-bs-toggle="modal"
                                                         data-bs-target="#orderModal{{ $or->id }}">Xem Chi
                                                         Tiết</button>
                                                     @if ($or->payment_status == 'pending' && $or->payment_method_id == 2)
-                                                        <button class="btn btn-secondary retry-payment-btn" data-order-id="{{ $or->id }}">Thanh toán lại</button>                                                        
+                                                        <button class="btn btn-secondary retry-payment-btn"
+                                                            data-order-id="{{ $or->id }}">Thanh toán lại</button>
                                                     @endif
 
                                                     @if ($or->payment_status == 'pending' && $or->payment_method_id == 3)
-                                                        <button class="btn btn-secondary retry-payment-btn" data-order-id="{{ $or->id }}">Thanh toán lại</button>                                                        
+                                                        <button class="btn btn-secondary retry-payment-btn"
+                                                            data-order-id="{{ $or->id }}">Thanh toán lại</button>
                                                     @endif
                                                 @endif
 
@@ -260,31 +267,32 @@
                                                     <button
                                                         class="btn btn-danger cancel-order"data-order-id="{{ $or->id }}"
                                                         data-status={{ $or->status_id }}>Hủy</button>
-                                                    <button class="btn btn-success"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#orderModal{{ $or->id }}"
-                                                    >Xem Chi Tiết</button>
+                                                    <button class="btn btn-success" data-bs-toggle="modal"
+                                                        data-bs-target="#orderModal{{ $or->id }}">Xem Chi
+                                                        Tiết</button>
                                                 @endif
 
                                                 @if ($or->status_id == 3)
-                                                    <button class="btn btn-success"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#orderModal{{ $or->id }}"
-                                                    >Xem Chi Tiết</button>
+                                                    <button class="btn btn-success" data-bs-toggle="modal"
+                                                        data-bs-target="#orderModal{{ $or->id }}">Xem Chi
+                                                        Tiết</button>
                                                 @endif
 
 
                                                 <!-- Nút xác nhận đơn hàng cho trạng thái "Đã giao" -->
                                                 @if ($or->status_id == 4)
-                                                    <button class="btn btn-success"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#orderModal{{ $or->id }}"
-                                                    >Xem Chi Tiết</button>
+                                                    <button class="btn btn-success" data-bs-toggle="modal"
+                                                        data-bs-target="#orderModal{{ $or->id }}">Xem Chi
+                                                        Tiết</button>
                                                     @if ($or->complaint)
-                                                        <a class="btn btn-warning" href="{{ route('complaintsDetail',['orderId'=> $or->id ]) }}">Xem khiếu nại</a>    
+                                                        <a class="btn btn-warning"
+                                                            href="{{ route('complaintsDetail', ['orderId' => $or->id]) }}">Xem
+                                                            khiếu nại</a>
                                                     @else
-                                                        <a class="btn btn-warning" href="{{ route('complaints',['orderId'=> $or->id ]) }}">Khiếu Nại</a>    
-                                                    @endif    
+                                                        <a class="btn btn-warning"
+                                                            href="{{ route('complaints', ['orderId' => $or->id]) }}">Khiếu
+                                                            Nại</a>
+                                                    @endif
                                                     <button class="btn btn-primary confirm-order"
                                                         data-order-id="{{ $or->id }}"
                                                         data-status={{ $or->status_id }}>Xác nhận đơn hàng</button>
@@ -292,20 +300,15 @@
 
                                                 <!-- Nút Khiếu nại cho trạng thái "Hoàn tất" -->
                                                 @if ($or->status_id == 5)
-                                            
-                                                        <button class="btn btn-success"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#orderModal{{ $or->id }}"
-                                                        >Xem Chi Tiết</button>
-                                          
-                                                @endif  
+                                                    <button class="btn btn-success" data-bs-toggle="modal"
+                                                        data-bs-target="#orderModal{{ $or->id }}">Xem Chi
+                                                        Tiết</button>
+                                                @endif
 
                                                 @if ($or->status_id == 6)
-                                                    <button class="btn btn-success"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#orderModal{{ $or->id }}"
-                                                    >Xem Chi Tiết</button>
-                                                    
+                                                    <button class="btn btn-success" data-bs-toggle="modal"
+                                                        data-bs-target="#orderModal{{ $or->id }}">Xem Chi
+                                                        Tiết</button>
                                                 @endif
 
 
@@ -328,63 +331,70 @@
                                                     <div class="modal-body d-flex justify-content-between">
                                                         <div>
                                                             <ul>
-                                                               
+
                                                                 @foreach ($or->cartItems as $item)
-                                                                   
                                                                     <li>
                                                                         <strong>Sản phẩm:</strong>
                                                                         {{ $item->product_name }}<br>
                                                                         <strong>Kích cỡ:</strong> {{ $item->size }}<br>
-                                                                        <strong>Số lượng:</strong> {{ $item->quantity }}<br>
-                                                                        <strong>Giá tiền:</strong> {{ number_format($item->price,0,',','.').' VNĐ' }}
+                                                                        <strong>Số lượng:</strong>
+                                                                        {{ $item->quantity }}<br>
+                                                                        <strong>Giá tiền:</strong>
+                                                                        {{ number_format($item->price, 0, ',', '.') . ' VNĐ' }}
                                                                     </li>
                                                                 @endforeach
                                                             </ul>
                                                             <p><strong>Phí vận chuyển:</strong>
-                                                            {{ number_format($or->shipping_fee, 0, ',', '.') }} VNĐ</p>
-                                                            
-                                                                <div class="payment-status">
-                                                                    Trạng thái thanh toán
-                                                                    @switch($or->payment_status)
-                                                                        @case('pending')
-                                                                            <span class="badge bg-warning">Đang chờ thanh toán</span>
-                                                                            @break
-                                                                        @case('paid')
-                                                                            <span class="badge bg-success">Đã thanh toán</span>
-                                                                            @break
-                                                                        @case('canceled')
-                                                                            <span class="badge bg-danger">Thanh toán thất bại</span>
-                                                                            @break
-                                                                        @default
-                                                                            <span class="badge bg-secondary">Không rõ trạng thái</span>
-                                                                    @endswitch
-                                                                </div>
-                                                        
-                                                            
-                                                                <div class="payment-method">
-                                                                    Phương thức thanh toán:
-                                                                    <span class="badge bg-secondary">{{ $or->payment->name }}</span>
-                                                                </div>
-                                                           
-                                                            
+                                                                {{ number_format($or->shipping_fee, 0, ',', '.') }} VNĐ</p>
+
+                                                            <div class="payment-status">
+                                                                Trạng thái thanh toán
+                                                                @switch($or->payment_status)
+                                                                    @case('pending')
+                                                                        <span class="badge bg-warning">Đang chờ thanh toán</span>
+                                                                    @break
+
+                                                                    @case('paid')
+                                                                        <span class="badge bg-success">Đã thanh toán</span>
+                                                                    @break
+
+                                                                    @case('canceled')
+                                                                        <span class="badge bg-danger">Thanh toán thất bại</span>
+                                                                    @break
+
+                                                                    @default
+                                                                        <span class="badge bg-secondary">Không rõ trạng thái</span>
+                                                                @endswitch
+                                                            </div>
+
+
+                                                            <div class="payment-method">
+                                                                Phương thức thanh toán:
+                                                                <span
+                                                                    class="badge bg-secondary">{{ $or->payment->name }}</span>
+                                                            </div>
+
+
                                                             <p><strong>Tổng tiền:</strong>
                                                                 {{ number_format($newTotal, 0, ',', '.') }} VNĐ</p>
                                                         </div>
                                                         <div>
                                                             <ul>
-                                                                    <li>
-                                                                        <strong>Tên người nhận:</strong>
-                                                                        {{ $or->orderAddress->recipient_name }}<br>
-                                                                        <strong>Email người nhận:</strong>{{ $or->orderAddress->recipient_email }}<br>
-                                                                        <strong>Địa chỉ:</strong>{{ $or->orderAddress->address_order }},
-                                                                        {{ $or->orderAddress->ward }},
-                                                                        {{ $or->orderAddress->city }},
-                                                                        {{ $or->orderAddress->province }}<br>
-                                                                        <strong>Số điện thoại:</strong>
-                                                                        {{ $or->orderAddress->phone_number }}
-                                                                    </li>
+                                                                <li>
+                                                                    <strong>Tên người nhận:</strong>
+                                                                    {{ $or->orderAddress->recipient_name }}<br>
+                                                                    <strong>Email người
+                                                                        nhận:</strong>{{ $or->orderAddress->recipient_email }}<br>
+                                                                    <strong>Địa
+                                                                        chỉ:</strong>{{ $or->orderAddress->address_order }},
+                                                                    {{ $or->orderAddress->ward }},
+                                                                    {{ $or->orderAddress->city }},
+                                                                    {{ $or->orderAddress->province }}<br>
+                                                                    <strong>Số điện thoại:</strong>
+                                                                    {{ $or->orderAddress->phone_number }}
+                                                                </li>
                                                             </ul>
-                        
+
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">
@@ -394,9 +404,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        
-                                        
                                     @endforeach
                                 </div>
                             </div>
@@ -407,7 +414,6 @@
             </div>
         </div>
     </div>
-    
 @endsection
 
 @push('script')
@@ -489,16 +495,16 @@
                             orderStatus.setAttribute('data-status', data
                                 .newStatus); // Cập nhật mã trạng thái từ server
 
-                             // Ẩn hoặc thay đổi các nút sau khi đơn hàng đã hoàn tất
-                                const confirmButton = orderCard.querySelector('.confirm-order');
-                                if (confirmButton) {
-                                    confirmButton.style.display = 'none'; // Ẩn nút "Xác nhận đơn hàng"
-                                }
+                            // Ẩn hoặc thay đổi các nút sau khi đơn hàng đã hoàn tất
+                            const confirmButton = orderCard.querySelector('.confirm-order');
+                            if (confirmButton) {
+                                confirmButton.style.display = 'none'; // Ẩn nút "Xác nhận đơn hàng"
+                            }
 
-                                const complaintButton = orderCard.querySelector('a.btn-warning');
-                                if (complaintButton) {
-                                    complaintButton.style.display = 'none'; // Ẩn nút "Khiếu Nại"
-                                }
+                            const complaintButton = orderCard.querySelector('a.btn-warning');
+                            if (complaintButton) {
+                                complaintButton.style.display = 'none'; // Ẩn nút "Khiếu Nại"
+                            }
 
                             // Chuyển đơn hàng sang tab "Hoàn tất" nếu trạng thái mới là hoàn tất
                             if (data.newStatus === 5) {
@@ -625,11 +631,14 @@
                                                 if (order.getAttribute(
                                                         'data-status') === '6') {
                                                     order.style.display = 'block';
-                                                    document.querySelectorAll('.retry-payment-btn').forEach(
-                                                        function(bt){
-                                                            bt.style.display = 'none';
-                                                        }
-                                                    )
+                                                    document.querySelectorAll(
+                                                            '.retry-payment-btn')
+                                                        .forEach(
+                                                            function(bt) {
+                                                                bt.style.display =
+                                                                    'none';
+                                                            }
+                                                        )
                                                 } else {
                                                     order.style.display = 'none';
                                                 }
@@ -662,51 +671,51 @@
             const retryButtons = document.querySelectorAll(".retry-payment-btn");
 
             retryButtons.forEach(button => {
-                button.addEventListener("click", function () {
+                button.addEventListener("click", function() {
                     const orderId = this.getAttribute('data-order-id');
-                    
+
 
                     fetch('{{ route('retryPayment') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        },
-                        body: JSON.stringify({ order_id: orderId })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.vnpay) {
-                            // Điều hướng đến URL thanh toán VNPAY
-                            window.location.href = data.vnpay;
-                        } else if(data.momo){
-                            // Điều hướng đến URL thanh toán VNPAY
-                            window.location.href = data.momo;
-                        }else {
-                            alert(data.message || "Đã xảy ra lỗi, vui lòng thử lại.");
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        alert("Không thể thực hiện thanh toán lại, vui lòng thử lại.");
-                    });
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector(
+                                    'meta[name="csrf-token"]').content
+                            },
+                            body: JSON.stringify({
+                                order_id: orderId
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.vnpay) {
+                                // Điều hướng đến URL thanh toán VNPAY
+                                window.location.href = data.vnpay;
+                            } else if (data.momo) {
+                                // Điều hướng đến URL thanh toán VNPAY
+                                window.location.href = data.momo;
+                            } else {
+                                alert(data.message || "Đã xảy ra lỗi, vui lòng thử lại.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            alert("Không thể thực hiện thanh toán lại, vui lòng thử lại.");
+                        });
                 });
             });
         });
 
         // nút khiếu lại
-        
-
     </script>
 
     <script type="module">
         // Lắng nghe sự kiện từ Laravel Echo
 
         const orderElement = document.querySelectorAll('.order-card')
-        
-        orderElement.forEach( order => {
+
+        orderElement.forEach(order => {
             const orderId = order.getAttribute('data-order-id'); // lấy ra id của từng đơn hàng
-            console.log(orderId);
             Echo.private(`order.${orderId}`)
                 .listen('OrderStatusUpdatedEvent', (e) => {
                     console.log(e); // Kiểm tra dữ liệu sự kiện nhận được
@@ -744,7 +753,7 @@
                                 </button><button class="btn btn-success"
                                 data-bs-toggle="modal"data-bs-target="#orderModal${orderId}">
                                 Xem chi tiết</button>`;
-                                                            
+
                         } else if (newStatusId === 2) {
                             buttonGroup.innerHTML =
                                 `<button class="btn btn-danger">Hủy</button>
@@ -760,7 +769,7 @@
                                 `<button class="btn btn-success"
                                 data-bs-toggle="modal" data-bs-target="#orderModal${orderId}"
                                 >Xem chi tiết</button>
-                                <a class="btn btn-warning" href="{{ route('complaints',['orderId'=> $or->id ]) }}">Khiếu Nại</a>
+                                <a class="btn btn-warning" href="{{ route('complaints', ['orderId' => $or->id]) }}">Khiếu Nại</a>
                                 <button class="btn btn-primary confirm-order"
                                 data-order-id=${orderId}
                                 data-status=${newStatusId}>Xác nhận đơn hàng</button>
@@ -772,7 +781,7 @@
                                 >Xem chi tiết</button>
                                 
                                 `;
-                        } else if(newStatusId === 6){
+                        } else if (newStatusId === 6) {
                             buttonGroup.innerHTML = `<button class="btn btn-success"
                             data-bs-toggle="modal" data-bs-target="#orderModal${orderId}"
                             >Xem chi tiết</button>`;
@@ -795,67 +804,86 @@
                                 };
 
                                 console.log(dataToSend);
-                                
+
 
                                 // Gửi yêu cầu POST mà không cần ID trong URL
                                 fetch('{{ route('confirmOrder') }}', {
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/json',
-                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                            'X-CSRF-TOKEN': document.querySelector(
+                                                    'meta[name="csrf-token"]')
                                                 .getAttribute('content'),
                                         },
-                                        body: JSON.stringify(dataToSend) // Truyền tất cả tham số qua body
+                                        body: JSON.stringify(
+                                            dataToSend
+                                        ) // Truyền tất cả tham số qua body
                                     })
                                     .then(response => {
                                         // Kiểm tra nếu response không phải là JSON hợp lệ
                                         if (response.ok) {
-                                            return response.json();  // Chỉ phân tích JSON nếu phản hồi hợp lệ
+                                            return response
+                                                .json(); // Chỉ phân tích JSON nếu phản hồi hợp lệ
                                         } else {
                                             throw new Error('Network response was not ok');
                                         }
                                     })
                                     .then(data => {
                                         if (data.status === 'success') {
-                                                console.log(data);
+                                            console.log(data);
                                             // Cập nhật giao diện khi xác nhận thành công
                                             const orderCard = this.closest('.order-card');
-                                            orderCard.setAttribute('data-status', data.newStatus);
+                                            orderCard.setAttribute('data-status', data
+                                                .newStatus);
                                             // tên trạng thái
-                                            const orderStatus = orderCard.querySelector('.order-status');
+                                            const orderStatus = orderCard.querySelector(
+                                                '.order-status');
                                             // Cập nhật trạng thái hiển thị trong giao diện
                                             orderStatus.textContent = data.statusName;
                                             orderStatus.setAttribute('data-status', data
-                                                .newStatus); // Cập nhật mã trạng thái từ server
+                                                .newStatus
+                                            ); // Cập nhật mã trạng thái từ server
 
                                             // Chuyển đơn hàng sang tab "Hoàn tất" nếu trạng thái mới là hoàn tất
                                             if (data.newStatus === 5) {
 
-                                                const button = this; // Lấy chính nút đang được click
-                                                button.textContent = 'Khiếu nại'; // Đổi nội dung nút
-                                                button.classList.remove('confirm-order'); // Xóa class "confirm-order"
+                                                const button =
+                                                    this; // Lấy chính nút đang được click
+                                                button.textContent =
+                                                    'Khiếu nại'; // Đổi nội dung nút
+                                                button.classList.remove(
+                                                    'confirm-order'
+                                                ); // Xóa class "confirm-order"
                                                 button.classList.add('btn', 'btn-warning');
                                                 button.setAttribute('data-status', data
                                                     .newStatus); // Cập nhật trạng thái nút
 
                                                 // Tìm tab "Hoàn tất" và chuyển đến đó
                                                 const completedTab = document.querySelector(
-                                                    `.tab-link[data-status="${data.newStatus}"]`);
+                                                    `.tab-link[data-status="${data.newStatus}"]`
+                                                );
                                                 if (completedTab) {
                                                     // Chuyển sang tab "Hoàn tất"
-                                                    document.querySelectorAll('.tab-link').forEach(function(tab) {
-                                                        tab.classList.remove('active');
-                                                    });
+                                                    document.querySelectorAll('.tab-link')
+                                                        .forEach(function(tab) {
+                                                            tab.classList.remove(
+                                                                'active');
+                                                        });
                                                     completedTab.classList.add('active');
 
                                                     // Ẩn/hiện các đơn hàng theo trạng thái
-                                                    const orders = document.querySelectorAll('.order-card');
+                                                    const orders = document
+                                                        .querySelectorAll('.order-card');
                                                     orders.forEach(function(order) {
-                                                        if (order.getAttribute('data-status') === '5') {
-                                                            order.style.display = 'block';
+                                                        if (order.getAttribute(
+                                                                'data-status') ===
+                                                            '5') {
+                                                            order.style.display =
+                                                                'block';
 
                                                         } else {
-                                                            order.style.display = 'none';
+                                                            order.style.display =
+                                                                'none';
                                                         }
                                                     });
                                                 }
@@ -877,25 +905,236 @@
                                         console.error('Error:', error);
                                         // alert('Có lỗi xảy ra trong quá trình xác nhận');
                                     });
-                        },{once:true}); //sự kiện này chỉ được gọi một lần duy nhất
-                    });
+                            }, {
+                                once: true
+                            }); //sự kiện này chỉ được gọi một lần duy nhất
+                        });
 
 
-                    // Lọc và hiển thị đơn hàng theo tab trạng thái hiện tại
-                    const activeStatus = document.querySelector('.tab-link.active').getAttribute('data-status');
-                    if (activeStatus !== 'all' && activeStatus !== newStatusId.toString()) {
-                        orderElement.style.display = 'none';
-                    } else {
-                        orderElement.style.display = 'block';
+                        // Lọc và hiển thị đơn hàng theo tab trạng thái hiện tại
+                        const activeStatus = document.querySelector('.tab-link.active').getAttribute(
+                            'data-status');
+                        if (activeStatus !== 'all' && activeStatus !== newStatusId.toString()) {
+                            orderElement.style.display = 'none';
+                        } else {
+                            orderElement.style.display = 'block';
+                        }
                     }
-                }
-            });
+                });
 
         })
-
-        
     </script>
 
 
+    {{-- đoạn code xử lí thông tin cụ thể của người dùng --}}
+    <script>
+        document.getElementById('editButton').addEventListener('click', function() {
+            const accountInfo = document.getElementById('accountInfo');
 
+            // Tạo HTML của form
+            const formHTML = `
+                <h5>Chỉnh sửa Thông Tin Tài Khoản</h5>
+                <form id="editForm">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Họ và Tên:</label>
+                        <input type="text" class="form-control" id="name" value="{{ $user->name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email:</label>
+                        <input type="email" class="form-control" id="email" value="{{ $user->email }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Số Điện Thoại:</label>
+                        <input type="text" class="form-control" id="phone" value="{{ $user->phone_number }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Tỉnh/Thành phố</label>
+                        <select class="form-control province choose" name="province" id="province">
+                            <option value = "">Tỉnh / Thành phố</option>
+                            @foreach ($list_provice as $province)
+                                <option value="{{ $province->matinh }}"
+                                    {{ $user->province_id == $province->matinh ? 'selected' : '' }}    
+                                >{{ $province->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Quận/huyện</label>
+                        <select class="form-control" name="city" id="city">
+                            <option value = "">Quận/huyện</option>                                               
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Xã/Phường</label>
+                        <select class="form-control" name="ward" id="ward">
+                            <option value = "">Xã/Phường</option>                                               
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="">Địa chỉ</label>
+                        <textarea class="form-control" name="address" id="address" placeholder="Địa chỉ của bạn...">{{ $user->address }}</textarea>
+                    </div>
+                    <button type="button" class="btn btn-success" id="saveButton">Lưu thay đổi</button>
+                    <button type="button" class="btn btn-secondary" id="cancelButton">Hủy</button>
+                </form>
+            `;
+
+            // Chèn form vào nội dung của accountInfo
+            accountInfo.innerHTML = formHTML;
+
+            const provinceSelect = document.getElementById('province');
+            const citySelect = document.getElementById('city');
+            const wardSelect = document.getElementById('ward');
+
+            // load dữ liệu nếu như tỉnh , thành phố , phường đã lưu
+            if ({{ $user->province_id }}) {
+                fetchCities({{ $user->province_id }}, {{ $user->city_id }});
+            }
+
+            // Gọi API lấy danh sách ward nếu có city_id
+            if ({{ $user->city_id }}) {
+                fetchWards({{ $user->city_id }}, {{ $user->ward_id }});
+            }
+
+
+            // Khi người dùng chọn tỉnh/thành phố
+            provinceSelect.addEventListener('change', function() {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                const selectedProvince = this.value;
+                const formattedProvinceId = selectedProvince.padStart(2,
+                    '0'); // Đảm bảo provinceId có ít nhất 2 chữ số
+                // Xóa tất cả tùy chọn trong citySelect và wardSelect
+                citySelect.innerHTML = '<option value = "" >Quận / Huyện</option>';
+                wardSelect.innerHTML = '<option value = "" >Xã / Phường</option>';
+
+                if (formattedProvinceId) {
+                    fetchCities(formattedProvinceId);
+                }
+
+
+            });
+
+
+            // Khi người dùng chọn thành phố
+            citySelect.addEventListener('change', function() {
+                const selectedCity = this.value // Lấy tùy chọn đã chọn
+                const fomatCityId = selectedCity.padStart(3, '0');
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                // Xóa tất cả tùy chọn trong wardSelect
+                wardSelect.innerHTML = '<option value="">Xã / Phường</option>'; // Đặt lại tùy chọn phường
+
+                if (fomatCityId) {
+                    fetchWards(fomatCityId);
+                }
+            });
+
+            // Hàm fetch danh sách city theo province_id
+            function fetchCities(provinceId, selectedCityId = '') {
+                fetch('{{ route('selectProvince') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            province: provinceId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        data.citys.forEach(city => {
+                            const option = document.createElement('option');
+                            option.value = city.macity;
+                            option.textContent = city.name;
+                            if (selectedCityId && city.macity === selectedCityId) {
+                                option.selected = true;
+                            }
+                            citySelect.appendChild(option);
+                        });
+                    });
+            }
+
+            // Hàm fetch danh sách ward theo city_id
+            function fetchWards(cityId, selectedWardId = '') {
+                fetch('{{ route('selectCity') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            city: cityId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        data.wards.forEach(ward => {
+                            const option = document.createElement('option');
+                            option.value = ward.phuongid;
+                            option.textContent = ward.name;
+                            if (selectedWardId && ward.phuongid === selectedWardId) {
+                                option.selected = true;
+                            }
+                            wardSelect.appendChild(option);
+                        });
+                    });
+            }
+
+            // Xử lý sự kiện nút Lưu
+            document.getElementById('saveButton').addEventListener('click', function() {
+                const newName = document.getElementById('name').value;
+                const newEmail = document.getElementById('email').value;
+                const newPhone = document.getElementById('phone').value;
+                const newProvince = document.getElementById('province').value;
+                const newCity = document.getElementById('city').value;
+                const newWard = document.getElementById('ward').value;
+                const newAddress = document.getElementById('address').value;
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+
+
+                // Gửi dữ liệu đến server
+                fetch('{{ route('updateProfile') }}', {
+                        method: 'POST', // Hoặc PUT tùy theo RESTful API
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                        },
+                        body: JSON.stringify({
+                            name: newName,
+                            email: newEmail,
+                            phone_number: newPhone,
+                            province_id: newProvince,
+                            city_id: newCity,
+                            ward_id: newWard,
+                            address: newAddress
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công',
+                                text: 'Cập nhập thông tin thành công',
+                                confirmButtonText: 'OK'
+                            });
+                            location.reload(); // Hoặc điều hướng đến trang khác
+                        } else {
+                            alert('Cập nhật thất bại: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Lỗi khi cập nhật thông tin:', error);
+                        alert('Đã xảy ra lỗi, vui lòng thử lại!');
+                    });
+            });
+
+            // Xử lý sự kiện nút Hủy
+            document.getElementById('cancelButton').addEventListener('click', function() {
+                location.reload(); // Hoặc khôi phục lại nội dung ban đầu
+            });
+        });
+    </script>
 @endpush

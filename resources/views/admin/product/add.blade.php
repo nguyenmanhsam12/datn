@@ -115,65 +115,76 @@
 
                             <!-- Chỗ chứa thuộc tính -->
                             <div id="tl_container">
-                                @if(session('product_attributes'))
-                                    @foreach(session('product_attributes') as $index => $variant)
-                                        <div class="col-md-12">
-                                            <div class="card card-primary">
-                                                <div class="card-header">
-                                                    <h3 class="card-title">Thêm thuộc tính {{ $index + 1 }}</h3>
-                                                    <div class="card-tools">
-                                                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                                                            <i class="fas fa-minus"></i>
-                                                        </button>
-                                                        <button type="button" class="btn btn-tool remove-attribute" title="Remove" style="color: red;">
-                                                            <i class="fas fa-times"></i>
-                                                        </button>
-                                                    </div>
+                                @if(old('variants'))
+                                    @foreach(old('variants') as $index => $variant)
+                                        {{-- {{ dd($variant) }} --}}
+                                        <div class="card card-primary">
+                                            <div class="card-header">
+                                                <h3 class="card-title">Thêm thuộc tính</h3>
+                                                <div class="card-tools">
+                                                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-tool remove-attribute" style="color: red;">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
                                                 </div>
-                                                <div class="card-body">
-                                                    <div class="attribute-group">
-                                                        <div class="form-group">
-                                                            <label for="inputStatus{{ $index }}">Kích cỡ</label>
-                                                            <select id="inputStatus{{ $index }}" name="variants[{{ $index }}][size_id]" class="form-control">
-                                                                <option value="">--Chọn kích cỡ--</option>
-                                                                @foreach ($allSize as $size)
-                                                                    <option value="{{ $size->id }}" {{ old("variants.$index.size_id", $variant['size_id'] ?? '') == $size->id ? 'selected' : '' }}>
-                                                                        Size {{ $size->name }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                            @error("variants.$index.size_id")
-                                                                <div class="text-danger">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="inputStock{{ $index }}">Số lượng</label>
-                                                            <input type="text" id="inputStock{{ $index }}" class="form-control" name="variants[{{ $index }}][stock]" value="{{ old("variants.$index.stock", $variant['stock'] ?? '') }}">
-                                                            @error("variants.$index.stock")
-                                                                <div class="text-danger">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="weight{{ $index }}">Trọng lượng</label>
-                                                            <input type="text" id="weight{{ $index }}" class="form-control" name="variants[{{ $index }}][weight]" value="{{ old("variants.$index.weight", $variant['weight'] ?? '') }}">
-                                                            @error("variants.$index.weight")
-                                                                <div class="text-danger">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="inputPrice{{ $index }}">Giá</label>
-                                                            <input type="text" id="inputPrice{{ $index }}" class="form-control" name="variants[{{ $index }}][price]" value="{{ old("variants.$index.price", $variant['price'] ?? '') }}">
-                                                            @error("variants.$index.price")
-                                                                <div class="text-danger">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="form-group">
+                                                    <label for="inputStatus{{ $index }}">Kích cỡ</label>
+                                                    <select id="inputStatus{{ $index }}" name="variants[{{ $index }}][size_id]" class="form-control size-select">
+                                                        <option value="">--Chọn kích cỡ--</option>
+                                                        @foreach ($allSize as $size)
+                                                            <option value="{{ $size->id }}" 
+                                                                {{ old("variants.$index.size_id") == $size->id ? 'selected' : '' }}
+                                                                >                                                                
+                                                                Size {{ $size->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error("variants.$index.size_id")
+                                                        <div class="text-danger mt-3">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="inputStock{{ $index }}">Số lượng</label>
+                                                    <input type="text" id="inputStock{{ $index }}" 
+                                                        class="form-control" 
+                                                        name="variants[{{ $index }}][stock]" 
+                                                        value="{{ old("variants.$index.stock") }}">
+                                                    @error("variants.$index.stock")
+                                                        <div class="text-danger mt-3">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="weight{{ $index }}">Trọng lượng</label>
+                                                    <input type="text" id="weight{{ $index }}" 
+                                                        class="form-control" 
+                                                        name="variants[{{ $index }}][weight]" 
+                                                        value="{{ old("variants.$index.weight") }}">
+                                                    @error("variants.$index.weight")
+                                                        <div class="text-danger mt-3">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="inputPrice{{ $index }}">Giá</label>
+                                                    <input type="text" id="inputPrice{{ $index }}" 
+                                                        class="form-control" 
+                                                        name="variants[{{ $index }}][price]" 
+                                                        value="{{ old("variants.$index.price") }}">
+                                                    @error("variants.$index.price")
+                                                        <div class="text-danger mt-3">{{ $message }}</div>
+                                                    @enderror
                                                 </div>
                                             </div>
                                         </div>
                                     @endforeach
                                 @endif
-                            </div>
+                            </div>  
                             
                             
                             
@@ -207,152 +218,207 @@
 
 @push('script')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let attributeIndex = {{ session('product_attributes') ? count(session('product_attributes')) : 0 }};
-            const selectedSizes = []; // Lưu trữ các kích cỡ đã được chọn
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('DOM đã được tải thành công');
+            // Chuyển dữ liệu từ Laravel vào biến JavaScript
+            let oldVariants = @json(old('variants', [])); 
+            let attributeIndex = oldVariants.length; // Số lượng variants sẽ làm index ban đầu
+            let selectedSizes = oldVariants.map(variant => variant.size_id) || []; // Mảng lưu các size đã chọn
 
-           
+            console.log(selectedSizes);
+            
 
-            document.getElementById('add-attribute').addEventListener('click', function() {
-                const attributesContainer = document.getElementById('tl_container');
-                
+            // Cập nhật lại danh sách các kích cỡ đã chọn để tránh trùng
+            function updateSizeOptions() {
+                const allSizeSelects = document.querySelectorAll('.size-select');
+                console.log(allSizeSelects);
 
-                // Tạo một div mới để chứa thuộc tính
-                const newAttributeGroup = document.createElement('div');
-                newAttributeGroup.classList.add('col-md-12'); // Cấu trúc div cha
+                allSizeSelects.forEach(select => {
+                    const currentValue = select.value;
+                    
+                    // Tạo HTML cho các option với những giá trị đã chọn
+                    let optionsHTML = '<option value="">--Chọn kích cỡ--</option>';
+                    @foreach ($allSize as $size)
+                        optionsHTML += `<option value="{{ $size->id }}" 
+                            
+                            ${currentValue  == {{ $size->id }} ? 'selected' : ''}
+                            >
+                            Size {{ $size->name }}
+                        </option>`;
+                    @endforeach
+                    
+                    // Đặt lại các lựa chọn cho mỗi select
+                    select.innerHTML = optionsHTML;
 
-                newAttributeGroup.innerHTML = `
-                    <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">Thêm thuộc tính</h3>
-                            <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <button type="button" class="btn btn-tool remove-attribute" title="Remove" style="color: red;">
-                                    <i class="fas fa-times"></i>
-                                </button>
+                    // Giữ nguyên giá trị hiện tại
+                    select.value = currentValue;
+                    console.log(select);
+
+                    
+                });
+            }
+
+            updateSizeOptions();
+
+            // Xử lý khi nhấn nút thêm thuộc tính
+                document.getElementById('add-attribute').addEventListener('click', function () {
+                    const attributesContainer = document.getElementById('tl_container');
+                    
+                    // Tạo một div mới để chứa thuộc tính
+                    const newAttributeGroup = document.createElement('div');
+                    newAttributeGroup.classList.add('col-md-12'); // Cấu trúc div cha
+                    newAttributeGroup.innerHTML = `
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Thêm thuộc tính</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-tool remove-attribute" title="Remove" style="color: red;">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="attribute-group">
+                                    <div class="form-group">
+                                        <label for="inputStatus${attributeIndex}">Kích cỡ</label>
+                                        <select id="inputStatus${attributeIndex}" name="variants[${attributeIndex}][size_id]" class="form-control size-select">
+                                            <option value="">--Chọn kích cỡ--</option>
+                                            @foreach ($allSize as $size)
+                                                <option value="{{ $size->id }}">Size {{ $size->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputStock${attributeIndex}">Số lượng</label>
+                                        <input type="text" id="inputStock${attributeIndex}" class="form-control" name="variants[${attributeIndex}][stock]">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="weight${attributeIndex}">Trọng lượng</label>
+                                        <input type="text" id="weight${attributeIndex}" class="form-control" name="variants[${attributeIndex}][weight]">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputPrice${attributeIndex}">Giá</label>
+                                        <input type="text" id="inputPrice${attributeIndex}" class="form-control" name="variants[${attributeIndex}][price]">
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="card-body">
-                            <div class="attribute-group">
-                                <div class="form-group">
-                                    <label for="inputStatus${attributeIndex}">Kích cỡ</label>
-                                    <select id="inputStatus${attributeIndex}" name="variants[${attributeIndex}][size_id]" class="form-control size-select">
-                                        <option value="">--Chọn kích cỡ--</option>
-                                        @foreach ($allSize as $size)
-                                            <option value="{{ $size->id }}">Size {{ $size->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('variants.${attributeIndex}.size_id')
-                                        <div class="text-danger mt-3">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="form-group">
-                                    <label for="inputStock${attributeIndex}">Số lượng</label>
-                                    <input type="text" id="inputStock${attributeIndex}" class="form-control" name="variants[${attributeIndex}][stock]">
-                                    @error('variants.${attributeIndex}.stock')
-                                        <div class="text-danger mt-3">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="form-group">
-                                    <label for="weight${attributeIndex}">Trọng lượng</label>
-                                    <input type="text" id="weight${attributeIndex}" class="form-control" name="variants[${attributeIndex}][weight]">
-                                    @error('variants.${attributeIndex}.weight')
-                                    <div class="text-danger mt-3">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="form-group">
-                                    <label for="inputPrice${attributeIndex}">Giá</label>
-                                    <input type="text" id="inputPrice${attributeIndex}" class="form-control" name="variants[${attributeIndex}][price]">
-                                    @error('variants.${attributeIndex}.price')
-                                    <div class="text-danger mt-3">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                    `;
 
-                // Thêm thuộc tính mới vào container
-                attributesContainer.appendChild(newAttributeGroup);
-                attributeIndex++; // Tăng chỉ số thuộc tính
+                    // Thêm thuộc tính mới vào container
+                    attributesContainer.appendChild(newAttributeGroup);
 
-                const sizeSelect = newAttributeGroup.querySelector('.size-select');
+                    // Lấy phần tử chọn size trong nhóm thuộc tính vừa tạo
+                    const sizeSelect = newAttributeGroup.querySelector('.size-select');
 
-                // Xử lý khi chọn kích cỡ
-                sizeSelect.addEventListener('change', function () {
-                    // ban đầu sẽ không có giá trị
-                    const previousValue = sizeSelect.dataset.previousValue || ''; // Lấy giá trị cũ
-                    const selectedSize = sizeSelect.value;
+                    // Đặt giá trị mặc định nếu có
+                    if (oldVariants[attributeIndex]) {
+                        sizeSelect.value = oldVariants[attributeIndex]['size_id'];
+                        selectedSizes.push(sizeSelect.value); // Lưu vào selectedSizes
+                    }
 
-                    // Nếu có giá trị cũ, loại bỏ khỏi mảng
-                    if (previousValue) {
-                        // hàm index of này nếu như có phần tử trong mảng sẽ trả về -1;
-                        const index = selectedSizes.indexOf(previousValue);
-                        if (index > -1) {
-                            selectedSizes.splice(index, 1);
+                    // Xử lý khi chọn kích cỡ
+                    sizeSelect.addEventListener('change', function () {
+                        const previousValue = sizeSelect.dataset.previousValue || ''; // Lấy giá trị cũ
+                        const selectedSize = sizeSelect.value;
+
+                        // Nếu có giá trị cũ, loại bỏ khỏi mảng
+                        if (previousValue) {
+                            const index = selectedSizes.indexOf(previousValue);
+                            if (index > -1) {
+                                selectedSizes.splice(index, 1);
+                            }
                         }
-                    }
 
-                    // Thêm giá trị mới vào mảng nếu không trống
-                    if (selectedSize) {
-                        selectedSizes.push(selectedSize);
-                    }
-
-                    // Lưu giá trị mới làm giá trị trước đó
-                    sizeSelect.dataset.previousValue = selectedSize;
-
-                    // Cập nhật danh sách kích cỡ khả dụng
-                    updateSizeOptions();
-                });
-
-                // Gán sự kiện xóa cho nút trong thuộc tính vừa tạo
-                newAttributeGroup.querySelector('.remove-attribute').addEventListener('click', function () {
-                    const previousValue = sizeSelect.value;
-
-                    // Nếu có giá trị cũ, loại bỏ khỏi mảng
-                    if (previousValue) {
-                        const index = selectedSizes.indexOf(previousValue);
-                        if (index > -1) {
-                            selectedSizes.splice(index, 1);
+                        // Kiểm tra xem kích cỡ đã được chọn chưa
+                        if (selectedSizes.includes(selectedSize)) {
+                            alert("Kích cỡ này đã được chọn. Vui lòng chọn kích cỡ khác.");
+                            sizeSelect.value = ''; // Hủy lựa chọn kích cỡ đã chọn
+                            return; // Không cho phép chọn trùng
                         }
-                    }
 
-                    attributesContainer.removeChild(newAttributeGroup);
+                        // Thêm giá trị mới vào mảng nếu không trống
+                        if (selectedSize) {
+                            selectedSizes.push(selectedSize);
+                            console.log(selectedSizes);
+                        }
 
-                    // Cập nhật danh sách kích cỡ khả dụng
-                    updateSizeOptions();
-                });
+                        // Lưu giá trị mới làm giá trị trước đó
+                        sizeSelect.dataset.previousValue = selectedSize;
 
-                
-
-            });
-
-
-                // Hàm cập nhật danh sách kích cỡ khả dụng
-                function updateSizeOptions() {
-                    const allSizeSelects = document.querySelectorAll('.size-select');
-
-                    allSizeSelects.forEach(select => {
-                        const currentValue = select.value;
-                        console.log(currentValue);
-                        
-                        select.innerHTML = `
-                            <option value="">--Chọn kích cỡ--</option>
-                            @foreach ($allSize as $size)
-                                <option value="{{ $size->id }}" ${selectedSizes.includes('{{ $size->id }}') && currentValue !== '{{ $size->id }}' ? 'disabled' : ''}>
-                                    Size {{ $size->name }}
-                                </option>
-                            @endforeach
-                        `;
-                        
-                        // Giữ nguyên giá trị hiện tại
-                        select.value = currentValue;
+                        // Cập nhật danh sách kích cỡ khả dụng
+                        updateSizeOptions();
                     });
-                }
+
+                    // Gán sự kiện xóa cho nút trong thuộc tính vừa tạo
+                    newAttributeGroup.querySelector('.remove-attribute').addEventListener('click', function () {
+                        const previousValue = sizeSelect.value;
+                        // Nếu có giá trị cũ, loại bỏ khỏi mảng
+                        if (previousValue) {
+                            const index = selectedSizes.indexOf(previousValue);
+                            if (index > -1) {
+                                selectedSizes.splice(index, 1);
+                            }
+                        }
+
+                        // Xóa nhóm thuộc tính
+                        attributesContainer.removeChild(newAttributeGroup);
+
+                        // Cập nhật danh sách kích cỡ khả dụng
+                        updateSizeOptions();
+                    });
+
+                    attributeIndex++; // Tăng chỉ số thuộc tính
+                    updateSizeOptions(); // Cập nhật lại danh sách kích cỡ khi thêm thuộc tính
+                });
+
+                document.querySelectorAll('.remove-attribute').forEach(button =>{
+                    button.addEventListener('click', function () {
+                        // Tìm phần tử cha chứa cả nhóm thuộc tính
+                        const attributeGroup = button.closest('.card');
+                        if (attributeGroup) {
+                            attributeGroup.remove(); // Xóa toàn bộ nhóm thuộc tính
+                        }
+                        
+                    });
+                });
+
+                // Xử lý nhóm thuộc tính khi khởi tạo (giá trị từ old)
+                document.querySelectorAll('.size-select').forEach(select => {
+                    select.addEventListener('change', function () {
+                        const previousValue = select.dataset.previousValue || '';
+                        const selectedSize = select.value;
+
+                        if (previousValue) {
+                            const index = selectedSizes.indexOf(previousValue);
+                            if (index > -1) selectedSizes.splice(index, 1);
+                        }
+
+                        if (selectedSizes.includes(selectedSize)) {
+                            alert('Kích cỡ này đã được chọn, vui lòng chọn kích cỡ khác.');
+                            select.value = '';
+                            return;
+                        }
+
+                        if (selectedSize) selectedSizes.push(selectedSize);
+
+                        select.dataset.previousValue = selectedSize;
+                        updateSizeOptions();
+                    });
+                });
+
         });
+
+            
+            
+
+            
+        
     </script>
+
 
     
 
