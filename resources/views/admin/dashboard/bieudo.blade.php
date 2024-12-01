@@ -21,7 +21,7 @@
                         <h5 class="card-title">
                             <i class="fas fa-shopping-cart"></i> Tổng số đơn hàng
                         </h5>
-                        <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $totalOrders }}</p>
+                        <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $sldh }}</p>
                     </div>
                 </div>
             </div>
