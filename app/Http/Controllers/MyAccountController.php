@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Brand;
+use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderStatus;
+use App\Models\Province;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,8 +15,8 @@ class MyAccountController extends Controller
 {
     public function myAccount()
     {
-        $user = Auth::user();
-
+        $user = Auth::user()->load(['ward', 'city', 'province']);
+        
         if (!$user) {
             return redirect()->route('login')->with('error', 'Vui lòng đăng nhập trước');
         }
@@ -25,8 +27,11 @@ class MyAccountController extends Controller
         $order =  Order::with('cartItems', 'orderStatus','orderAddress','complaint')
             ->where('user_id', $user->id)
             ->get();
+        $list_provice = Province::all();
         
-        return view('client.pages.myaccount', compact('status', 'order', 'user','list_brand','list_category'));
+        return view('client.pages.myaccount', compact('status', 'order', 'user','list_brand','list_category'
+            ,'list_provice'
+        ));
     }
 
     // nút xác nhận đã nhận hàng
@@ -106,5 +111,20 @@ class MyAccountController extends Controller
             'newStatus' => $order->status_id,
             'statusName' => $order->orderStatus->name,
         ]);
+    }
+
+    // update profile
+    public function updateProfile(Request $request){
+
+        $data = $request->all();
+
+        $user = auth()->user();
+
+        $newUser = User::find($user->id);
+
+        $newUser->update($data);
+
+        return response()->json(['success' => true, 'message' => 'Thông tin cập nhật thành công']);
+
     }
 }

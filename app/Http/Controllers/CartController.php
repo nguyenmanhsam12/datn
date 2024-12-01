@@ -43,7 +43,9 @@ class CartController extends Controller
 
         // Kiểm tra nếu giỏ hàng không tồn tại
         if (!$cart) {
-            return view('client.pages.cart', ['cartItems' => [], 'totalAmount' => 0]); // Nếu không có giỏ hàng
+            return view('client.pages.cart', ['cartItems' => [],'finalTotal'=>0,'list_brand'=>$list_brand
+                ,'list_category'=>$list_category
+            ]); // Nếu không có giỏ hàng
         }
 
         // Truy vấn trực tiếp vào bảng cartItems và kết hợp với variants và products
@@ -84,9 +86,10 @@ class CartController extends Controller
         session(['totalAmount' => $totalAmount]);
 
         // giá trị của tổng đơn hàng
-        
-        $finalTotal = $totalAmount;
-
+        if($totalAmount){
+            $finalTotal = $totalAmount;
+        }
+        $finalTotal = 0;
 
         return view('client.pages.cart', compact('cart', 'cartItems','finalTotal','list_brand','list_category'));
     }

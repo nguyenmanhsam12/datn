@@ -22,6 +22,10 @@ class User extends Authenticatable
         'email',
         'password',
         'phone_number',
+        'address',
+        'city_id',
+        'province_id',
+        'ward_id',
     ];
 
     /**
@@ -61,6 +65,16 @@ class User extends Authenticatable
     public function wishlists()
     {
         return $this->hasMany(Wishlist::class, 'user_id');
+    }
+
+    public function province(){
+        return $this->belongsTo(Province::class,'province_id');
+    }
+    public function city(){
+        return $this->belongsTo(City::class,'city_id');
+    }
+    public function ward(){
+        return $this->belongsTo(Ward::class,'ward_id');
     }
     
 }

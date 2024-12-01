@@ -10,8 +10,9 @@ class Ward extends Model
     use HasFactory;
 
     protected $primaryKey = 'phuongid';
-
+    
     protected $table = 'ward';
 
     protected $fillable = ['name','type','macity'];
 }
+            
