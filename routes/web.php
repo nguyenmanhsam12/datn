@@ -22,6 +22,7 @@ use App\Http\Controllers\MyAccountController;
 use App\Http\Controllers\OrderAdminController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\ThanhYouController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WishlistController;
@@ -38,6 +39,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('/',[HomeController::class,'index'])->name('home');
+
 
 Route::get('/login',[AuthController::class,'login'])->name('login');
 Route::get('/register',[AuthController::class,'register'])->name('register');
@@ -106,6 +108,8 @@ Route::get('/shop/category/{categoryId}', [ShopController::class, 'showProByCate
 
 // bài viết
 Route::get('/blog',[BlogController::class,'blog'])->name('blog');
+
+Route::get('blog/{id}', [BlogController::class, 'show'])->name('blog.show');
 
 //về chúng tôi
 Route::get('/about',[AboutController::class,'about'])->name('about');
@@ -256,6 +260,23 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::put('/admin/comlaints/update-status', [ComplanintsController::class, 'updateStatus'])->name('admin.comlaints.updateStatus');
 
     });
+
+
+
+
+         // Quản lý bài viết
+         Route::get('posts', [PostController::class, 'index'])->name('admin.posts.index'); // Danh sách bài viết
+         Route::get('posts/create', [PostController::class, 'create'])->name('admin.posts.create'); // Form thêm bài viết
+         Route::post('posts', [PostController::class, 'store'])->name('admin.posts.store'); // Lưu bài viết mới
+         Route::get('posts/{id}/edit', [PostController::class, 'edit'])->name('admin.posts.edit'); // Form sửa bài viết
+         Route::put('admin/posts/{id}', [PostController::class, 'update'])->name('admin.posts.update');
+                
+        Route::delete('admin/posts/{id}', [PostController::class, 'destroy'])->name('admin.posts.destroy');
+        Route::put('admin/posts/{id}/restore', [PostController::class, 'restore'])->name('admin.posts.restore');
+        Route::delete('admin/posts/{id}/forceDelete', [PostController::class, 'forceDelete'])->name('admin.posts.forceDelete');
+        Route::get('admin/posts/deleted', [PostController::class, 'deletedPosts'])->name('admin.posts.listDelete');
+
+
 
     // Route::prefix('statistical')->group(function(){
     //     Route::get('/',[StatisticsController::class,'index'])->name('admin.statistical.index');
