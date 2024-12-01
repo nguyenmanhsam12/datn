@@ -27,7 +27,9 @@ class BlogController extends Controller
                             ->orderBy('created_at', 'desc')
                             ->take(5)
                             ->get();
+                            $list_brand = Brand::orderBy('id','desc')->get();
+                            $list_category = Category::orderBy('id', 'desc')->get();
 
-        return view('client.pages.blog-detail', compact('post', 'recentPosts'));
+        return view('client.pages.blog-detail', compact('post', 'recentPosts','list_brand','list_category'));
     }
 }

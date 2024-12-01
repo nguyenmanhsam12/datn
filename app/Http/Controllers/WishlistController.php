@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Brand;
+use App\Models\Category;
 
 class WishlistController extends Controller
 {
     public function index()
     {
         $wishlists = auth()->user()->wishlists()->with('product')->paginate(12);
-
+        $list_brand = Brand::orderBy('id','desc')->get();
+        $list_category = Category::orderBy('id', 'desc')->get();
         DB::enableQueryLog();
 
         $topSellingProducts = \App\Models\Product::join('product_variants', 'products.id', '=', 'product_variants.product_id')
@@ -22,7 +25,7 @@ class WishlistController extends Controller
             ->take(12)
             ->get();
 
-        return view('client.pages.wishlist', compact('wishlists', 'topSellingProducts'));
+        return view('client.pages.wishlist', compact('list_category','list_brand','wishlists', 'topSellingProducts'));
     }
 
     public function store(Request $request)

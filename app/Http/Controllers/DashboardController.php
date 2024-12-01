@@ -22,8 +22,8 @@ class DashboardController extends Controller
     {
 
 $totalReviewsCount = Review::count();
-        // Đếm số lượng tổng quan
-        $totalOrders = Order::count();
+        // Đếm số lượng tổng quanssldh
+        $sldh = Order::count();
         $totalProducts = Product::count();
         $totalAdmins = User::count();
 
@@ -218,7 +218,7 @@ $totalReviewsCount = Review::count();
              'revenues',
              'revenueAndSalesData',
              'sanPham',
-             'totalReviewsCount'
+             'totalReviewsCount','sldh'
             
         ));
     }
