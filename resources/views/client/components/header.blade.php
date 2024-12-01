@@ -11,6 +11,19 @@
                 <div class="col-12 col-md-6">
                     <div class="header-right-menu text-center text-md-end">
                         <ul>
+                            <li><a href="#">usd</a><i class="zmdi zmdi-chevron-down"></i>
+                                <ul>
+                                    <li><a href="#">eur</a></li>
+                                    <li><a href="#">usd</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#">English</a><i class="zmdi zmdi-chevron-down"></i>
+                                <ul>
+                                    <li><a href="#">English</a></li>
+                                    <li><a href="#">France</a></li>
+                                </ul>
+                            </li>
+
                             @if (Auth::user())
                                 <li><a href="#">Xin chào {{ Auth::user()->name }}</a><i class="zmdi zmdi-chevron-down"></i>
                                     <ul>
@@ -42,18 +55,7 @@
                                 </li>
                             @endif
                           
-                            {{-- <li><a href="#">usd</a><i class="zmdi zmdi-chevron-down"></i>
-                                <ul>
-                                    <li><a href="#">eur</a></li>
-                                    <li><a href="#">usd</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="#">English</a><i class="zmdi zmdi-chevron-down"></i>
-                                <ul>
-                                    <li><a href="#">English</a></li>
-                                    <li><a href="#">France</a></li>
-                                </ul>
-                            </li> --}}
+                            
                         </ul>
                     </div>								
                 </div>
@@ -73,7 +75,7 @@
                 </div>
                 <!-- logo end -->
                 <!-- mainmenu area start -->
-                <div class="col-md-auto col-6 d-flex justify-content-end">
+                <div class="col-md-auto col-6 d-flex justify-content-end gap-2">
                     <!-- Menu Area -->
                     <div class="mainmenu  position-relative">
                         <nav>
@@ -105,6 +107,26 @@
                         </nav>
                     </div>
                     <!-- Menu Area -->
+                    <div class="mini-cart text-right">
+                        <ul>
+                            <li>
+                                <button class="cart-icon" id="search-icon">
+                                    <i class="zmdi zmdi-search"></i>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="search-modal" class="search-modal">
+                        <div class="search-modal-content">
+                            <div class="search-modal-logo">
+                                <img style="width: 200px;" src="{{asset('img/logo/logo.png')}}" alt="" srcset="">
+                            </div>
+                            <input type="text" id="search-input" placeholder="Tìm kiếm...">
+                            <div id="search-results"></div> 
+                            <p class="close" id="close-modal">&times;</p>
+                        </div>
+                    </div>
+                    
                     <!-- Menu Cart Area Start -->
                     <div class="mini-cart text-right">
                         <ul>
@@ -142,6 +164,7 @@
                             </li>
                         </ul>
                     </div>
+                    
                     <!-- Menu Cart Area Start -->
                 </div>
                 <!-- mainmenu area end -->
