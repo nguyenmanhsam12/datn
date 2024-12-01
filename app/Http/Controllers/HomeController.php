@@ -8,6 +8,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\CartItems;
 use App\Models\Review;
+use App\Models\Post;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use Illuminate\Support\Facades\Auth;
@@ -21,11 +22,16 @@ class HomeController extends Controller
             ->limit(8)
             ->get();
         $list_cate = Category::orderBy('id', 'asc')->limit(4)->get();
-
         $list_brand = Brand::orderBy('id', 'desc')->get();
         $list_category = Category::orderBy('id', 'desc')->get();
+        $posts = Post::orderBy('created_at', 'desc')
+                       ->take(3) 
+                       ->get();
+       
+        return view('client.pages.home', compact('list_product', 'list_cate', 'list_brand', 'list_category'
+            ,'posts'
+        ));
 
-        return view('client.pages.home', compact('list_product', 'list_cate', 'list_brand', 'list_category'));
     }
 
     public function getProductsByCategory($category_id)
@@ -114,6 +120,7 @@ class HomeController extends Controller
             'message.required_without' => 'Bạn phải chọn ít nhất một trong hai: Đánh giá sao hoặc đánh giá văn bản.',
         ]);
         if (!$request->rating && !$request->message) {
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Vui lòng chọn ít nhất một hình thức đánh giá (sao hoặc văn bản).'
@@ -157,3 +164,6 @@ class HomeController extends Controller
         ]);
     }
 }
+     
+  
+  

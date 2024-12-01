@@ -264,6 +264,24 @@
                             </li>
                         </ul>
                     </li>
+                                                               {{--  Bài viết --}}
+                                                               <li class="nav-item ">
+                                                                <a href="#" class="nav-link ">
+                                                                    <i class="nav-icon fas fa-gift"></i>
+                                                                    <p>
+                                                                       Bài viết
+                                                                        <i class="right fas fa-angle-left"></i>
+                                                                    </p>
+                                                                </a>
+                                                                <ul class="nav nav-treeview">
+                                                                    <li class="nav-item">
+                                                                        <a href="{{route('admin.posts.index')}}" class="nav-link">
+                                                                            <p>Danh Sách Bài viết</p>
+                                                                        </a>
+                                                                        
+                                                                    </li>
+                                                                </ul>
+                                                            </li>
     
 
 

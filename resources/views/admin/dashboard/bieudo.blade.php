@@ -55,7 +55,7 @@
             <div class="card text-center" style="background-color: #64b5f6; color: white;">
                 <div class="card-body">
                     <h5 class="card-title">
-                        <i class="fas fa-user-shield"></i> Quản trị viên
+                        <i class="fas fa-user-shield"></i> Tống số tài khoản
                     </h5>
                     <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $totalAdmins }}</p>
                 </div>
@@ -77,7 +77,7 @@
                     <h5 class="card-title">
                         <i class="fas fa-user-shield"></i> Mã giảm giá còn hạn
                     </h5>
-                    <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $expiredCouponsCount }}</p>
+                    <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $activeCouponsCount }}</p>
                 </div>
             </div>
         </div>
@@ -87,7 +87,7 @@
                     <h5 class="card-title">
                         <i class="fas fa-user-shield"></i> Mã giảm giá hết hạn
                     </h5>
-                    <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $activeCouponsCount }}</p>
+                    <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $expiredCouponsCount }}</p>
                 </div>
             </div>
         </div>
@@ -97,7 +97,7 @@
                     <h5 class="card-title">
                         <i class="fas fa-user-shield"></i> Đánh giá
                     </h5>
-                    <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $activeCouponsCount }}</p>
+                    <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $totalReviewsCount }}</p>
                 </div>
             </div>
         </div>
@@ -112,11 +112,11 @@
                 <!-- First Row -->
                 <div class="col-md-4 mb-2">
                     <label for="start_date" class="form-label">Ngày bắt đầu</label>
-                    <input type="date" name="start_date" id="start_date" class="form-control form-control-sm" value="{{ $startDate->format('Y-m-d') }}">
+                    <input type="datetime-local" name="start_date" id="start_date" class="form-control form-control-sm" value="{{ $startDate->format('Y-m-d\TH:i') }}">
                 </div>
                 <div class="col-md-4 mb-2">
                     <label for="end_date" class="form-label">Ngày kết thúc</label>
-                    <input type="date" name="end_date" id="end_date" class="form-control form-control-sm" value="{{ $endDate->format('Y-m-d') }}">
+                    <input type="datetime-local" name="end_date" id="end_date" class="form-control form-control-sm" value="{{ $endDate->format('Y-m-d\TH:i') }}">
                 </div>
                 <div class="col-md-4 mb-2">
                     <label for="status_id" class="form-label">Trạng thái</label>
