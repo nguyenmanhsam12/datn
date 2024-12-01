@@ -59,7 +59,7 @@ class ShopController extends Controller
         // Trả về kết quả AJAX
         if ($request->ajax()) {
             $products_html = view('client.pages.product-list', compact('list_product'))->render();
-            $pagination = $list_product->links()->toHtml();
+            $pagination = $list_product->links('pagination::bootstrap-4')->toHtml();
 
             return response()->json([
                 'products_html' => $products_html,
