@@ -57,6 +57,11 @@
             color: white;
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
         }
+        .blog-photo img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover; /* Đảm bảo ảnh đồng nhất kích thước */
+        }
     </style>
 @endpush
 
@@ -228,7 +233,7 @@
             <!-- Section-title end -->
             <div class="row">
                 <!-- Single-blog start -->
-                <div class="col-lg-4 col-md-6 col-12">
+                {{-- <div class="col-lg-4 col-md-6 col-12">
                     <div class="single-blog mt-30">
                         <div class="blog-photo">
                             <a href="#"><img src="img/blog/1.webp" alt="" /></a>
@@ -251,10 +256,10 @@
                             <a href="#" class="button-2 text-dark-red">Read more...</a>
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 <!-- Single-blog end -->
                 <!-- Single-blog start -->
-                <div class="col-lg-4 col-md-6 col-12">
+                {{-- <div class="col-lg-4 col-md-6 col-12">
                     <div class="single-blog mt-30">
                         <div class="blog-photo">
                             <a href="#"><img src="img/blog/2.webp" alt="" /></a>
@@ -277,33 +282,40 @@
                             <a href="#" class="button-2 text-dark-red">Read more...</a>
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 <!-- Single-blog end -->
+                @if($posts->isEmpty())
+                <p>Không có bài viết nào.</p>
+            @else
+                @foreach ($posts as $post)
                 <!-- Single-blog start -->
                 <div class="col-lg-4 col-md-6 col-12">
-                    <div class="single-blog mt-30">
+                    <div class="single-blog mb-30">
                         <div class="blog-photo">
-                            <a href="#"><img src="img/blog/3.webp" alt="" /></a>
+                            <a href="{{ route('blog.show', $post->id) }}" class="blog-photo">
+                            <img src="{{ asset($post->thumbnail) }}" alt="Hình ảnh bài viết" style="max-width: 350px; "></a>
+                            <div class="like-share text-center fix">
+                                <a href="javascript:void(0);" class="like-button" data-post-id="{{ $post->id }}">
+                                    <i class="zmdi zmdi-favorite"></i>
+                                    <span>Like</span>
+                                </a>
+                                <a href="#"><i class="zmdi zmdi-comments"></i><span> Comments</span></a>
+                                <a href="#"><i class="zmdi zmdi-share"></i><span>Share</span></a>
+                            </div>
                         </div>
-                        <div class="blog-info">
+                        <div class="blog-info"> 
                             <div class="post-meta fix">
                                 <div class="post-year floatleft">
-                                    <h4 class="post-title"><a href="#" tabindex="0">Fashion drawing 2022</a>
-                                    </h4>
+                                    <h4 class="post-title"><a href="{{ route('blog.show', $post->id) }}" tabindex="0">{{ $post->title }}</a></h4>
                                 </div>
                             </div>
-                            <div class="like-share fix">
-                                <a href="#"><i class="zmdi zmdi-favorite"></i><span>78 Like</span></a>
-                                <a href="#"><i class="zmdi zmdi-comments"></i><span>25 Comments</span></a>
-                                <a href="#"><i class="zmdi zmdi-share"></i><span>43 Share</span></a>
-                            </div>
-                            <p>There are many variations of passages of Lorem Ipsum alteratio available, but the majority
-                                have suffered If you are going to use a passage Lorem Ipsum, you alteration in some form.
-                            </p>
-                            <a href="#" class="button-2 text-dark-red">Read more...</a>
+                            <p>{{ \Illuminate\Support\Str::limit($post->content, 200) }}</p>
+                            <a href="{{ route('blog.show', $post->id) }}" class="button-2 text-dark-red">Read more...</a>
                         </div>
                     </div>
                 </div>
+                @endforeach
+                @endif
                 <!-- Single-blog end -->
             </div>
         </div>

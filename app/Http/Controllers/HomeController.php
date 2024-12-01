@@ -7,6 +7,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\CartItems;
 use App\Models\Review;
+use App\Models\Post;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use Illuminate\Support\Facades\Auth;
@@ -19,8 +20,12 @@ class HomeController extends Controller
             ->limit(8)
             ->get();
         $list_category = Category::orderBy('id','asc')->limit(4)->get();
+
+        $posts = Post::orderBy('created_at', 'desc')
+                       ->take(3) 
+                       ->get();
        
-        return view('client.pages.home',compact('list_product','list_category'));
+        return view('client.pages.home',compact('list_product','list_category','posts'));
     }
 
     public function getProductsByCategory($category_id) {
@@ -138,6 +143,8 @@ class HomeController extends Controller
               'status' => 'success',
               'message' => 'Đánh giá đã được xóa thành công!'
           ]);
-      }   
+      }
+
   }
+  
   
