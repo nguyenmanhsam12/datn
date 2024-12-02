@@ -92,14 +92,16 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Hình ảnh chính</label>
-                                    <input type="file"name="image" class="form-control">
+                                    <input type="file"name="image" id="mainImage" class="form-control">
+                                    <div id="previewMainImage" class="mt-3"></div>
                                     @error('image')
                                         <div class="text-danger mt-3">{{ $message }}</div>
                                     @enderror
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Hình ảnh phụ</label>
-                                    <input type="file" name="gallary[]" class="form-control" multiple>
+                                    <input type="file" name="gallary[]"id="gallaryImages" class="form-control" multiple>
+                                    <div id="previewGallaryImages" class="mt-3"></div>
                                     @error('gallary')
                                         <div class="text-danger mt-3">{{ $message }}</div>
                                     @enderror
@@ -419,10 +421,49 @@
         
     </script>
 
-
+    {{-- đoạn mã preview ảnh --}}
+    <script>
+        // Xem trước hình ảnh chính
+        document.getElementById('mainImage').addEventListener('change', function(event) {
+            const previewContainer = document.getElementById('previewMainImage');
+            previewContainer.innerHTML = ''; // Xóa preview cũ nếu có
     
-
-
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '200px';
+                    img.style.marginTop = '10px';
+                    previewContainer.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    
+        // Xem trước nhiều hình ảnh phụ
+        document.getElementById('gallaryImages').addEventListener('change', function(event) {
+            const previewContainer = document.getElementById('previewGallaryImages');
+            previewContainer.innerHTML = ''; // Xóa preview cũ nếu có
+    
+            const files = event.target.files;
+            for (const file of files) {
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.maxWidth = '100px';
+                        img.style.margin = '5px';
+                        previewContainer.appendChild(img);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+    </script>
+    
 
     <script>
        $(function () {

@@ -18,11 +18,13 @@ class CheckAdmin
     {   
         $user = Auth::user();
 
-        if($user && $user->roles->contains('name','admin')){
-            return $next($request);
+        // Kiểm tra nếu người dùng tồn tại và chỉ có duy nhất một vai trò là 'guest'
+        // hàm first này giúp này 1 phần tử đầu tiên của 1 collection
+        if ($user && $user->roles->count() === 1 && $user->roles->first()->name === 'guest') {
+            return redirect()->route('home')->with('error', 'Tài khoản này không có quyền truy cập trang quản trị');
         }
 
-        return redirect()->route('home')->with('error','Bạn không có quyền truy cập');
+        return $next($request);
 
     }
 }

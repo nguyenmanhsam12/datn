@@ -26,6 +26,10 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ThanhYouController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
+
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -185,13 +189,26 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::get('/edit/{id}',[UserController::class,'edit'])->name('admin.user.edit');
         Route::put('/update/{id}',[UserController::class,'update'])->name('admin.user.update');
         Route::get('/delete/{id}',[UserController::class,'delete'])->name('admin.user.delete');
+    });
 
+    Route::prefix('role')->group(function(){
+        Route::get('/',[RoleController::class,'index'])->name('admin.role.index');
+        Route::get('/create',[RoleController::class,'create'])->name('admin.role.create');
+        Route::post('/store',[RoleController::class,'store'])->name('admin.role.store');
+        Route::get('/edit/{id}',[RoleController::class,'edit'])->name('admin.role.edit');
+        Route::put('/update/{id}',[RoleController::class,'update'])->name('admin.role.update');
+        Route::get('/delete/{id}',[RoleController::class,'delete'])->name('admin.role.delete');
+    });
+
+    Route::prefix('permission')->group(function(){
+        Route::get('/create',[PermissionController::class,'createPermission'])->name('admin.permission.createPermission');
+        Route::post('/store',[PermissionController::class,'store'])->name('admin.permission.store');
 
     });
 
     Route::prefix('brands')->group(function(){
-        Route::get('/',[BrandController::class,'index'])->name('admin.brand.index');
-        Route::get('/create',[BrandController::class,'create'])->name('admin.brand.create');
+        Route::get('/',[BrandController::class,'index'])->name('admin.brand.index')->middleware('can:brand_list');
+        Route::get('/create',[BrandController::class,'create'])->name('admin.brand.create')->middleware('can:brand_add');
         Route::post('/storeBrand',[BrandController::class,'storeBrand'])->name('admin.brand.storeBrand');
         Route::get('/edit/{id}',[BrandController::class,'edit'])->name('admin.brand.edit');
         Route::put('/update/{id}',[BrandController::class,'updateBrand'])->name('admin.brand.updateBrand');
@@ -216,8 +233,6 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::get('/edit/{id}',[CategoryController::class,'edit'])->name('admin.category.edit');
         Route::put('/update/{id}',[CategoryController::class,'update'])->name('admin.category.update');
         Route::get('/delete/{id}',[CategoryController::class,'delete'])->name('admin.category.delete');
-
-
     });
 
     Route::prefix('product')->group(function(){

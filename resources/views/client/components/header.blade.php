@@ -27,19 +27,18 @@
                             @if (Auth::user())
                                 <li><a href="#">Xin chào {{ Auth::user()->name }}</a><i class="zmdi zmdi-chevron-down"></i>
                                     <ul>
-                                        @if (Auth::user()->hasRole('admin'))
-                                            <li><a href="{{ route('dashboard') }}">Admin</a></li>   
+                                        @if (Auth::user()->roles->count() == 1 && Auth::user()->roles->first()->name == 'guest')
+                                            <li><a href="{{ route('myAccount') }}">Tài khoản của tôi</a></li>
+                                            <li><a href="{{route('wishlist')}}">Yêu thích</a></li>
+                                            <li><a href="{{ route('checkout') }}">Thanh toán</a></li>
+                                            <li><a href="{{ route('logout') }}">Đăng Xuất</a></li>
+                                        @else
+                                            <li><a href="{{ route('dashboard') }}">Admin</a></li>
+                                            <li><a href="{{ route('myAccount') }}">Tài khoản của tôi</a></li>
+                                            <li><a href="{{route('wishlist')}}">Yêu thích</a></li>
+                                            <li><a href="{{ route('checkout') }}">Thanh toán</a></li>
+                                            <li><a href="{{ route('logout') }}">Đăng Xuất</a></li>
                                         @endif
-
-                                        <li><a href="{{ route('myAccount') }}">Tài khoản của tôi</a></li>
-
-                                        <li><a href="{{route('wishlist')}}">Yêu thích</a></li>
-                                        
-                                        
-
-                                        <li><a href="{{ route('checkout') }}">Thanh toán</a></li>
-                                        <li><a href="{{ route('logout') }}">Đăng Xuất</a></li>
-
                                     </ul>
                                 </li>
                             @else

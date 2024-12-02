@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +20,22 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // định nghĩa gate
+        Gate::define('brand_list',function($user){
+            // truyền keycode lên
+            return $user->checkPermissionAccess(config('permission.access.list-brand'));
+        });
+        Gate::define('brand_add',function($user){
+            // truyền keycode lên
+            return $user->checkPermissionAccess(config('permission.access.add-brand'));
+        });
+        Gate::define('brand_edit',function($user){
+            // truyền keycode lên
+            return $user->checkPermissionAccess(config('permission.access.edit-brand'));
+        });
+        Gate::define('brand_delete',function($user){
+            // truyền keycode lên
+            return $user->checkPermissionAccess(config('permission.access.delete-brand'));
+        });
     }
 }
