@@ -73,6 +73,29 @@
                         </li>
                     </ul>
                 </li>
+
+                {{-- vai trò --}}
+                <li class="nav-item ">
+                    <a href="#" class="nav-link ">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p>
+                            Vai trò
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{route('admin.role.index')}}" class="nav-link">
+                                <p>Danh sách vai trò</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route('admin.permission.createPermission')}}" class="nav-link">
+                                <p>Thêm quyền</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 
                 {{--  brand --}}
                 <li class="nav-item ">
