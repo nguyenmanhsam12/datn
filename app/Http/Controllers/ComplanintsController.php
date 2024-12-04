@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ComplaintRequest;
 use App\Models\Complaints;
 use App\Models\Order;
+use App\Models\Brand;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -13,7 +15,9 @@ class ComplanintsController extends Controller
 {
     public function complaints($orderId){
         $order = Order::find($orderId);
-        return view('client.pages.complaint',compact('order'));
+        $list_brand = Brand::orderBy('id','desc')->get();
+        $list_category = Category::orderBy('id','desc')->get();
+        return view('client.pages.complaint',compact('order','list_brand','list_category'));
     }
 
     public function complaintStore(ComplaintRequest $request){
@@ -55,7 +59,9 @@ class ComplanintsController extends Controller
     public function complaintsDetail($orderId){
         $complaint = Complaints::where('order_id',$orderId)->first();
         $complaint->attachments = json_decode($complaint->attachments);
-        return view('client.pages.detail_comlaint',compact('complaint'));
+        $list_brand = Brand::orderBy('id','desc')->get();
+        $list_category = Category::orderBy('id','desc')->get();
+        return view('client.pages.detail_comlaint',compact('complaint','list_brand','list_category'));
     }
 
     public function updateComplaintsImage(Request $request , $orderId){

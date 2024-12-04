@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\Province;
+use App\Models\Transactions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,6 +18,7 @@ class MyAccountController extends Controller
     {
         $user = Auth::user()->load(['ward', 'city', 'province']);
         
+
         if (!$user) {
             return redirect()->route('login')->with('error', 'Vui lòng đăng nhập trước');
         }
@@ -85,6 +87,15 @@ class MyAccountController extends Controller
                 'status' => 'error',
                 'message' => 'Đơn hàng không thể hủy trong trạng thái này.'
             ], 400);
+        }
+
+        if($order->payment_method_id == 3 && $order->payment_status == 'pending'){
+            $transaction = Transactions::where('order_id',$order->id)->first();
+            if ($transaction) {
+                $transaction->status = 'canceled'; // hoặc 'failed' tùy theo logic
+                $transaction->save();
+            }
+            $order->payment_status = 'canceled'; // Cập nhật trạng thái thanh toán trong đơn hàng
         }
 
         // Lấy các sản phẩm trong đơn hàng

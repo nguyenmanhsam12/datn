@@ -130,6 +130,7 @@
             const moduleCheckboxes = document.querySelectorAll('.checkbox-wrapper');
             const checkAll = document.querySelector('.checkall'); // Checkbox "CheckAll"
             const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+            const childCheckboxes = document.querySelectorAll('.checkbox-childrent'); // Tất cả checkbox con
 
             checkAll.addEventListener('change', function () {
                         allCheckboxes.forEach(checkbox => {
@@ -144,6 +145,21 @@
                     childCheckboxes.forEach(childCheckbox => {
                         childCheckbox.checked = moduleCheckbox.checked;
                     });
+                });
+            });
+
+            // Lắng nghe sự kiện thay đổi trạng thái của các checkbox con
+            childCheckboxes.forEach(childCheckbox => {
+                childCheckbox.addEventListener('change', function () {
+                    const parent = childCheckbox.closest('.card');
+                    const parentModuleCheckbox = parent.querySelector('.checkbox-wrapper');
+
+                    // Kiểm tra nếu tất cả checkbox con của quyền cha không được chọn thì bỏ tích checkbox cha
+                    const allChecked = Array.from(parent.querySelectorAll('.checkbox-childrent')).every(checkbox => checkbox.checked);
+                    parentModuleCheckbox.checked = allChecked; // Bỏ tích checkbox cha nếu không còn checkbox con nào được chọn
+                    checkAll.checked = allChecked;
+                    
+
                 });
             });
         });

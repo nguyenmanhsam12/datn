@@ -38,7 +38,10 @@ class StoreProductRequest extends FormRequest
             'variants.*.size_id' => 'required_with:variants|integer|exists:sizes,id',
             'variants.*.stock' => 'required_with:variants|integer',
             'variants.*.price' => 'required_with:variants|numeric',
-            'variants.*.weight' => 'required_with:variants|numeric',    
+               // Validate chiều dài, chiều rộng, chiều cao
+            'variants.*.length' => 'required_with:variants|numeric',
+            'variants.*.width' => 'required_with:variants|numeric',
+            'variants.*.height' => 'required_with:variants|numeric',
 
         ];
     }
@@ -54,7 +57,12 @@ class StoreProductRequest extends FormRequest
             'description.required' => 'Mô tả ngắn là bắt buộc.',
             'description_text.required' => 'Mô tả dài là bắt buộc.',
             'gallary.*.image' => 'Từng ảnh trong bộ sưu tập phải là file ảnh hợp lệ.',
-        
+            'variants.*.size_id.required_with' => 'Size là bắt buộc khi thêm thuộc tính.',
+            'variants.*.stock.required_with' => 'Số lượng tồn kho là bắt buộc khi thêm thuộc tính.',
+            'variants.*.price.required_with' => 'Giá sản phẩm là bắt buộc khi thêm thuộc tính.',
+            'variants.*.length.required_with' => 'Chiều dài là bắt buộc và phải là số dương.',
+            'variants.*.width.required_with' => 'Chiều rộng là bắt buộc và phải là số dương.',
+            'variants.*.height.required_with' => 'Chiều cao là bắt buộc và phải là số dương.',
         ];
     }
 

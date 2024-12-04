@@ -31,39 +31,18 @@ class CheckoutController extends Controller
 {
 
     // Method lấy thông tin đơn hàng từ session
-    // hàm xử lí khi người dùng back lại trang thanh toán
-    public function getOrderSummary()
-    {
-        // Kiểm tra xem có session 'order_id' không
-        if (Session::has('order_id')) {
-            // Lấy thông tin đơn hàng từ session
-            $orderId = Session::get('order_id');
-            
-            return response()->json([
-                'success' => true,
-                'message' => 'đơn hàng đã được tìm thấy.',
-                'orderId' => $orderId,
-            ]);
-        }
-
-        // Trả về lỗi nếu không có session 'order_id'
-        return response()->json([
-            'success' => false,
-            'message' => 'Không có đơn hàng nào trong session.',
-        ]);
-    }
-
+    // hàm tính phí vận chuyển
     private function calculateShippingFee($total_weight)
     {
         // Xử lý mức phí vận chuyển dựa trên trọng lượng sản phẩm (có thể cứng hóa giá trị trong code)
-        if ($total_weight >= 0  && $total_weight <= 0.7) {
-            return 15000;
-        } elseif ($total_weight > 0.7 && $total_weight <= 1.5) {
-            return 25000;  // Phí vận chuyển cho trọng lượng từ 5kg đến 10kg là 100
-        } elseif ($total_weight > 1.5 && $total_weight < 5) {
-            return 40000;  // Phí vận chuyển cho trọng lượng từ 10kg đến 20kg là 150
-        } else {
-            return 0;  // Phí vận chuyển cho trọng lượng trên 20kg là 200
+        if ($total_weight <= 1) {
+            return 15000; 
+        } elseif ($total_weight <= 2) {
+            return 25000; 
+        } elseif ($total_weight <= 5) {
+            return 40000; 
+        } else{
+            return 0;
         }
     }
 
@@ -91,10 +70,10 @@ class CheckoutController extends Controller
             $variant = $item->variants;
             $product = $variant->product;
 
-
-            $total_weight += $variant->weight * $item->quantity;
-
-
+            // thể tích 
+            $volume = $variant->height * $variant->length * $variant->width/3000;
+            $total_weight += $volume * $item->quantity;
+            
             return [
                 'id' => $item->id,
                 'variant_id' => $variant->id,
@@ -113,6 +92,7 @@ class CheckoutController extends Controller
         $list_category = Category::orderBy('id','desc')->get();
 
         $shipping = $this->calculateShippingFee($total_weight);
+        // lưu phí ship vào trong session
         session(['shipping' => $shipping]);
 
         $newTotal = session('newTotal', 0) + $shipping;
@@ -135,8 +115,6 @@ class CheckoutController extends Controller
             $citys = City::where('matinh', $province)->get();
 
             // Trả về danh sách thành phố dưới dạng JSON
-
-
             return response()->json([
                 'message' => 'Lấy danh sách thành phố thành công',
                 'citys' => $citys,
@@ -285,6 +263,7 @@ class CheckoutController extends Controller
 
                 // Gọi hàm xử lý thanh toán momo
                 $payUrl = $this->momoPayment($newTotal,$order->id);
+
                 return response()->json([
                     'message' => 'Liên kết thanh toán đã được tạo thành công.',
                     'momo' => $payUrl,
@@ -517,8 +496,8 @@ class CheckoutController extends Controller
             $result = $this->execPostRequest($endpoint, json_encode($data));
             $jsonResult = json_decode($result, true);  // decode json
 
-            Log::info('MoMo Response: ', $jsonResult);
 
+            Log::info('Phản hồi từ MoMo:', ['result' => $result]);
 
             //Just a example, please check more in there
 

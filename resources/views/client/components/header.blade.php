@@ -33,7 +33,7 @@
                                             <li><a href="{{ route('checkout') }}">Thanh toán</a></li>
                                             <li><a href="{{ route('logout') }}">Đăng Xuất</a></li>
                                         @else
-                                            <li><a href="{{ route('dashboard') }}">Admin</a></li>
+                                            <li><a href="{{ route('dashboard') }}">Trang quản trị</a></li>
                                             <li><a href="{{ route('myAccount') }}">Tài khoản của tôi</a></li>
                                             <li><a href="{{route('wishlist')}}">Yêu thích</a></li>
                                             <li><a href="{{ route('checkout') }}">Thanh toán</a></li>

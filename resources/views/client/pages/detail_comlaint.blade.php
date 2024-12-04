@@ -3,8 +3,6 @@
 @section('content')
     <main class="main container border rounded shadow mt-4 mb-4 p-4">
         <h1 class="text-center mb-4">Chi tiết khiếu nại</h1>
-        <p class="text-center mb-4">Nếu bạn gặp vấn đề với đơn hàng, hãy điền thông tin dưới đây để chúng tôi hỗ trợ bạn sớm
-            nhất.</p>
         <form action="{{ route('updateComplaintsImage',['orderId'=>$complaint->order_id]) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')

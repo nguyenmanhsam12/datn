@@ -380,12 +380,18 @@
             const citySelect = document.getElementById('city');
             const wardSelect = document.getElementById('ward');
 
-            if({{ $user->province_id }}){
-                fetchCities({{ $user->province_id }}, {{ $user->city_id }});
+            // nếu như người dùng đã cập nhập thông tin tài khoản rồi
+            let provinceOld = {!! json_encode($user->province_id ?? null) !!};
+            let cityIdOld = {!! json_encode($user->city_id ?? null) !!};
+            let wardIdOld = {!! json_encode($user->ward_id ?? null) !!};
+
+            if (provinceOld) {
+                fetchCities(provinceOld,cityIdOld);
             }
 
-            if ({{ $user->city_id }}) {
-                fetchWards({{ $user->city_id }}, {{ $user->ward_id }});
+            // Gọi API lấy danh sách ward nếu có city_id
+            if (cityIdOld) {
+                fetchWards(cityIdOld,wardIdOld);
             }
 
             // Khi người dùng chọn tỉnh/thành phố
@@ -394,15 +400,13 @@
 
                 const selectedProvince = provinceSelect.selectedOptions[0];
                 const provinceId = selectedProvince ? selectedProvince.dataset.id : ''; // Lấy ID từ data-id
-                const formattedProvinceId = provinceId.padStart(2,
-                '0'); // Đảm bảo provinceId có ít nhất 2 chữ số
-
+                
                 // Xóa tất cả tùy chọn trong citySelect và wardSelect
                 citySelect.innerHTML = '<option value = "" >Quận / Huyện</option>';
                 wardSelect.innerHTML = '<option value = "" >Xã / Phường</option>';
 
-                if (province) {
-                    fetchCities(formattedProvinceId);
+                if (provinceId) {
+                    fetchCities(provinceId);
                 }
             });
 
@@ -410,12 +414,12 @@
             citySelect.addEventListener('change', function() {
                 const selectedCity = citySelect.selectedOptions[0]; // Lấy tùy chọn đã chọn
                 const cityId = selectedCity ? selectedCity.dataset.id : ''; // Lấy ID từ data-id
-                const fomatCityId = cityId.padStart(3, '0');
+                
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 // Xóa tất cả tùy chọn trong wardSelect
                 wardSelect.innerHTML = '<option value="">Xã / Phường</option>'; // Đặt lại tùy chọn phường
-                if (city) {
-                    fetchWards(fomatCityId);
+                if (cityId) {
+                    fetchWards(cityId);
                 }
             });
 

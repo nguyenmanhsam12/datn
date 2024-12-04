@@ -23,6 +23,8 @@ class VariantController extends Controller
 
         $variant = ProductVariants::find($id);
 
+        
+
         if (!$variant) {
             return redirect()->back()->with('error', 'Kích cỡ này không tồn tại');
         }
@@ -31,11 +33,10 @@ class VariantController extends Controller
             'size_id' => 'required|exists:sizes,id',
             'stock' => 'required|integer|min:1',
             'price' => 'required|numeric',
-            'weight' => 'required|numeric',
+            'length' => 'required|numeric',
+            'width' => 'required|numeric',
+            'height' => 'required|numeric',
         ]);
-
-
-        
 
         $duplicateVariant = ProductVariants::where('product_id', $variant->product_id)
                 ->where('size_id', $request->size_id)

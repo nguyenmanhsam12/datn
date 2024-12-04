@@ -10,9 +10,8 @@ class Ward extends Model
     use HasFactory;
 
     protected $primaryKey = 'phuongid';
-    
     protected $table = 'ward';
-
+    protected $keyType = 'string';      // Khóa chính là kiểu chuỗi
     protected $fillable = ['name','type','macity'];
 }
             
