@@ -53,27 +53,55 @@
                                             <option value="{{ $size->id }}" {{ $size->id == $variant->size_id ? 'selected' : '' }}>Size {{ $size->name }}
                                             </option>
                                         @endforeach
-                                        
-                                        
                                     </select>
+                                    @error("size_id")
+                                        <div class="text-danger mt-3">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="form-group">
                                     <label for="inputStatus">Số lượng</label>
                                     <input type="text" class="form-control" name="stock"
                                     value="{{ $variant->stock }}"
                                     >
+                                    @error("stock")
+                                        <div class="text-danger mt-3">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="form-group">
-                                    <label for="weight">Trọng lượng</label>
-                                    <input type="text" class="form-control" name="weight"
-                                    value="{{ $variant->weight }}"
+                                    <label for="length">Chiều dài</label>
+                                    <input type="text" class="form-control" name="length"
+                                    value="{{ $variant->length }}"
                                     >
+                                    @error("length")
+                                        <div class="text-danger mt-3">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="form-group">
+                                    <label for="width">Chiều rộng</label>
+                                    <input type="text" class="form-control" name="width"
+                                    value="{{ $variant->width }}"
+                                    >
+                                    @error("width")
+                                        <div class="text-danger mt-3">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="form-group">
+                                    <label for="height">Chiều cao</label>
+                                    <input type="text" class="form-control" name="height"
+                                    value="{{ $variant->height }}"
+                                    >
+                                    @error("height")
+                                        <div class="text-danger mt-3">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="form-group">
                                     <label for="inputStatus">Giá</label>
                                     <input type="text" class="form-control" name="price"
                                     value="{{ $variant->price }}"
                                     >
+                                    @error("price")
+                                        <div class="text-danger mt-3">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
 

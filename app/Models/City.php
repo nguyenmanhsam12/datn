@@ -10,8 +10,7 @@ class City extends Model
     use HasFactory;
 
     protected $primaryKey = 'macity';
-
     protected $table = 'city';
-
+    protected $keyType = 'string';      // Khóa chính là kiểu chuỗi
     protected $fillable = ['name','type','matinh'];
 }

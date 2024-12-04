@@ -162,12 +162,34 @@
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label for="weight{{ $index }}">Trọng lượng</label>
-                                                    <input type="text" id="weight{{ $index }}" 
+                                                    <label for="length{{ $index }}">Chiều dài</label>
+                                                    <input type="text" id="length{{ $index }}" 
                                                         class="form-control" 
-                                                        name="variants[{{ $index }}][weight]" 
-                                                        value="{{ old("variants.$index.weight") }}">
-                                                    @error("variants.$index.weight")
+                                                        name="variants[{{ $index }}][length]" 
+                                                        value="{{ old("variants.$index.length") }}">
+                                                    @error("variants.$index.length")
+                                                        <div class="text-danger mt-3">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="width{{ $index }}">Chiều rộng</label>
+                                                    <input type="text" id="width{{ $index }}" 
+                                                        class="form-control" 
+                                                        name="variants[{{ $index }}][width]" 
+                                                        value="{{ old("variants.$index.width") }}">
+                                                    @error("variants.$index.width")
+                                                        <div class="text-danger mt-3">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="height{{ $index }}">Chiều cao</label>
+                                                    <input type="text" id="height{{ $index }}" 
+                                                        class="form-control" 
+                                                        name="variants[{{ $index }}][height]" 
+                                                        value="{{ old("variants.$index.height") }}">
+                                                    @error("variants.$index.height")
                                                         <div class="text-danger mt-3">{{ $message }}</div>
                                                     @enderror
                                                 </div>
@@ -221,19 +243,14 @@
 @push('script')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('DOM đã được tải thành công');
             // Chuyển dữ liệu từ Laravel vào biến JavaScript
             let oldVariants = @json(old('variants', [])); 
             let attributeIndex = oldVariants.length; // Số lượng variants sẽ làm index ban đầu
             let selectedSizes = oldVariants.map(variant => variant.size_id) || []; // Mảng lưu các size đã chọn
 
-            console.log(selectedSizes);
-            
-
             // Cập nhật lại danh sách các kích cỡ đã chọn để tránh trùng
             function updateSizeOptions() {
                 const allSizeSelects = document.querySelectorAll('.size-select');
-                console.log(allSizeSelects);
 
                 allSizeSelects.forEach(select => {
                     const currentValue = select.value;
@@ -254,7 +271,6 @@
 
                     // Giữ nguyên giá trị hiện tại
                     select.value = currentValue;
-                    console.log(select);
 
                     
                 });
@@ -298,8 +314,16 @@
                                         <input type="text" id="inputStock${attributeIndex}" class="form-control" name="variants[${attributeIndex}][stock]">
                                     </div>
                                     <div class="form-group">
-                                        <label for="weight${attributeIndex}">Trọng lượng</label>
-                                        <input type="text" id="weight${attributeIndex}" class="form-control" name="variants[${attributeIndex}][weight]">
+                                        <label for="length${attributeIndex}">Chiều dài</label>
+                                        <input type="text" id="length${attributeIndex}" class="form-control" name="variants[${attributeIndex}][length]">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="width${attributeIndex}">Chiều rộng</label>
+                                        <input type="text" id="width${attributeIndex}" class="form-control" name="variants[${attributeIndex}][width]">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="height${attributeIndex}">Chiều cao</label>
+                                        <input type="text" id="height${attributeIndex}" class="form-control" name="variants[${attributeIndex}][height]">
                                     </div>
                                     <div class="form-group">
                                         <label for="inputPrice${attributeIndex}">Giá</label>
@@ -345,7 +369,6 @@
                         // Thêm giá trị mới vào mảng nếu không trống
                         if (selectedSize) {
                             selectedSizes.push(selectedSize);
-                            console.log(selectedSizes);
                         }
 
                         // Lưu giá trị mới làm giá trị trước đó
@@ -464,7 +487,7 @@
         });
     </script>
     
-
+    {{-- databaset --}}
     <script>
        $(function () {
             // Summernote

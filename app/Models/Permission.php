@@ -16,4 +16,5 @@ class Permission extends Model
     public function permissionChildrent(){
         return $this->hasMany(Permission::class,'parent_id');
     }
+    
 }
