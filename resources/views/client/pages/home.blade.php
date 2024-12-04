@@ -96,7 +96,7 @@
                                                 <form action="{{ route('wishlist.add') }}" method="POST">
                                                     @csrf
                                                     <input type="hidden" name="product_id" value="{{ $pr->id }}">
-                                                    <button type="submit" class="btn btn-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
+                                                    <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
                                                         <i class="zmdi zmdi-favorite-outline"></i>
                                                     </button>
                                                 </form>
