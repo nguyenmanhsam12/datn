@@ -30,9 +30,9 @@ class Product extends Model
 
     // lấy ra 1 sản phẩm chính của biến thể
     public function mainVariant(){
-        return $this->hasOne(ProductVariants::class)->orderBy('price','asc');
+        return $this->hasOne(ProductVariants::class);
     }
-
+ 
     public function variants()
     {
         return $this->hasMany(ProductVariants::class);

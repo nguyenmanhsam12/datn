@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -40,6 +41,17 @@ class Handler extends ExceptionHandler
                 ], 400); // Trả về mã lỗi 400
             }    
         }
+
+        if ($exception instanceof AuthorizationException) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Bạn không có quyền thực hiện hành động này.'
+                ], 403);
+            }
+    
+            // Flash thông báo lỗi cho web app
+            return redirect()->back()->with('error', 'Bạn không có quyền thực hiện hành động này.');
+        }   
 
         return parent::render($request, $exception);
     }

@@ -99,6 +99,9 @@
                                             </div>
                                         </div>
                                     @endforeach
+                                    @error('permission_id')
+                                        <div class="text-danger mt-3">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
 

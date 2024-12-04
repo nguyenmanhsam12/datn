@@ -30,7 +30,7 @@
                 <div class="card-header">
                     <div class="card card-gray">
                         <div class="card-header">
-                            <h3 class="card-title">Thêm vai trò </h3>
+                            <h3 class="card-title">Thêm quyền</h3>
                         </div>
                         <!-- /.card-header -->
                         <!-- form start -->

@@ -38,9 +38,10 @@ class AuthController extends Controller
 
     }
 
-    public function logout(){
-
+    public function logout(Request $request){
         Auth::logout();    
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
         return redirect('/')->with('success','Đăng xuất thành công');
     }
 
@@ -56,15 +57,13 @@ class AuthController extends Controller
 
         $data['password'] = bcrypt($data['password']);
 
-        $role = Role::where('name','user')->first();
+        $role = Role::where('name','guest')->first();
 
         $user = User::create($data);
 
         $user->roles()->attach($role);
 
-        return redirect(route('login'))->with('success','Đăng Ký thành công');
-
-        
+        return redirect(route('login'))->with('success','Đăng Ký thành công');        
     }
 
 

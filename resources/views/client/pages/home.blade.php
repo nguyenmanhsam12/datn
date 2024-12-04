@@ -343,8 +343,6 @@
                     $('#product-list').html('<div class="text-center">Loading...</div>');
                 },
                 success: function(response) {
-                    console.log(response)
-
                     let html = '';
 
                     // Khai báo biến đường dẫn trong Blade

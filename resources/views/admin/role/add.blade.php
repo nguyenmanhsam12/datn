@@ -43,6 +43,7 @@
                         </div>
                         <!-- /.card-header -->
                         <!-- form start -->
+                        
                         <form action="{{ route('admin.role.store') }}" method="POST">
                             @csrf
                            
@@ -96,6 +97,10 @@
                                             </div>
                                         </div>
                                     @endforeach
+
+                                    @error('permission_id')
+                                        <div class="text-danger mt-3">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
 
