@@ -177,6 +177,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/wishlist/add', [WishlistController::class, 'store'])->name('wishlist.add');
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
     Route::delete('/wishlist/remove/{id}', [WishlistController::class, 'destroy'])->name('wishlist.remove');
+    Route::post('/wishlist/store', [WishlistController::class, 'addToWishlist'])->name('wishlist.store');
 });
 
 Route::prefix('admin')->middleware('checkadmin')->group(function(){
