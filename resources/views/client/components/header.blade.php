@@ -25,17 +25,18 @@
                             </li>
 
                             @if (Auth::user())
-                                <li><a href="#">Xin chào {{ Auth::user()->name }}</a><i class="zmdi zmdi-chevron-down"></i>
+                                <li><a href="#">Xin chào {{ Auth::user()->name }}</a><i
+                                        class="zmdi zmdi-chevron-down"></i>
                                     <ul>
                                         @if (Auth::user()->roles->count() == 1 && Auth::user()->roles->first()->name == 'guest')
                                             <li><a href="{{ route('myAccount') }}">Tài khoản của tôi</a></li>
-                                            <li><a href="{{route('wishlist')}}">Yêu thích</a></li>
+                                            <li><a href="{{ route('wishlist') }}">Yêu thích</a></li>
                                             <li><a href="{{ route('checkout') }}">Thanh toán</a></li>
                                             <li><a href="{{ route('logout') }}">Đăng Xuất</a></li>
                                         @else
                                             <li><a href="{{ route('dashboard') }}">Trang quản trị</a></li>
                                             <li><a href="{{ route('myAccount') }}">Tài khoản của tôi</a></li>
-                                            <li><a href="{{route('wishlist')}}">Yêu thích</a></li>
+                                            <li><a href="{{ route('wishlist') }}">Yêu thích</a></li>
                                             <li><a href="{{ route('checkout') }}">Thanh toán</a></li>
                                             <li><a href="{{ route('logout') }}">Đăng Xuất</a></li>
                                         @endif
@@ -49,14 +50,14 @@
                                         <li><a href="{{ route('checkout') }}">Thanh toán</a></li>
                                         <li><a href="{{ route('login') }}">Đăng nhập</a></li>
                                         <li><a href="{{ route('register') }}">Đăng Ký</a></li>
-                                        
+
                                     </ul>
                                 </li>
                             @endif
-                          
-                            
+
+
                         </ul>
-                    </div>								
+                    </div>
                 </div>
             </div>
         </div>
@@ -69,7 +70,8 @@
                 <!-- logo start -->
                 <div class="col-md col-6">
                     <div class="top-logo">
-                        <a href="{{route('home')}}"><img style="width: 200px;" src="{{asset('img/logo/logo.png')}}" alt="" /></a>
+                        <a href="{{ route('home') }}"><img style="width: 200px;"
+                                src="{{ asset('img/logo/logo.png') }}" alt="" /></a>
                     </div>
                 </div>
                 <!-- logo end -->
@@ -79,29 +81,31 @@
                     <div class="mainmenu  position-relative">
                         <nav>
                             <ul>
-                                <li class="expand"><a href="{{ route('home') }}">Trang chủ</a></li>						
-                                
-                         
-                                <li class="expand position-static"><a href="{{route('shop')}}">Cửa Hàng</a>
+                                <li class="expand"><a href="{{ route('home') }}">Trang chủ</a></li>
+
+
+                                <li class="expand position-static"><a href="{{ route('shop') }}">Cửa Hàng</a>
                                     <div class="restrain mega-menu megamenu4">
                                         <span>
                                             <a class="mega-menu-title" href="">Thương hiệu</a>
-                                            @foreach($list_brand as $br)
-                                                <a href="">{{ $br->name }}</a>
+                                            @foreach ($list_brand as $br)
+                                                <a
+                                                    href="{{ route('shop', ['brand_id' => $br->id]) }}">{{ $br->name }}</a>
                                             @endforeach
-                                            
                                         </span>
                                         <span class="block-last">
                                             <a class="mega-menu-title" href="product-details.html">Danh mục</a>
-                                            @foreach($list_category as $cate)
-                                                <a href="">{{ $cate->name }}</a>
+                                            @foreach ($list_category as $cate)
+                                                <a
+                                                    href="{{ route('shop', ['category_id' => $cate->id]) }}">{{ $cate->name }}</a>
                                             @endforeach
                                         </span>
+
                                     </div>
                                 </li>
-                                <li class="expand"><a href="{{route('blog')}}">Tin tức</a></li>
-                                <li class="expand"><a href="{{route('contact')}}">Liên hệ</a></li>
-                                <li class="expand"><a href="{{route('about')}}">Về chúng tôi</a></li>
+                                <li class="expand"><a href="{{ route('blog') }}">Tin tức</a></li>
+                                <li class="expand"><a href="{{ route('contact') }}">Liên hệ</a></li>
+                                <li class="expand"><a href="{{ route('about') }}">Về chúng tôi</a></li>
                             </ul>
                         </nav>
                     </div>
@@ -118,26 +122,27 @@
                     <div id="search-modal" class="search-modal">
                         <div class="search-modal-content">
                             <div class="search-modal-logo">
-                                <img style="width: 200px;" src="{{asset('img/logo/logo.png')}}" alt="" srcset="">
+                                <img style="width: 200px;" src="{{ asset('img/logo/logo.png') }}" alt=""
+                                    srcset="">
                             </div>
                             <input type="text" id="search-input" placeholder="Tìm kiếm...">
-                            <div id="search-results"></div> 
+                            <div id="search-results"></div>
                             <p class="close" id="close-modal">&times;</p>
                         </div>
                     </div>
-                    
+
                     <!-- Menu Cart Area Start -->
                     <div class="mini-cart text-right">
                         <ul>
                             <li>
-                                <a class="cart-icon" href="{{route('cart')}}">
+                                <a class="cart-icon" href="{{ route('cart') }}">
                                     <i class="zmdi zmdi-shopping-cart"></i>
                                     <span class="cart-count"></span>
                                 </a>
                             </li>
                         </ul>
                     </div>
-                    
+
                     <!-- Menu Cart Area Start -->
                 </div>
                 <!-- mainmenu area end -->
@@ -201,5 +206,3 @@
     </div>
     <!-- Mobile-menu end -->
 </header>
-
-
