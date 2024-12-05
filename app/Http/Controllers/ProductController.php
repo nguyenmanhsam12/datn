@@ -19,8 +19,8 @@ class ProductController extends Controller
         $list_product = Product::with('brand','category','user','variants')->orderBy('id','desc')->get();
 
         // session()->forget('product_attributes');
-
-        return view('admin.product.list',compact('list_product'));
+        $list_size = Size::all();
+        return view('admin.product.list',compact('list_product','list_size'));
     }
 
     public function create(){
@@ -214,22 +214,24 @@ class ProductController extends Controller
     public function delete($id){
         $product = Product::find($id);
 
-        if ($product->image && file_exists(public_path($product->image))) {
-            unlink(public_path($product->image)); // Xóa ảnh chính
-        }
+        // if ($product->image && file_exists(public_path($product->image))) {
+        //     unlink(public_path($product->image)); // Xóa ảnh chính
+        // }
 
-        // Thêm các ảnh trong gallery vào danh sách xóa
-        if ($product->gallary) {
-            $galleryImages = json_decode($product->gallary, true);
-            foreach ($galleryImages as $galleryImage) {
-                if ($galleryImage && file_exists(public_path($galleryImage))) {
-                    unlink(public_path($galleryImage)); // Xóa ảnh trong gallery
-                }
-            }
+        // // Thêm các ảnh trong gallery vào danh sách xóa
+        // if ($product->gallary) {
+        //     $galleryImages = json_decode($product->gallary, true);
+        //     foreach ($galleryImages as $galleryImage) {
+        //         if ($galleryImage && file_exists(public_path($galleryImage))) {
+        //             unlink(public_path($galleryImage)); // Xóa ảnh trong gallery
+        //         }
+        //     }
+        // }
+        
+        if($product){
+            $product->delete();
         }
         
-        $product->delete();
-
         return redirect()->route('admin.product.index')->with('success','Xóa thành công');
     }
 

@@ -78,4 +78,15 @@ class OrderAdminController extends Controller
             return response()->json(['message' => 'Không tìm thấy đơn hàng!'], 404);
         }
     }
+
+    public function deleteOrder($id){
+        $order = Order::find($id);
+
+        if($order){
+            $order->delete();
+            return redirect()->back()->with('success','Xóa đơn hàng thành công');
+        }
+
+        return redirect()->back()->with('error','Đơn hàng không tồn tại');
+    }
 }

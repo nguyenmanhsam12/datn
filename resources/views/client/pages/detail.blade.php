@@ -11,6 +11,13 @@
 
 
     <style>
+        .post-title a {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
         input[type="text"] {
             background: #f6f6f6;
             border: medium none;

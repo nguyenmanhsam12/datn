@@ -3,7 +3,7 @@
     <a href="{{ route('dashboard') }}" class="brand-link">
         <img src="{{ asset('backend/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo"
             class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">{{ Auth::user()->name }}</span>
+        <span class="brand-text font-weight-light">Admin</span>
     </a>
 
     <!-- Sidebar -->
@@ -15,7 +15,7 @@
                     alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block">Alexander Pierce</a>
+                <a href="#" class="d-block">{{ Auth::user()->name }}</a>
             </div>
         </div>
 
@@ -79,7 +79,7 @@
                 {{-- vai trò --}}
                 <li class="nav-item ">
                     <a href="#" class="nav-link ">
-                        <i class="nav-icon fas fa-users"></i>
+                        <i class="nav-icon fas fa-user-shield"></i>
                         <p>
                             Vai trò
                             <i class="right fas fa-angle-left"></i>
@@ -299,7 +299,7 @@
                        {{-- Đánh giá --}}
                        <li class="nav-item ">
                         <a href="#" class="nav-link ">
-                            <i class="nav-icon fas fa-gift"></i>
+                            <i class="nav-icon fas fa-star"></i>
                             <p>
                                 Đánh giá
                                 <i class="right fas fa-angle-left"></i>
@@ -317,7 +317,7 @@
                                                                {{--  Bài viết --}}
                                                                <li class="nav-item ">
                                                                 <a href="#" class="nav-link ">
-                                                                    <i class="nav-icon fas fa-gift"></i>
+                                                                    <i class="nav-icon fas fa-pen-nib"></i>
                                                                     <p>
                                                                        Bài viết
                                                                         <i class="right fas fa-angle-left"></i>

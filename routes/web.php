@@ -148,6 +148,10 @@ Route::get('/complaint_detail/{orderId}',[ComplanintsController::class, 'complai
 
 Route::put('/update_complaint_image/{orderId}',[ComplanintsController::class, 'updateComplaintsImage'])->name('updateComplaintsImage');
 
+// hủy khiếu nại
+Route::delete('/complaint_delete',[ComplanintsController::class, 'complaintsDelete'])->name('complaintsDelete');
+
+
 
 // đặt hàng thành công -> cảm ơn 
 Route::get('/thank-you', [ThanhYouController::class,'thankyou'])->name('thankyou');
@@ -254,6 +258,7 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::get('/edit/{id}',[VariantController::class,'edit'])->name('admin.variant.edit')->middleware('can:view,App\Models\ProductVariants');
         Route::put('/update/{id}',[VariantController::class,'update'])->name('admin.variant.update');
         Route::get('/delete/{id}',[VariantController::class,'delete'])->name('admin.variant.delete')->middleware('can:delete,App\Models\ProductVariants');
+        Route::post('/productVariant',[VariantController::class,'productVariant'])->name('admin.variant.add');
     });
 
     Route::prefix('order')->group(function(){
@@ -261,7 +266,7 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::get('/detail/{id}',[OrderAdminController::class,'detail'])->name('admin.order.detail');
         Route::put('/admin/orders/update-status', [OrderAdminController::class, 'updateStatus'])->name('admin.order.updateStatus');
         Route::put('/admin/orders/update-order', [OrderAdminController::class, 'updateOrder'])->name('admin.order.updateOrder');
-
+        Route::get('/admin/orders/delete-order/{id}', [OrderAdminController::class, 'deleteOrder'])->name('admin.order.deleteOrder');
     });
 
     Route::prefix('coupons')->group(function(){

@@ -95,10 +95,104 @@
                                             <a href="{{ route('admin.product.delete', ['id' => $pr->id]) }}" class="btn btn-danger"
                                                 onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa</a>
                                         @endcan
-                                        <button type="button" class="btn btn-info" id="openAddAttributeModal">Thêm thuộc
+                                        <button type="button" class="btn btn-info" 
+                                                data-bs-toggle="modal" data-bs-target="#productVariant{{$pr->id}}"
+                                            >Thêm thuộc
                                             tính</button>
                                     </td>
                                 </tr>
+
+                                <div class="modal fade" id="productVariant{{$pr->id}}" tabindex="-1" role="dialog" aria-labelledby="addAttributeModalLabel"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addAttributeModalLabel">Thêm thuộc tính</h5>
+                                                <!-- Nút X (đóng modal) -->
+                                                <button type="button" class="close" id="closeModal" aria-label="Close"
+                                                data-bs-dismiss="modal"
+                                                >
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{ route('admin.variant.add') }}" method="POST">
+                                                    @csrf
+
+                                                    <input type="hidden" class="form-control" name="product_id"value="{{$pr->id}}">
+                                                    <!-- Kích cỡ (Select) -->
+                                                    <div class="form-group">
+                                                        <label for="size">Kích cỡ</label>
+                                                        <select class="form-control" id="size" name="size_id"required>
+                                                            <option value="">--Chọn size--</option>                                                                
+                                                            @foreach ($list_size as $size)
+                                                                <option value="{{$size->id}}">{{$size->name}}</option>                                                                
+                                                            @endforeach
+                                                        </select>
+                                                        @error("size_id")
+                                                            <div class="text-danger mt-3">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                            
+                                                    <!-- Số lượng -->
+                                                    <div class="form-group">
+                                                        <label for="stock">Số lượng</label>
+                                                        <input type="number" class="form-control" id="stock" name="stock"
+                                                            placeholder="Nhập số lượng"required >
+                                                        @error("stock")
+                                                            <div class="text-danger mt-3">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                            
+                                                    <!-- Trọng lượng -->
+                                                    <div class="form-group">
+                                                        <label for="length">Chiều dài</label>
+                                                        <input type="number" class="form-control" id="length" name="length"
+                                                            placeholder="Nhập chiều dài" required>
+                                                        @error("length")
+                                                            <div class="text-danger mt-3">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="width">Chiều rộng</label>
+                                                        <input type="number" class="form-control" id="width" name="width"
+                                                            placeholder="Nhập chiều dài" required>
+                                                            @error("width")
+                                                            <div class="text-danger mt-3">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="height">Chiều cao</label>
+                                                        <input type="number" class="form-control" id="height" name="height"
+                                                            placeholder="Nhập chiều dài"required >
+                                                            @error("height")
+                                                            <div class="text-danger mt-3">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                            
+                                                    <!-- Giá -->
+                                                    <div class="form-group">
+                                                        <label for="price">Giá</label>
+                                                        <input type="number" class="form-control" id="price" name="price" placeholder="Nhập giá"required
+                                                            >
+                                                            @error("price")
+                                                            <div class="text-danger mt-3">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                               
+                                            </div>
+                                            <div class="modal-footer">
+                                                <!-- Nút Đóng -->
+                                                <button type="button" class="btn btn-secondary" id="dismissModal" data-bs-dismiss="modal">Đóng</button>
+                                                <!-- Nút Lưu -->
+                                                <button type="submit" class="btn btn-primary" id="saveAttributes">Lưu</button>
+                                            </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                     
                             @endforeach
                         </tbody>
                     </table>
@@ -111,102 +205,12 @@
         <!-- /.content -->
     </div>
     <!-- Modal -->
-    <div class="modal fade" id="addAttributeModal" tabindex="-1" role="dialog" aria-labelledby="addAttributeModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addAttributeModalLabel">Thêm thuộc tính</h5>
-                    <!-- Nút X (đóng modal) -->
-                    <button type="button" class="close" id="closeModal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="addAttributeForm">
-                        <!-- Kích cỡ (Select) -->
-                        <div class="form-group">
-                            <label for="size">Kích cỡ</label>
-                            <select class="form-control" id="size" name="size">
-                                <option value="S">S</option>
-                                <option value="M">M</option>
-                                <option value="L">L</option>
-                                <option value="XL">XL</option>
-                                <option value="XXL">XXL</option>
-                            </select>
-                        </div>
-
-                        <!-- Số lượng -->
-                        <div class="form-group">
-                            <label for="quantity">Số lượng</label>
-                            <input type="number" class="form-control" id="quantity" name="quantity"
-                                placeholder="Nhập số lượng" required>
-                        </div>
-
-                        <!-- Trọng lượng -->
-                        <div class="form-group">
-                            <label for="weight">Trọng lượng (kg)</label>
-                            <input type="number" class="form-control" id="weight" name="weight"
-                                placeholder="Nhập trọng lượng" required>
-                        </div>
-
-                        <!-- Giá -->
-                        <div class="form-group">
-                            <label for="price">Giá</label>
-                            <input type="number" class="form-control" id="price" name="price" placeholder="Nhập giá"
-                                required>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <!-- Nút Đóng -->
-                    <button type="button" class="btn btn-secondary" id="dismissModal">Đóng</button>
-                    <!-- Nút Lưu -->
-                    <button type="button" class="btn btn-primary" id="saveAttributes">Lưu</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 @endsection
 
 @push('script')
     <script>
         let table = new DataTable('#list_product');
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const openModalBtns = document.querySelectorAll('.btn-info'); // Tất cả các nút mở modal
-            const modal = document.getElementById('addAttributeModal'); // Modal
-            const closeModalBtn = document.getElementById('closeModal'); // Nút đóng (X)
-            const dismissModalBtn = document.getElementById('dismissModal'); // Nút đóng (Đóng)
-
-            // Hàm mở modal
-            function openModal() {
-                modal.classList.add('show'); // Thêm lớp 'show' để modal hiển thị
-                modal.style.display = 'block'; // Hiển thị modal
-            }
-
-            // Hàm đóng modal
-            function closeModal() {
-                modal.classList.remove('show'); // Loại bỏ lớp 'show'
-                modal.style.display = 'none'; // Ẩn modal
-            }
-
-            // Gắn sự kiện mở modal cho tất cả các nút "Thêm thuộc tính"
-            openModalBtns.forEach(function(btn) {
-                btn.addEventListener('click', openModal);
-            });
-
-            // Gắn sự kiện đóng modal vào nút "X" và nút "Đóng"
-            closeModalBtn.addEventListener('click', closeModal);
-            dismissModalBtn.addEventListener('click', closeModal);
-
-            // Đóng modal khi nhấn bên ngoài modal
-            window.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    closeModal();
-                }
-            });
-        });
-    </script>
+    
 @endpush

@@ -13,6 +13,20 @@ use Illuminate\Support\Facades\Log;
 
 class ComplanintsController extends Controller
 {
+    public function complaintsDelete(Request $request){
+        $orderId = $request->input('order_id');
+
+        // Tìm khiếu nại theo mã đơn hàng
+        $complaint = Complaints::where('order_id', $orderId)->first();
+        
+        if ($complaint) {
+            $complaint->delete(); // Xóa khiếu nại
+            return response()->json(['success' => true, 'message' => 'Khiếu nại đã được hủy']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Không tìm thấy khiếu nại']);
+    }
+
     public function complaints($orderId){
         $order = Order::find($orderId);
         $list_brand = Brand::orderBy('id','desc')->get();

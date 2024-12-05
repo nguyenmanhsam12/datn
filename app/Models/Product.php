@@ -10,10 +10,11 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\User;
 use App\Models\ProductVariants;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory , HasSlug ;
+    use HasFactory , HasSlug , SoftDeletes ;
 
     protected $table = 'products';
 
