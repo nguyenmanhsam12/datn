@@ -73,7 +73,9 @@
                             <td>
                                 <a href="{{ route('admin.order.detail', ['id' => $order->id]) }}"
                                     class="btn btn-success btn-sm">Xem Chi Tiết</a>
-                                <button class="btn btn-danger btn-sm">Xóa</button>
+                                <a href="{{ route('admin.order.deleteOrder',['id'=>$order->id]) }}" class="btn btn-danger btn-sm"
+                                onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))"
+                                >Xóa</a>
                             </td>
                         </tr>
                     @endforeach

@@ -89,6 +89,15 @@ class MyAccountController extends Controller
             ], 400);
         }
 
+        if($order->payment_method_id == 2 && $order->payment_status == 'pending'){
+            $transaction = Transactions::where('order_id',$order->id)->first();
+            if ($transaction) {
+                $transaction->status = 'canceled'; // hoặc 'failed' tùy theo logic
+                $transaction->save();
+            }
+            $order->payment_status = 'canceled'; // Cập nhật trạng thái thanh toán trong đơn hàng
+        }
+
         if($order->payment_method_id == 3 && $order->payment_status == 'pending'){
             $transaction = Transactions::where('order_id',$order->id)->first();
             if ($transaction) {

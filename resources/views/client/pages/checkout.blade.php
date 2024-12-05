@@ -262,11 +262,11 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="">Địa chỉ</label>
-                                                        <textarea class="custom-textarea" name="address_order" id="address_order" placeholder="Địa chỉ của bạn...">
+                                                        {{-- <textarea class="custom-textarea" name="address_order" id="address_order" placeholder="Địa chỉ của bạn...">
                                                             {{ $user->address }}
-                                                        </textarea>
+                                                        </textarea> --}}
+                                                        <input type="text" name="address_order" id="address_order" value="{{ $user->address }}" placeholder="Địa chỉ của bạn">
                                                         <div id="recipient_address_order_error" class="text-danger mb-3 error-message" style="display: none;"></div>
-
                                                     </div>
                                                 </div>
                                             </div>
@@ -322,13 +322,31 @@
                                                                         <button class="border p-2 text-white" id="button-coupon" style="background-color:#434343;" type="button">Áp dụng</button>
                                                                     </td>
                                                                 </tr>
+                                                            @else
+                                                                <tr>
+                                                                    <td >
+                                                                        <label for="discount_code" style="white-space: nowrap">Mã giảm giá</label>
+                                                                        <input class="border" type="text" id="discount_code" name="discount_code" style="width: 100%;" placeholder="Nhập mã giảm giá">
+                                                                    </td>
+                                                                    <td>
+                                                                        <button class="border p-2 text-white" id="cancelCoupon" style="background-color:#434343;" type="button">Hủy mã</button>
+                                                                    </td>
+                                                                </tr>
                                                             @endif
                                                             <tr>
                                                                 <td>Tổng đơn hàng</td>
-                                                                <td class="text-right" style="white-space: nowrap"
+                                                                @if(session()->has('newTotal'))
+                                                                    <td class="text-right" style="white-space: nowrap"
+                                                                        name="total_amount" id="total_amount">
+                                                                        {{ number_format($newTotal, 0, ',', '.') . ' VNĐ' }}
+                                                                    </td>
+                                                                @else
+                                                                    <td class="text-right" style="white-space: nowrap"
                                                                     name="total_amount" id="total_amount">
-                                                                    {{ number_format($newTotal, 0, ',', '.') . ' VNĐ' }}
+                                                                    {{ number_format(session('totalAmount', 0), 0, ',', '.').' VNĐ' }}
                                                                 </td>
+                                                                
+                                                                @endif
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -638,7 +656,7 @@
                                 // coupon_message.classList.remove('text-success');
                                 // coupon_message.classList.add('text-danger');
                                 // coupon_message.style.display = 'block';
-                                alert('Lỗi');
+                                alert('Đơn hàng của bạn không đủ điều kiện');
                             }
                         })
                         .catch(error => console.error('Error:', error));
@@ -651,6 +669,37 @@
         
     </script>
 
+    {{-- hủy mã giảm giá --}}
+    <script>
+        // xóa mã giảm giá
+        document.getElementById('cancelCoupon')?.addEventListener('click', function() {
+
+            fetch('{{ route('removeCoupon') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('total_amount').textContent = formatPrice(data.original_total);
+                    // Reload trang để cập nhật giao diện dựa trên session
+                    location.reload();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+            });
+
+        // Format lại giá tiền
+        function formatPrice(price) {
+                // Chuyển giá trị thành chuỗi và loại bỏ các ký tự không phải là số
+                let formattedPrice = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                // Thêm đuôi "VNĐ"
+                return formattedPrice + " VNĐ";
+        }
+    </script>
     
 
 
