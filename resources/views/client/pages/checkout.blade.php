@@ -312,41 +312,25 @@
                                                                     {{ number_format($shipping, 0, ',', '.') . ' VNĐ' }}</td>
                                                             </tr>
                                                             
-                                                            @if (!session()->has('coupon_id'))
-                                                                <tr>
-                                                                    <td >
+                                                            <tr id="coupon-row">
+                                                                @if (!session()->has('coupon_id'))
+                                                                    <td>
                                                                         <label for="discount_code" style="white-space: nowrap">Mã giảm giá (nếu có)</label>
                                                                         <input class="border" type="text" id="discount_code" name="discount_code" style="width: 100%;" placeholder="Nhập mã giảm giá">
                                                                     </td>
                                                                     <td>
                                                                         <button class="border p-2 text-white" id="button-coupon" style="background-color:#434343;" type="button">Áp dụng</button>
                                                                     </td>
-                                                                </tr>
-                                                            @else
-                                                                <tr>
-                                                                    <td >
-                                                                        <label for="discount_code" style="white-space: nowrap">Mã giảm giá</label>
-                                                                        <input class="border" type="text" id="discount_code" name="discount_code" style="width: 100%;" placeholder="Nhập mã giảm giá">
-                                                                    </td>
-                                                                    <td>
-                                                                        <button class="border p-2 text-white" id="cancelCoupon" style="background-color:#434343;" type="button">Hủy mã</button>
-                                                                    </td>
-                                                                </tr>
-                                                            @endif
+                                                                @endif
+                                                            </tr>
+                                                            
                                                             <tr>
                                                                 <td>Tổng đơn hàng</td>
-                                                                @if(session()->has('newTotal'))
                                                                     <td class="text-right" style="white-space: nowrap"
                                                                         name="total_amount" id="total_amount">
-                                                                        {{ number_format($newTotal, 0, ',', '.') . ' VNĐ' }}
-                                                                    </td>
-                                                                @else
-                                                                    <td class="text-right" style="white-space: nowrap"
-                                                                    name="total_amount" id="total_amount">
-                                                                    {{ number_format(session('totalAmount', 0), 0, ',', '.').' VNĐ' }}
+                                                                        {{-- {{ number_format(session('newTotal', 0), 0, ',', '.').' VNĐ' }} --}}
+                                                                        {{ number_format($finalTotal,0,',','.').' VNĐ' }}
                                                                 </td>
-                                                                
-                                                                @endif
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -616,91 +600,49 @@
 
     {{-- mã giảm giá trong trang thanh toán--}}
     <script>
-        document.addEventListener('DOMContentLoaded',function(){
+        document.addEventListener('DOMContentLoaded', function () {
+            const discountElement = document.getElementById('text-discount');
+            const totalAmountElement = document.getElementById('total_amount');
+            const couponRow = document.querySelector('#coupon-row');
+        
 
             function formatPrice(price) {
-                // Chuyển giá trị thành chuỗi và loại bỏ các ký tự không phải là số
-                let formattedPrice = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                // Thêm đuôi "VNĐ"
-                return formattedPrice + " VNĐ";
+                return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ";
             }
 
-            document.getElementById('button-coupon')?.addEventListener('click',function(){
-                var coupon = document.getElementById('discount_code').value;
+            function applyCoupon() {
+                const coupon = document.getElementById('discount_code').value;
+                const  include_shipping = true;
 
-                if (coupon) {
-                    // Gửi mã giảm giá đến backend thông qua AJAX
-                    fetch('{{ route('applyCoupon') }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                    .getAttribute('content')
-                            },
-                            body: JSON.stringify({
-                                code: coupon
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                // Cập nhật thông báo và tổng tiền sau giảm giá
-                                document.getElementById('text-discount').textContent = formatPrice(data.discount);
-                                document.getElementById('total_amount').textContent = formatPrice(data.new_total); 
-                                location.reload();
-
-                            } else {
-                                // Hiển thị lỗi nếu mã giảm giá không hợp lệ
-                                // document.getElementById('couponCode').value = '';
-                                // coupon_message.textContent = data.error;
-                                // coupon_message.classList.remove('text-success');
-                                // coupon_message.classList.add('text-danger');
-                                // coupon_message.style.display = 'block';
-                                alert('Đơn hàng của bạn không đủ điều kiện');
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
-                } else {
-                    console.error('Vui lòng nhập mã giảm giá');
+                if (!coupon) {
+                    alert('Vui lòng nhập mã giảm giá');
+                    return;
                 }
-            });
+
+                fetch('{{ route('applyCoupon') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify(
+                        { code: coupon, include_shipping:include_shipping }
+                    )
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            discountElement.textContent = formatPrice(data.discount);
+                            totalAmountElement.textContent = formatPrice(data.finalTotal);
+                            couponRow.style.display = 'none';
+                        } else {
+                            alert(data.error || 'Đơn hàng của bạn không đủ điều kiện');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            document.getElementById('button-coupon').addEventListener('click',applyCoupon);
         });
-
-        
     </script>
-
-    {{-- hủy mã giảm giá --}}
-    <script>
-        // xóa mã giảm giá
-        document.getElementById('cancelCoupon')?.addEventListener('click', function() {
-
-            fetch('{{ route('removeCoupon') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('total_amount').textContent = formatPrice(data.original_total);
-                    // Reload trang để cập nhật giao diện dựa trên session
-                    location.reload();
-                }
-            })
-            .catch(error => console.error('Error:', error));
-            });
-
-        // Format lại giá tiền
-        function formatPrice(price) {
-                // Chuyển giá trị thành chuỗi và loại bỏ các ký tự không phải là số
-                let formattedPrice = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                // Thêm đuôi "VNĐ"
-                return formattedPrice + " VNĐ";
-        }
-    </script>
-    
-
-
 @endpush

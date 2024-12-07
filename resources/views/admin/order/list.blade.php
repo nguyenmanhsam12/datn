@@ -148,6 +148,8 @@
 
 @push('script')
     <script>
-        let table = new DataTable('#list_order');
+        let table = new DataTable('#list_order',{
+            order: [[0, 'desc']] // Sắp xếp theo cột đầu tiên (Mã đơn hàng) theo thứ tự giảm dần
+        });
     </script>
 @endpush

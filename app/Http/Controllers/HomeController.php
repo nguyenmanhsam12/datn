@@ -19,7 +19,8 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $list_product = Product::whereHas('mainVariant')
+        $list_product = Product::whereNotNull('category_id')
+            ->whereHas('mainVariant')
             ->orderBy('id', 'desc')
             ->limit(8)
             ->get();

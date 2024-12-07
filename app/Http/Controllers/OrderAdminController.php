@@ -16,8 +16,10 @@ class OrderAdminController extends Controller
     // Giao diện admin
     public function index()
     {
-        $orders = Order::with('user', 'payment', 'orderStatus')->orderBy('id', 'desc')->get();
+        $orders = Order::with('user', 'payment', 'orderStatus')->orderBy('id','desc')->get();
+
         $order_status = OrderStatus::all();
+        
         return view('admin.order.list', compact('orders', 'order_status'));
     }
 
@@ -27,23 +29,6 @@ class OrderAdminController extends Controller
         $finalTotal = $order->total_amount + $order->shipping_fee + $order->discount_amount;
         $order_status = OrderStatus::all();
         return view('admin.order.detailOrder', compact('order', 'order_status','finalTotal'));
-    }
-
-    public function updateOrder(Request $request)
-    {   
-        $data = $request->all();
-
-        $orderId = $data['orderId'];
-        $newStatus = $data['status_id'];
-
-        $order = Order::find($orderId);
-        if ($order) {
-            $order->status_id = $newStatus;
-            $order->save();
-            return redirect()->route('admin.order.index')->with('success','Cập nhật thành công');
-        } else {
-            return redirect()->route('admin.order.index')->with('error','Không tìm thấy đơn hàng');
-        }
     }
 
     // cập nhật bằng js
@@ -62,6 +47,11 @@ class OrderAdminController extends Controller
             if($newStatus == $currentStatus + 1 ){
 
                 $order->status_id = $newStatus;
+
+                if($order->status_id == 5){
+                    $order->payment_status = 'paid';
+                }
+
                 $order->save();
 
                 // Phát sự kiện OrderStatusUpdatedEvent

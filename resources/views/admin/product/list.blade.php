@@ -85,7 +85,13 @@
                                     </td>
                                     <td>{{ $pr->sku }}</td>
                                     <td>{{ $pr->brand->name }}</td>
-                                    <td>{{ $pr->category->name }}</td>
+                                    @if($pr->category_id)
+                                        <td>{{ $pr->category->name }}</td>
+                                    @else
+                                        <td>
+                                            Không có danh mục
+                                        </td>
+                                    @endif
                                     <td>
                                         @can('view', [App\Models\Product::class, $pr->id])
                                             <a href="{{ route('admin.product.edit', ['id' => $pr->id]) }}"

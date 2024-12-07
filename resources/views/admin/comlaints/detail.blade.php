@@ -31,9 +31,9 @@
                             <p><strong>Ngày Đặt hàng:</strong> {{ $complain->order->created_at }}</p>
                             @php
                                 $finalTotal =
+                                    $complain->order->total_amount - 
                                     $complain->order->discount_amount +
-                                    $complain->order->shipping_fee +
-                                    $complain->order->total_amount;
+                                    $complain->order->shipping_fee ; 
                             @endphp
                             <p><strong>Tổng tiền đơn hàng:</strong> {{ number_format($finalTotal, 0, ',', '.') . ' VNĐ' }}</p>
                         </div>

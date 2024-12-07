@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Components\Recursive;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -60,6 +61,14 @@ class CategoryController extends Controller
 
     public function delete($id){
         $category = Category::find($id);
+
+        $product = Product::where('category_id',$category->id)->first();
+
+        if($product){
+            $product->category_id = null;
+            $product->save();
+        }
+        
         $category->delete();
         return redirect()->route('admin.category.index')->with('success','Xóa thành công');
     }

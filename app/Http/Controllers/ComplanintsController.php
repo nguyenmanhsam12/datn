@@ -171,37 +171,57 @@ class ComplanintsController extends Controller
     }
 
     // cập nhâp form thường
-    public function updateComplaints(Request $request, $id){
-
+    public function updateComplaints(Request $request, $id)
+    {
         $data = $request->all();
 
+        // Lấy khiếu nại dựa vào ID
         $complaint = Complaints::findOrFail($id);
+        
+        // lấy ra đơn hàng
+        $order = Order::find($complaint->order_id);
 
-        // Các trạng thái hợp lệ theo quy tắc
-        $validStatuses = ['Chờ xử lý', 'Đang xử lý', 'Giải quyết thành công', 'Giải quyết thất bại', 'Đã hủy'];
-    
-        $currentStatus = $complaint->status;
-        $newStatus = $data['status'];
-    
+        $currentStatus = $complaint->status;    //lưu trạng thái khiếu nại ban đầu
+
+        $newStatus = $data['status'] ?? $currentStatus; // Nếu không có trạng thái mới, giữ nguyên trạng thái hiện tại
+
+        $response = $data['response'] ?? $complaint->response; // Nếu không có phản hồi mới, giữ nguyên phản hồi hiện tại
+
+        // Danh sách trạng thái yêu cầu phản hồi
+        $statusesRequireResponse = ['Giải quyết thành công', 'Đã hủy'];
+
         // Kiểm tra điều kiện chuyển đổi trạng thái
         if ($currentStatus === 'Chờ xử lý' && $newStatus === 'Đang xử lý') {
+            // Cho phép cập nhật trạng thái, phản hồi không bắt buộc
             $complaint->status = $newStatus;
-            $complaint->response = $data['response'];
+            $complaint->response = $response; // Lưu phản hồi nếu có
 
-        } elseif ($currentStatus === 'Đang xử lý' && in_array($newStatus, ['Giải quyết thành công', 'Giải quyết thất bại', 'Đã hủy'])) {
+        } elseif ($currentStatus === 'Đang xử lý' && in_array($newStatus,$statusesRequireResponse)) {
+            // Yêu cầu phản hồi khi chuyển sang trạng thái hoàn tất hoặc hủy
+            if (in_array($newStatus, $statusesRequireResponse) && empty($response)) {
+                return redirect()->back()->with('error', 'Vui lòng nhập phản hồi trước khi cập nhật trạng thái này.');
+            }
+
             $complaint->status = $newStatus;
-            $complaint->response = $data['response'];
+            $complaint->response = $response;
+            $order->status_id = 5;
+            $order->save();
 
+        } elseif ($currentStatus === $newStatus) {
+            // Cập nhật phản hồi mà không thay đổi trạng thái
+            $complaint->response = $response;
         } else {
-            // Chuyển hướng lại với thông báo lỗi nếu không hợp lệ
-            return redirect()->back()->with('error', 'Cập nhập trạng thái không hợp lệ!');
+            // Trạng thái không hợp lệ
+            return redirect()->back()->with('error', 'Cập nhật trạng thái không hợp lệ!');
         }
-    
+
+        // Lưu cập nhật vào cơ sở dữ liệu
         $complaint->save();
-    
+
         // Chuyển hướng lại với thông báo thành công
-        return redirect()->back()->with('success', 'Cập nhật trạng thái thành công!');
+        return redirect()->back()->with('success', 'Cập nhật thành công!');
     }
+
     
 
 
