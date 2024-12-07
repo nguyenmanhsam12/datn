@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class VariantController extends Controller
 {
     public function index(){
-        $list_variant = ProductVariants::with('product','size')->get();
+        $list_variant = ProductVariants::with('product','size')->orderBy('id','desc')->get();
         return view('admin.variant.list',compact('list_variant'));
     }
 

@@ -74,7 +74,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="maximum_discount">Giá trị tối đa đơn hàng</label>
+                                    <label for="maximum_discount">Giá trị giảm tối đa</label>
                                     <input type="number" class="form-control" id="maximum_discount" name="maximum_discount" value="{{ old('maximum_discount',$coupon->maximum_discount) }}" step="0.01" required>
                                     @error('maximum_discount')
                                             <div class="text-danger mt-3">{{ $message }}</div>

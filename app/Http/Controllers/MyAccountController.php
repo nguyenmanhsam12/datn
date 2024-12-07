@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Brand;
+use App\Models\Complaints;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderStatus;
@@ -28,6 +29,7 @@ class MyAccountController extends Controller
         $list_category = Category::orderBy('id','desc')->get();
         $order =  Order::with('cartItems', 'orderStatus','orderAddress','complaint')
             ->where('user_id', $user->id)
+            ->orderBy('id','desc')
             ->get();
         $list_provice = Province::all();
         
@@ -52,9 +54,23 @@ class MyAccountController extends Controller
             ], 404);
         }
 
+        // Kiểm tra nếu có khiếu nại cho đơn hàng
+        $complaint = Complaints::where('order_id', $order->id)->first();
+
+        if ($complaint) {
+            // Kiểm tra trạng thái khiếu nại
+            if (in_array($complaint->status, ['Chờ xử lý', 'Đang xử lý'])) {
+                return response()->json([
+                    'status' => 'error',
+                    'error' => 'Không thể xác nhận đơn hàng khi có khiếu nại chưa được giải quyết.'
+                ], 400);
+            }
+        }
+
         // Xử lý hành động xác nhận đơn hàng
         if ($order && $order->status_id == $data['currentStatus']) {
             $order->status_id = 5;
+            $order->payment_status = 'paid';
             $order->save();
 
             return response()->json([
@@ -63,6 +79,7 @@ class MyAccountController extends Controller
                 'orderId' => $order->id,
                 'newStatus' => $order->status_id,
                 'statusName' => $order->orderStatus->name,
+                'newpaymentStatus' => $order->payment_status,
             ]);
         }
     }

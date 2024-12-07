@@ -343,13 +343,16 @@
                                                                             <strong>Số lượng:</strong>
                                                                             {{ $item->quantity }}<br>
                                                                             <strong>Giá tiền:</strong>
-                                                                            {{ number_format($item->price, 0, ',', '.') . ' VNĐ' }}
+                                                                            {{ number_format($item->price, 0, ',', '.') . ' VNĐ' }}<br>
+                                                                            <strong>Giá tiền giảm:</strong>
+                                                                            {{ number_format($or->discount_amount, 0, ',', '.') . ' VNĐ' }}<br>
                                                                         </li>
                                                                     @endforeach
                                                                 </ul>
                                                                 <p><strong>Phí vận chuyển:</strong>
                                                                     {{ number_format($or->shipping_fee, 0, ',', '.') }} VNĐ
                                                                 </p>
+                                                                
 
                                                                 <div class="payment-status">
                                                                     Trạng thái thanh toán
@@ -468,95 +471,108 @@
             button.addEventListener('click', function(e) {
                 e.preventDefault();
 
-                // Lấy ID đơn hàng từ thuộc tính data-order-id
+                // Lấy ID đơn hàng và trạng thái hiện tại
                 const orderId = this.getAttribute('data-order-id');
-                const currentStatus = this.getAttribute(
-                    'data-status'); // Lấy trạng thái hiện tại của đơn hàng
+                const currentStatus = this.getAttribute('data-status'); 
 
-                // Các tham số cần truyền qua body, bao gồm ID của đơn hàng
-                const dataToSend = {
-                    orderId: orderId,
-                    currentStatus: currentStatus // Thêm thông tin trạng thái hiện tại nếu cần
-                };
+                // Sử dụng SweetAlert để hỏi người dùng xác nhận
+                Swal.fire({
+                    title: 'Xác nhận xác nhận đơn hàng',
+                    text: "Bạn có chắc chắn muốn xác nhận đơn hàng này?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xác nhận',
+                    cancelButtonText: 'Hủy bỏ',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Nếu người dùng chọn xác nhận, tiến hành gửi yêu cầu
+                        const dataToSend = {
+                            orderId: orderId,
+                            currentStatus: currentStatus
+                        };
 
-                // Gửi yêu cầu POST mà không cần ID trong URL
-                fetch('{{ route('confirmOrder') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                .getAttribute('content'),
-                        },
-                        body: JSON.stringify(dataToSend) // Truyền tất cả tham số qua body
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
+                        // Gửi yêu cầu POST
+                        fetch('{{ route('confirmOrder') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                        .getAttribute('content'),
+                                },
+                                body: JSON.stringify(dataToSend) 
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.status === 'success') {
+                                    // Cập nhật giao diện khi xác nhận thành công
+                                    const orderCard = this.closest('.order-card');
+                                    orderCard.setAttribute('data-status', data.newStatus);
+                                    const orderStatus = orderCard.querySelector('.order-status');
+                                    orderStatus.textContent = data.statusName;
+                                    orderStatus.setAttribute('data-status', data.newStatus); 
+                                    const paymentStatus = orderCard.querySelector('.payment-status span');
+                                    if(data.newpaymentStatus == 'paid'){
+                                        paymentStatus.textContent = 'Đã thanh toán'
+                                    }
 
-                            // Cập nhật giao diện khi xác nhận thành công
-                            const orderCard = this.closest('.order-card');
-                            orderCard.setAttribute('data-status', data.newStatus);
-                            // tên trạng thái
-                            const orderStatus = orderCard.querySelector('.order-status');
-                            // Cập nhật trạng thái hiển thị trong giao diện
-                            orderStatus.textContent = data.statusName;
-                            orderStatus.setAttribute('data-status', data
-                                .newStatus); // Cập nhật mã trạng thái từ server
+                                    // Ẩn hoặc thay đổi các nút sau khi đơn hàng đã hoàn tất
+                                    const confirmButton = orderCard.querySelector('.confirm-order');
+                                    if (confirmButton) {
+                                        confirmButton.style.display = 'none'; 
+                                    }
 
-                            // Ẩn hoặc thay đổi các nút sau khi đơn hàng đã hoàn tất
-                            const confirmButton = orderCard.querySelector('.confirm-order');
-                            if (confirmButton) {
-                                confirmButton.style.display = 'none'; // Ẩn nút "Xác nhận đơn hàng"
-                            }
+                                    const complaintButton = orderCard.querySelector('a.btn-warning');
+                                    if (complaintButton) {
+                                        complaintButton.style.display = 'none'; 
+                                    }
 
-                            const complaintButton = orderCard.querySelector('a.btn-warning');
-                            if (complaintButton) {
-                                complaintButton.style.display = 'none'; // Ẩn nút "Khiếu Nại"
-                            }
-
-                            // Chuyển đơn hàng sang tab "Hoàn tất" nếu trạng thái mới là hoàn tất
-                            if (data.newStatus === 5) {
-                                // Tìm tab "Hoàn tất" và chuyển đến đó
-                                const completedTab = document.querySelector(
-                                    `.tab-link[data-status="${data.newStatus}"]`);
-                                if (completedTab) {
-                                    // Chuyển sang tab "Hoàn tất"
-                                    document.querySelectorAll('.tab-link').forEach(function(tab) {
-                                        tab.classList.remove('active');
-                                    });
-                                    completedTab.classList.add('active');
-
-                                    // Ẩn/hiện các đơn hàng theo trạng thái
-                                    const orders = document.querySelectorAll('.order-card');
-                                    orders.forEach(function(order) {
-                                        if (order.getAttribute('data-status') === '5') {
-                                            order.style.display = 'block';
-
-                                        } else {
-                                            order.style.display = 'none';
+                                    // Chuyển đơn hàng sang tab "Hoàn tất" nếu trạng thái mới là hoàn tất
+                                    if (data.newStatus === 5) {
+                                        const completedTab = document.querySelector(`.tab-link[data-status="${data.newStatus}"]`);
+                                        if (completedTab) {
+                                            document.querySelectorAll('.tab-link').forEach(function(tab) {
+                                                tab.classList.remove('active');
+                                            });
+                                            completedTab.classList.add('active');
+                                            const orders = document.querySelectorAll('.order-card');
+                                            orders.forEach(function(order) {
+                                                if (order.getAttribute('data-status') === '5') {
+                                                    order.style.display = 'block';
+                                                } else {
+                                                    order.style.display = 'none';
+                                                }
+                                            });
                                         }
+                                    }
+
+                                    // Hiển thị thông báo SweetAlert
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Thành công',
+                                        text: 'Đơn hàng đã được xác nhận và chuyển sang trạng thái hoàn tất!',
+                                        confirmButtonText: 'OK'
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Lỗi',
+                                        text: data.error,
+                                        confirmButtonText: 'OK'
                                     });
                                 }
-                            }
-
-
-                            // Hiển thị thông báo SweetAlert
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Thành công',
-                                text: 'Đơn hàng đã được xác nhận và chuyển sang trạng thái hoàn tất!',
-                                confirmButtonText: 'OK'
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Có lỗi xảy ra trong quá trình xác nhận');
                             });
-                        } else {
-                            alert('Có lỗi xảy ra');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Có lỗi xảy ra trong quá trình xác nhận');
-                    });
+                    } else {
+                        // Người dùng hủy bỏ, có thể thêm một thông báo nếu muốn
+                        Swal.fire('Hành động đã bị hủy bỏ', '', 'info');
+                    }
+                });
             });
-        });
+        }); 
+
 
         // nút hủy bỏ đơn hàng
         document.querySelectorAll('.cancel-order').forEach(button => {
@@ -740,7 +756,9 @@
                     const orderId = e.order.id;
                     const newStatus = e.order.order_status.name;
                     const newStatusId = e.order.status_id;
+                    const newPaymentStatus = e.order.payment_status;    //Trạng thái thanh toán
 
+                    
 
                     const complaintsRoute = "{{ route('complaints', ['orderId' => ':orderId']) }}";
 
@@ -761,6 +779,16 @@
                         // Hiển thị và ẩn các nút button theo `newStatusId`
                         const buttonGroup = orderElement.querySelector('.button-group');
                         buttonGroup.innerHTML = ''; // Xóa các nút hiện có
+
+                        const paymentStatusElement = orderElement.querySelector('.payment-status span');
+                        if(newPaymentStatus == 'pending'){
+                            paymentStatusElement.textContent = 'Đang chờ thanh toán';
+                        }
+
+                        if(newPaymentStatus == 'paid'){
+                            paymentStatusElement.textContent = 'Đã thanh toán';
+                        }
+                        
 
                         // thế router
                         const dynamicComplaintUrl = complaintsRoute.replace(':orderId', orderId);
@@ -807,112 +835,108 @@
                             button.addEventListener('click', function(e) {
                                 e.preventDefault();
 
-                                // Lấy ID đơn hàng từ thuộc tính data-order-id
+                                // Lấy ID đơn hàng và trạng thái hiện tại
                                 const orderId = this.getAttribute('data-order-id');
-                                const currentStatus = this.getAttribute(
-                                    'data-status'); // Lấy trạng thái hiện tại của đơn hàng
+                                const currentStatus = this.getAttribute('data-status'); 
 
-                                // Các tham số cần truyền qua body, bao gồm ID của đơn hàng
-                                const dataToSend = {
-                                    orderId: orderId,
-                                    currentStatus: currentStatus // Thêm thông tin trạng thái hiện tại nếu cần
-                                };
+                                // Sử dụng SweetAlert để hỏi người dùng xác nhận
+                                Swal.fire({
+                                    title: 'Xác nhận xác nhận đơn hàng',
+                                    text: "Bạn có chắc chắn muốn xác nhận đơn hàng này?",
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Xác nhận',
+                                    cancelButtonText: 'Hủy bỏ',
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        // Nếu người dùng chọn xác nhận, tiến hành gửi yêu cầu
+                                        const dataToSend = {
+                                            orderId: orderId,
+                                            currentStatus: currentStatus
+                                        };
 
-                                // Gửi yêu cầu POST mà không cần ID trong URL
-                                fetch('{{ route('confirmOrder') }}', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'X-CSRF-TOKEN': document.querySelector(
-                                                    'meta[name="csrf-token"]')
-                                                .getAttribute('content'),
-                                        },
-                                        body: JSON.stringify(
-                                            dataToSend) // Truyền tất cả tham số qua body
-                                    })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data.status === 'success') {
+                                        // Gửi yêu cầu POST
+                                        fetch('{{ route('confirmOrder') }}', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                                        .getAttribute('content'),
+                                                },
+                                                body: JSON.stringify(dataToSend) 
+                                            })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data.status === 'success') {
+                                                    // Cập nhật giao diện khi xác nhận thành công
+                                                    const orderCard = this.closest('.order-card');
+                                                    orderCard.setAttribute('data-status', data.newStatus);
+                                                    const orderStatus = orderCard.querySelector('.order-status');
+                                                    orderStatus.textContent = data.statusName;
+                                                    orderStatus.setAttribute('data-status', data.newStatus); 
+                                                    // trạng thái thanh toán
+                                                    const paymentStatus = orderCard.querySelector('.payment-status span');
+                                                    if(data.newpaymentStatus == 'paid'){
+                                                        paymentStatus.textContent = 'Đã thanh toán'
+                                                    }
 
-                                            // Cập nhật giao diện khi xác nhận thành công
-                                            const orderCard = this.closest('.order-card');
-                                            orderCard.setAttribute('data-status', data
-                                                .newStatus);
-                                            // tên trạng thái
-                                            const orderStatus = orderCard.querySelector(
-                                                '.order-status');
-                                            // Cập nhật trạng thái hiển thị trong giao diện
-                                            orderStatus.textContent = data.statusName;
-                                            orderStatus.setAttribute('data-status', data
-                                                .newStatus
-                                                ); // Cập nhật mã trạng thái từ server
+                                                    // Ẩn hoặc thay đổi các nút sau khi đơn hàng đã hoàn tất
+                                                    const confirmButton = orderCard.querySelector('.confirm-order');
+                                                    if (confirmButton) {
+                                                        confirmButton.style.display = 'none'; 
+                                                    }
 
-                                            // Ẩn hoặc thay đổi các nút sau khi đơn hàng đã hoàn tất
-                                            const confirmButton = orderCard.querySelector(
-                                                '.confirm-order');
-                                            if (confirmButton) {
-                                                confirmButton.style.display =
-                                                'none'; // Ẩn nút "Xác nhận đơn hàng"
-                                            }
+                                                    const complaintButton = orderCard.querySelector('a.btn-warning');
+                                                    if (complaintButton) {
+                                                        complaintButton.style.display = 'none'; 
+                                                    }
 
-                                            const complaintButton = orderCard.querySelector(
-                                                'a.btn-warning');
-                                            if (complaintButton) {
-                                                complaintButton.style.display =
-                                                'none'; // Ẩn nút "Khiếu Nại"
-                                            }
-
-                                            // Chuyển đơn hàng sang tab "Hoàn tất" nếu trạng thái mới là hoàn tất
-                                            if (data.newStatus === 5) {
-                                                // Tìm tab "Hoàn tất" và chuyển đến đó
-                                                const completedTab = document.querySelector(
-                                                    `.tab-link[data-status="${data.newStatus}"]`
-                                                    );
-                                                if (completedTab) {
-                                                    // Chuyển sang tab "Hoàn tất"
-                                                    document.querySelectorAll('.tab-link')
-                                                        .forEach(function(tab) {
-                                                            tab.classList.remove(
-                                                                'active');
-                                                        });
-                                                    completedTab.classList.add('active');
-
-                                                    // Ẩn/hiện các đơn hàng theo trạng thái
-                                                    const orders = document
-                                                        .querySelectorAll('.order-card');
-                                                    orders.forEach(function(order) {
-                                                        if (order.getAttribute(
-                                                                'data-status') ===
-                                                            '5') {
-                                                            order.style.display =
-                                                                'block';
-
-                                                        } else {
-                                                            order.style.display =
-                                                                'none';
+                                                    // Chuyển đơn hàng sang tab "Hoàn tất" nếu trạng thái mới là hoàn tất
+                                                    if (data.newStatus === 5) {
+                                                        const completedTab = document.querySelector(`.tab-link[data-status="${data.newStatus}"]`);
+                                                        if (completedTab) {
+                                                            document.querySelectorAll('.tab-link').forEach(function(tab) {
+                                                                tab.classList.remove('active');
+                                                            });
+                                                            completedTab.classList.add('active');
+                                                            const orders = document.querySelectorAll('.order-card');
+                                                            orders.forEach(function(order) {
+                                                                if (order.getAttribute('data-status') === '5') {
+                                                                    order.style.display = 'block';
+                                                                } else {
+                                                                    order.style.display = 'none';
+                                                                }
+                                                            });
                                                         }
+                                                    }
+
+                                                    // Hiển thị thông báo SweetAlert
+                                                    Swal.fire({
+                                                        icon: 'success',
+                                                        title: 'Thành công',
+                                                        text: 'Đơn hàng đã được xác nhận và chuyển sang trạng thái hoàn tất!',
+                                                        confirmButtonText: 'OK'
+                                                    });
+                                                } else {
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: 'Lỗi',
+                                                        text: data.error,
+                                                        confirmButtonText: 'OK'
                                                     });
                                                 }
-                                            }
-
-
-                                            // Hiển thị thông báo SweetAlert
-                                            Swal.fire({
-                                                icon: 'success',
-                                                title: 'Thành công',
-                                                text: 'Đơn hàng đã được xác nhận và chuyển sang trạng thái hoàn tất!',
-                                                confirmButtonText: 'OK'
+                                            })
+                                            .catch(error => {
+                                                console.error('Error:', error);
+                                                alert('Có lỗi xảy ra trong quá trình xác nhận');
                                             });
-                                        } else {
-                                            alert('Có lỗi xảy ra');
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error('Error:', error);
-                                        alert('Có lỗi xảy ra trong quá trình xác nhận');
-                                    });
+                                    } else {
+                                        // Người dùng hủy bỏ, có thể thêm một thông báo nếu muốn
+                                        Swal.fire('Hành động đã bị hủy bỏ', '', 'info');
+                                    }
+                                });
                             });
-                        });
+                        }); 
 
                         // gắn lại sự kiến cho nút hủy khi cập nhập bằng laravel echo
                         document.querySelectorAll('.cancel-order').forEach(button => {
@@ -1082,9 +1106,8 @@
         })
     </script>
 
-
-    {{-- đoạn code xử lí thông tin cụ thể của người dùng --}}
     <script>
+        // đoạn code xử lí thông tin người dùng
         document.getElementById('editButton').addEventListener('click', function() {
             const accountInfo = document.getElementById('accountInfo');
 
@@ -1280,7 +1303,7 @@
                                 text: 'Cập nhập thông tin thành công',
                                 confirmButtonText: 'OK'
                             });
-                            location.reload(); // Hoặc điều hướng đến trang khác
+                            // location.reload(); 
                         } else {
                             alert('Cập nhật thất bại: ' + data.message);
                         }
@@ -1296,5 +1319,6 @@
                 location.reload(); // Hoặc khôi phục lại nội dung ban đầu
             });
         });
+
     </script>
 @endpush

@@ -112,7 +112,9 @@ class ProductController extends Controller
                         'size_id' => $variant['size_id'],
                         'stock' => $variant['stock'],
                         'price' => $variant['price'],
-                        'weight' => $variant['weight'],
+                        'length' => $variant['length'],
+                        'width' => $variant['width'],
+                        'height' => $variant['height'],
                     ]);
 
                 }

@@ -27,6 +27,7 @@ class OrderStatusUpdatedEvent implements ShouldBroadcast
         $this->order = $order;
         $this->newStatus = $order->orderStatus;
         $this->orderItems = $order->cartItems;
+
     }
 
     /**
