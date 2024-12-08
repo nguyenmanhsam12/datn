@@ -85,9 +85,9 @@
             <div class="card text-center" style="background-color: #64b5f6; color: white;">
                 <div class="card-body">
                     <h5 class="card-title">
-                        <i class="fas fa-user-shield"></i> Mã giảm giá hết hạn
+                        <i class="fas fa-user-shield"></i> Đơn hàng khiếu nại
                     </h5>
-                    <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $expiredCouponsCount }}</p>
+                    <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $khieuNai }}</p>
                 </div>
             </div>
         </div>
@@ -570,7 +570,15 @@
                         <tbody>
                             @foreach($topProducts as $item)
                                 <tr>
-                                    <td>{{ $item->productVariant->product ? $item->productVariant->product->name : 'N/A' }}</td>
+                                    <td>
+                                        @if ($item->productVariant && $item->productVariant->product)
+                                            <a href="{{ route('getDetailProduct', ['slug' => $item->productVariant->product->slug]) }}" style="color:black">
+                                                {{ $item->productVariant->product->name }}
+                                            </a>
+                                        @else
+                                            N/A
+                                        @endif
+                                    </td>
                                     <td>{{ $item->total_sold }}</td>
                                 </tr>
                             @endforeach
@@ -606,7 +614,9 @@
                         <tbody>
                             @foreach($sanPham as $item)
                             <tr>
-                                <td>{{ $item->product->name }}</td>
+                              <td>  <a href="{{ route('getDetailProduct', ['slug' => $item->product->slug]) }}" style="color:black">
+                                    {{ $item->product->name }}
+                                </a></td>
                                 <td>{{ $item->total_stock }}</td> <!-- Hiển thị tổng tồn kho -->
                             </tr>
                         @endforeach

@@ -319,10 +319,11 @@
                                                     action="{{ route('submitReview', ['slug' => $product->slug]) }}">
                                                     @csrf
                                                     <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                                    <input type="hidden" name="rating" id="rating" value="1">
+                                                    <input type="hidden" name="rating" id="rating" value="">
                                                     <!-- Giữ giá trị sao chọn -->
                                                     <div class="row">
                                                         <div class="col-md-12">
+                                                            <p id="error-message" style="color: red; display: none;"></p>
                                                             <textarea class="custom-textarea" name="message" placeholder="Đánh giá của bạn..."></textarea>
                                                             <button type="submit" data-text="Gửi đánh giá"
                                                                 class="button-one submit-button mt-20">Gửi đánh
@@ -602,6 +603,22 @@
                 var form = $(this); // Lấy form hiện tại
                 var url = form.attr('action'); // Lấy URL action của form
                 var data = form.serialize(); // Lấy tất cả dữ liệu trong form
+
+                        // **Validate phía client**
+        var rating = $('#rating').val();
+        var message = $('textarea[name="message"]').val().trim();
+        var errorMessage = $('#error-message');
+
+        if (!rating || rating < 1 || rating > 5) {
+            errorMessage.text('Vui lòng chọn số sao hợp lệ (1 đến 5).').show();
+            return;
+        }
+
+        if (!message || message.length =="") {
+            errorMessage.text('Vui lòng nhập nội dung đánh giá.').show();
+            return;
+        }
+        errorMessage.hide();
 
 
 
