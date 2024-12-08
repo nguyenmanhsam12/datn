@@ -13,6 +13,7 @@ use App\Models\Payment_Methods;
 use App\Models\ProductVariants;
 use Illuminate\Http\Request;
 use App\Models\Review;
+use App\Models\Complaints;
 use Carbon\Carbon;
 use DB;
 
@@ -24,6 +25,7 @@ class DashboardController extends Controller
 $totalReviewsCount = Review::count();
         // Đếm số lượng tổng quanssldh
         $sldh = Order::count();
+        $khieuNai=Complaints::count();
         $totalProducts = Product::count();
         $totalAdmins = User::count();
         $doanhThu = Order::whereHas('orderStatus', function ($query) {
@@ -218,7 +220,7 @@ $totalReviewsCount = Review::count();
              'revenues',
              'revenueAndSalesData',
              'sanPham',
-             'totalReviewsCount','sldh'
+             'totalReviewsCount','sldh','khieuNai'
             
         ));
     }
