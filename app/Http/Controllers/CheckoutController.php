@@ -31,39 +31,22 @@ class CheckoutController extends Controller
 {
 
     // Method lấy thông tin đơn hàng từ session
-    // hàm xử lí khi người dùng back lại trang thanh toán
-    public function getOrderSummary()
-    {
-        // Kiểm tra xem có session 'order_id' không
-        if (Session::has('order_id')) {
-            // Lấy thông tin đơn hàng từ session
-            $orderId = Session::get('order_id');
-            
-            return response()->json([
-                'success' => true,
-                'message' => 'đơn hàng đã được tìm thấy.',
-                'orderId' => $orderId,
-            ]);
-        }
-
-        // Trả về lỗi nếu không có session 'order_id'
-        return response()->json([
-            'success' => false,
-            'message' => 'Không có đơn hàng nào trong session.',
-        ]);
-    }
-
-    private function calculateShippingFee($total_weight)
+    // hàm tính phí vận chuyển
+    private function calculateShippingFee($total_weight,$totalAmount)
     {
         // Xử lý mức phí vận chuyển dựa trên trọng lượng sản phẩm (có thể cứng hóa giá trị trong code)
-        if ($total_weight >= 0  && $total_weight <= 0.7) {
-            return 15000;
-        } elseif ($total_weight > 0.7 && $total_weight <= 1.5) {
-            return 25000;  // Phí vận chuyển cho trọng lượng từ 5kg đến 10kg là 100
-        } elseif ($total_weight > 1.5 && $total_weight < 5) {
-            return 40000;  // Phí vận chuyển cho trọng lượng từ 10kg đến 20kg là 150
-        } else {
-            return 0;  // Phí vận chuyển cho trọng lượng trên 20kg là 200
+        if($totalAmount >= 6000000){
+            return 0; //freeship
+        }
+
+        if ($total_weight <= 1) {
+            return 15000; 
+        } elseif ($total_weight <= 2) {
+            return 25000; 
+        } elseif ($total_weight <= 5) {
+            return 40000; 
+        } else{
+            return 50000;
         }
     }
 
@@ -84,6 +67,10 @@ class CheckoutController extends Controller
         
         $cartItems = CartItems::with('variants.product', 'variants.size')->where('cart_id', $cart->id)->get();
 
+        if(!$cartItems){
+            return redirect()->route('shop')->with('error', 'Vui lòng chọn sản phẩm trước khi thanh toán');
+        }
+
         // Tính tổng trọng lượng cho tất cả các sản phẩm trong giỏ hàng
         $total_weight = 0; // Khởi tạo tổng trọng lượng
 
@@ -91,10 +78,10 @@ class CheckoutController extends Controller
             $variant = $item->variants;
             $product = $variant->product;
 
-
-            $total_weight += $variant->weight * $item->quantity;
-
-
+            // thể tích 
+            $volume = $variant->height * $variant->length * $variant->width/3000;
+            $total_weight += $volume * $item->quantity;
+            
             return [
                 'id' => $item->id,
                 'variant_id' => $variant->id,
@@ -112,14 +99,26 @@ class CheckoutController extends Controller
         $list_brand = Brand::orderBy('id','desc')->get();
         $list_category = Category::orderBy('id','desc')->get();
 
-        $shipping = $this->calculateShippingFee($total_weight);
+        
+        $totalAmount = session('totalAmount',0);
+        $shipping = $this->calculateShippingFee($total_weight,$totalAmount);
+        // lưu phí ship vào trong session
         session(['shipping' => $shipping]);
 
-        $newTotal = session('newTotal', 0) + $shipping;
+        // Kiểm tra session newTotalCheckout
+        $finalTotal = session('newTotalCheckout', null);
 
+        if ($finalTotal === null) {
+            // Nếu không có newTotalCheckout, lấy tổng tiền từ giỏ hàng và cộng phí vận chuyển
+            $totalAmount = session('newTotal', 0);
+            $finalTotal = $totalAmount + $shipping; // Tổng tiền giỏ hàng + phí ship
+        }
 
-        return view('client.pages.checkout', compact('cartItems', 'user', 'province', 'payment', 'shipping', 'newTotal',
-            'list_brand','list_category'
+        // Lưu tổng tiền cuối cùng vào session
+        session(['finalTotal' => $totalAmount]);
+    
+        return view('client.pages.checkout', compact('cartItems', 'user', 'province', 'payment', 'shipping', 
+            'list_brand','list_category','finalTotal'
         ));
     }
 
@@ -135,8 +134,6 @@ class CheckoutController extends Controller
             $citys = City::where('matinh', $province)->get();
 
             // Trả về danh sách thành phố dưới dạng JSON
-
-
             return response()->json([
                 'message' => 'Lấy danh sách thành phố thành công',
                 'citys' => $citys,
@@ -261,7 +258,7 @@ class CheckoutController extends Controller
             session()->forget(['coupon_id', 'discount', 'newTotal', 'totalAmount']);
 
             if ($data['payment_method'] == 2) { // Giả sử 2 là ID của VNPAY
-                $newTotal = $order->total_amount + $order->shipping_fee;
+                $newTotal = $order->total_amount + $order->shipping_fee - $order->discount_amount;
                 
                 // Tạo bản ghi thanh toán trong transactions khi có giao dịch thanh toán
                 Transactions::create([
@@ -276,7 +273,7 @@ class CheckoutController extends Controller
             }
 
             if ($data['payment_method'] == 3) { //Thanh toán momo
-                $newTotal = $order->total_amount + $order->shipping_fee;
+                $newTotal = $order->total_amount + $order->shipping_fee - $order->discount_amount;
                 
                 // Tạo bản ghi thanh toán trong transactions khi có giao dịch thanh toán
                 Transactions::create([
@@ -285,6 +282,7 @@ class CheckoutController extends Controller
 
                 // Gọi hàm xử lý thanh toán momo
                 $payUrl = $this->momoPayment($newTotal,$order->id);
+
                 return response()->json([
                     'message' => 'Liên kết thanh toán đã được tạo thành công.',
                     'momo' => $payUrl,
@@ -411,7 +409,7 @@ class CheckoutController extends Controller
                 }
                 $order->save();
 
-                return redirect()->route('shop');
+                return redirect()->route('myAccount'); 
             }
 
             // Lưu thay đổi vào đơn hàng
@@ -432,14 +430,14 @@ class CheckoutController extends Controller
         // Kiểm tra trạng thái thanh toán và đơn hàng
         if ($order->payment_status === 'pending' && $order->status_id === 1 && $order->payment_method_id === 2) {
             // tổng đơn hàng
-            $newTotal = $order->total_amount + $order->shipping_fee + $order->discount_amount;
+            $newTotal = $order->total_amount + $order->shipping_fee - $order->discount_amount;
             // Tạo liên kết thanh toán VNPAY
             return $this->vnpayPayment($newTotal,$order->id);
         }
 
         if ($order->payment_status === 'pending' && $order->status_id === 1 && $order->payment_method_id === 3) {
             // tổng đơn hàng
-            $newTotal = $order->total_amount + $order->shipping_fee + $order->discount_amount;
+            $newTotal = $order->total_amount + $order->shipping_fee - $order->discount_amount;
                 // Tạo liên kết thanh toán momo
                 $payUrl = $this->momoPayment($newTotal,$order->id);
                 return response()->json([
@@ -517,8 +515,8 @@ class CheckoutController extends Controller
             $result = $this->execPostRequest($endpoint, json_encode($data));
             $jsonResult = json_decode($result, true);  // decode json
 
-            Log::info('MoMo Response: ', $jsonResult);
 
+            Log::info('Phản hồi từ MoMo:', ['result' => $result]);
 
             //Just a example, please check more in there
 
@@ -574,7 +572,7 @@ class CheckoutController extends Controller
                 }
                 $order->save();
 
-                return redirect()->route('home');
+                return redirect()->route('myAccount');
             }
 
             // Lưu thay đổi vào đơn hàng

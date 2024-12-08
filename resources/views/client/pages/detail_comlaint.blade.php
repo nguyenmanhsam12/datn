@@ -3,8 +3,6 @@
 @section('content')
     <main class="main container border rounded shadow mt-4 mb-4 p-4">
         <h1 class="text-center mb-4">Chi tiết khiếu nại</h1>
-        <p class="text-center mb-4">Nếu bạn gặp vấn đề với đơn hàng, hãy điền thông tin dưới đây để chúng tôi hỗ trợ bạn sớm
-            nhất.</p>
         <form action="{{ route('updateComplaintsImage',['orderId'=>$complaint->order_id]) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
@@ -45,10 +43,15 @@
                 <label for="complaint_details">Phản hồi từ chăm sóc khách hàng:</label>
                 <textarea name="complaint_details" class="form-control" rows="5" placeholder="Phản hồi từ phía shop" readonly>{{ $complaint->response}}</textarea>
             </div>
-            <div class="form-actions text-end mt-4">
-                <a href="{{ route('myAccount') }}" class="btn btn-secondary ">Quay lại</a>
-                <button type="submit" class="btn btn-primary">Cập nhập khiếu nại</button>
-            </div>
+            <div class="form-actions d-flex justify-content-between align-items-center mt-4">
+                <button type="button" class="btn btn-danger" id="cancel-complaint-btn"
+                data-order-id = "{{ $complaint->order_id }}"    
+                >Hủy khiếu nại</button>
+                <div>
+                    <a href="{{ route('myAccount') }}" class="btn btn-secondary">Quay lại</a>
+                    <button type="submit" class="btn btn-primary">Cập nhật khiếu nại</button>
+                </div>
+            </div>            
         </form>
         <div class="complaint__footer text-center mt-4 border-top pt-4">
             <p>Email: support@cuahang.com | Hotline: 1900 1234</p>
@@ -57,4 +60,63 @@
     </main>
 @endsection
 
+@push('script')
 
+{{-- hủy khiếu nại --}}
+<script>
+    document.getElementById('cancel-complaint-btn').addEventListener('click', function () {
+        const order_id = document.getElementById('cancel-complaint-btn').getAttribute('data-order-id');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        Swal.fire({
+            title: 'Bạn có chắc chắn?',
+            text: 'Bạn sẽ không thể khôi phục khiếu nại này!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Hủy khiếu nại',
+            cancelButtonText: 'Quay lại'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('{{ route('complaintsDelete') }}', {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        order_id: order_id
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire(
+                            'Đã hủy!',
+                            'Khiếu nại của bạn đã được hủy.',
+                            'success'
+                        ).then(() => {
+                            window.location.href = "{{ route('myAccount') }}";
+                        });
+                    } else {
+                        Swal.fire(
+                            'Thất bại!',
+                            'Có lỗi xảy ra, vui lòng thử lại.',
+                            'error'
+                        );
+                    }
+                })
+                .catch(error => {
+                    Swal.fire(
+                        'Lỗi!',
+                        'Không thể hủy khiếu nại. Vui lòng thử lại sau.',
+                        'error'
+                    );
+                });
+            }
+        });
+    });
+</script>
+
+@endpush

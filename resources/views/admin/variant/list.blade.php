@@ -61,8 +61,12 @@
                                     <td>{{$item->stock}}</td>
                                     <td>{{$item->price}}</td>
                                     <td>
-                                        <a href="{{route('admin.variant.edit',['id'=>$item->id])}}"class="btn btn-warning">Sửa</a>
-                                        <a href="{{route('admin.variant.delete',['id'=>$item->id])}}"class="btn btn-danger"onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa</a>
+                                        @can('view',App\Models\ProductVariants::class)
+                                            <a href="{{route('admin.variant.edit',['id'=>$item->id])}}"class="btn btn-warning">Sửa</a>
+                                        @endcan
+                                        @can('delete',App\Models\ProductVariants::class)
+                                            <a href="{{route('admin.variant.delete',['id'=>$item->id])}}"class="btn btn-danger"onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa</a>
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach

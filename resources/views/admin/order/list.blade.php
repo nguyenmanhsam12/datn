@@ -73,7 +73,9 @@
                             <td>
                                 <a href="{{ route('admin.order.detail', ['id' => $order->id]) }}"
                                     class="btn btn-success btn-sm">Xem Chi Tiết</a>
-                                <button class="btn btn-danger btn-sm">Xóa</button>
+                                <a href="{{ route('admin.order.deleteOrder',['id'=>$order->id]) }}" class="btn btn-danger btn-sm"
+                                onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))"
+                                >Xóa</a>
                             </td>
                         </tr>
                     @endforeach
@@ -146,6 +148,8 @@
 
 @push('script')
     <script>
-        let table = new DataTable('#list_order');
+        let table = new DataTable('#list_order',{
+            order: [[0, 'desc']] // Sắp xếp theo cột đầu tiên (Mã đơn hàng) theo thứ tự giảm dần
+        });
     </script>
 @endpush

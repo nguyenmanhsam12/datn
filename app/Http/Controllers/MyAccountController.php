@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Brand;
+use App\Models\Complaints;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\Province;
+use App\Models\Transactions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,6 +19,7 @@ class MyAccountController extends Controller
     {
         $user = Auth::user()->load(['ward', 'city', 'province']);
         
+
         if (!$user) {
             return redirect()->route('login')->with('error', 'Vui lòng đăng nhập trước');
         }
@@ -26,6 +29,7 @@ class MyAccountController extends Controller
         $list_category = Category::orderBy('id','desc')->get();
         $order =  Order::with('cartItems', 'orderStatus','orderAddress','complaint')
             ->where('user_id', $user->id)
+            ->orderBy('id','desc')
             ->get();
         $list_provice = Province::all();
         
@@ -50,9 +54,23 @@ class MyAccountController extends Controller
             ], 404);
         }
 
+        // Kiểm tra nếu có khiếu nại cho đơn hàng
+        $complaint = Complaints::where('order_id', $order->id)->first();
+
+        if ($complaint) {
+            // Kiểm tra trạng thái khiếu nại
+            if (in_array($complaint->status, ['Chờ xử lý', 'Đang xử lý'])) {
+                return response()->json([
+                    'status' => 'error',
+                    'error' => 'Không thể xác nhận đơn hàng khi có khiếu nại chưa được giải quyết.'
+                ], 400);
+            }
+        }
+
         // Xử lý hành động xác nhận đơn hàng
         if ($order && $order->status_id == $data['currentStatus']) {
             $order->status_id = 5;
+            $order->payment_status = 'paid';
             $order->save();
 
             return response()->json([
@@ -61,6 +79,7 @@ class MyAccountController extends Controller
                 'orderId' => $order->id,
                 'newStatus' => $order->status_id,
                 'statusName' => $order->orderStatus->name,
+                'newpaymentStatus' => $order->payment_status,
             ]);
         }
     }
@@ -85,6 +104,24 @@ class MyAccountController extends Controller
                 'status' => 'error',
                 'message' => 'Đơn hàng không thể hủy trong trạng thái này.'
             ], 400);
+        }
+
+        if($order->payment_method_id == 2 && $order->payment_status == 'pending'){
+            $transaction = Transactions::where('order_id',$order->id)->first();
+            if ($transaction) {
+                $transaction->status = 'canceled'; // hoặc 'failed' tùy theo logic
+                $transaction->save();
+            }
+            $order->payment_status = 'canceled'; // Cập nhật trạng thái thanh toán trong đơn hàng
+        }
+
+        if($order->payment_method_id == 3 && $order->payment_status == 'pending'){
+            $transaction = Transactions::where('order_id',$order->id)->first();
+            if ($transaction) {
+                $transaction->status = 'canceled'; // hoặc 'failed' tùy theo logic
+                $transaction->save();
+            }
+            $order->payment_status = 'canceled'; // Cập nhật trạng thái thanh toán trong đơn hàng
         }
 
         // Lấy các sản phẩm trong đơn hàng

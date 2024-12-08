@@ -262,11 +262,11 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="">Địa chỉ</label>
-                                                        <textarea class="custom-textarea" name="address_order" id="address_order" placeholder="Địa chỉ của bạn...">
+                                                        {{-- <textarea class="custom-textarea" name="address_order" id="address_order" placeholder="Địa chỉ của bạn...">
                                                             {{ $user->address }}
-                                                        </textarea>
+                                                        </textarea> --}}
+                                                        <input type="text" name="address_order" id="address_order" value="{{ $user->address }}" placeholder="Địa chỉ của bạn">
                                                         <div id="recipient_address_order_error" class="text-danger mb-3 error-message" style="display: none;"></div>
-
                                                     </div>
                                                 </div>
                                             </div>
@@ -312,22 +312,24 @@
                                                                     {{ number_format($shipping, 0, ',', '.') . ' VNĐ' }}</td>
                                                             </tr>
                                                             
-                                                            @if (!session()->has('coupon_id'))
-                                                                <tr>
-                                                                    <td >
+                                                            <tr id="coupon-row">
+                                                                @if (!session()->has('coupon_id'))
+                                                                    <td>
                                                                         <label for="discount_code" style="white-space: nowrap">Mã giảm giá (nếu có)</label>
                                                                         <input class="border" type="text" id="discount_code" name="discount_code" style="width: 100%;" placeholder="Nhập mã giảm giá">
                                                                     </td>
                                                                     <td>
                                                                         <button class="border p-2 text-white" id="button-coupon" style="background-color:#434343;" type="button">Áp dụng</button>
                                                                     </td>
-                                                                </tr>
-                                                            @endif
+                                                                @endif
+                                                            </tr>
+                                                            
                                                             <tr>
                                                                 <td>Tổng đơn hàng</td>
-                                                                <td class="text-right" style="white-space: nowrap"
-                                                                    name="total_amount" id="total_amount">
-                                                                    {{ number_format($newTotal, 0, ',', '.') . ' VNĐ' }}
+                                                                    <td class="text-right" style="white-space: nowrap"
+                                                                        name="total_amount" id="total_amount">
+                                                                        {{-- {{ number_format(session('newTotal', 0), 0, ',', '.').' VNĐ' }} --}}
+                                                                        {{ number_format($finalTotal,0,',','.').' VNĐ' }}
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -380,12 +382,18 @@
             const citySelect = document.getElementById('city');
             const wardSelect = document.getElementById('ward');
 
-            if({{ $user->province_id }}){
-                fetchCities({{ $user->province_id }}, {{ $user->city_id }});
+            // nếu như người dùng đã cập nhập thông tin tài khoản rồi
+            let provinceOld = {!! json_encode($user->province_id ?? null) !!};
+            let cityIdOld = {!! json_encode($user->city_id ?? null) !!};
+            let wardIdOld = {!! json_encode($user->ward_id ?? null) !!};
+
+            if (provinceOld) {
+                fetchCities(provinceOld,cityIdOld);
             }
 
-            if ({{ $user->city_id }}) {
-                fetchWards({{ $user->city_id }}, {{ $user->ward_id }});
+            // Gọi API lấy danh sách ward nếu có city_id
+            if (cityIdOld) {
+                fetchWards(cityIdOld,wardIdOld);
             }
 
             // Khi người dùng chọn tỉnh/thành phố
@@ -394,15 +402,13 @@
 
                 const selectedProvince = provinceSelect.selectedOptions[0];
                 const provinceId = selectedProvince ? selectedProvince.dataset.id : ''; // Lấy ID từ data-id
-                const formattedProvinceId = provinceId.padStart(2,
-                '0'); // Đảm bảo provinceId có ít nhất 2 chữ số
-
+                
                 // Xóa tất cả tùy chọn trong citySelect và wardSelect
                 citySelect.innerHTML = '<option value = "" >Quận / Huyện</option>';
                 wardSelect.innerHTML = '<option value = "" >Xã / Phường</option>';
 
-                if (province) {
-                    fetchCities(formattedProvinceId);
+                if (provinceId) {
+                    fetchCities(provinceId);
                 }
             });
 
@@ -410,12 +416,12 @@
             citySelect.addEventListener('change', function() {
                 const selectedCity = citySelect.selectedOptions[0]; // Lấy tùy chọn đã chọn
                 const cityId = selectedCity ? selectedCity.dataset.id : ''; // Lấy ID từ data-id
-                const fomatCityId = cityId.padStart(3, '0');
+                
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 // Xóa tất cả tùy chọn trong wardSelect
                 wardSelect.innerHTML = '<option value="">Xã / Phường</option>'; // Đặt lại tùy chọn phường
-                if (city) {
-                    fetchWards(fomatCityId);
+                if (cityId) {
+                    fetchWards(cityId);
                 }
             });
 
@@ -594,60 +600,49 @@
 
     {{-- mã giảm giá trong trang thanh toán--}}
     <script>
-        document.addEventListener('DOMContentLoaded',function(){
+        document.addEventListener('DOMContentLoaded', function () {
+            const discountElement = document.getElementById('text-discount');
+            const totalAmountElement = document.getElementById('total_amount');
+            const couponRow = document.querySelector('#coupon-row');
+        
 
             function formatPrice(price) {
-                // Chuyển giá trị thành chuỗi và loại bỏ các ký tự không phải là số
-                let formattedPrice = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                // Thêm đuôi "VNĐ"
-                return formattedPrice + " VNĐ";
+                return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ";
             }
 
-            document.getElementById('button-coupon')?.addEventListener('click',function(){
-                var coupon = document.getElementById('discount_code').value;
+            function applyCoupon() {
+                const coupon = document.getElementById('discount_code').value;
+                const  include_shipping = true;
 
-                if (coupon) {
-                    // Gửi mã giảm giá đến backend thông qua AJAX
-                    fetch('{{ route('applyCoupon') }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                    .getAttribute('content')
-                            },
-                            body: JSON.stringify({
-                                code: coupon
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                // Cập nhật thông báo và tổng tiền sau giảm giá
-                                document.getElementById('text-discount').textContent = formatPrice(data.discount);
-                                document.getElementById('total_amount').textContent = formatPrice(data.new_total); 
-                                location.reload();
-
-                            } else {
-                                // Hiển thị lỗi nếu mã giảm giá không hợp lệ
-                                // document.getElementById('couponCode').value = '';
-                                // coupon_message.textContent = data.error;
-                                // coupon_message.classList.remove('text-success');
-                                // coupon_message.classList.add('text-danger');
-                                // coupon_message.style.display = 'block';
-                                alert('Lỗi');
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
-                } else {
-                    console.error('Vui lòng nhập mã giảm giá');
+                if (!coupon) {
+                    alert('Vui lòng nhập mã giảm giá');
+                    return;
                 }
-            });
+
+                fetch('{{ route('applyCoupon') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify(
+                        { code: coupon, include_shipping:include_shipping }
+                    )
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            discountElement.textContent = formatPrice(data.discount);
+                            totalAmountElement.textContent = formatPrice(data.finalTotal);
+                            couponRow.style.display = 'none';
+                        } else {
+                            alert(data.error || 'Đơn hàng của bạn không đủ điều kiện');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            document.getElementById('button-coupon').addEventListener('click',applyCoupon);
         });
-
-        
     </script>
-
-    
-
-
 @endpush

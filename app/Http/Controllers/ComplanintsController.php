@@ -5,15 +5,33 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ComplaintRequest;
 use App\Models\Complaints;
 use App\Models\Order;
+use App\Models\Brand;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class ComplanintsController extends Controller
 {
+    public function complaintsDelete(Request $request){
+        $orderId = $request->input('order_id');
+
+        // Tìm khiếu nại theo mã đơn hàng
+        $complaint = Complaints::where('order_id', $orderId)->first();
+        
+        if ($complaint) {
+            $complaint->delete(); // Xóa khiếu nại
+            return response()->json(['success' => true, 'message' => 'Khiếu nại đã được hủy']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Không tìm thấy khiếu nại']);
+    }
+
     public function complaints($orderId){
         $order = Order::find($orderId);
-        return view('client.pages.complaint',compact('order'));
+        $list_brand = Brand::orderBy('id','desc')->get();
+        $list_category = Category::orderBy('id','desc')->get();
+        return view('client.pages.complaint',compact('order','list_brand','list_category'));
     }
 
     public function complaintStore(ComplaintRequest $request){
@@ -55,7 +73,9 @@ class ComplanintsController extends Controller
     public function complaintsDetail($orderId){
         $complaint = Complaints::where('order_id',$orderId)->first();
         $complaint->attachments = json_decode($complaint->attachments);
-        return view('client.pages.detail_comlaint',compact('complaint'));
+        $list_brand = Brand::orderBy('id','desc')->get();
+        $list_category = Category::orderBy('id','desc')->get();
+        return view('client.pages.detail_comlaint',compact('complaint','list_brand','list_category'));
     }
 
     public function updateComplaintsImage(Request $request , $orderId){
@@ -151,37 +171,57 @@ class ComplanintsController extends Controller
     }
 
     // cập nhâp form thường
-    public function updateComplaints(Request $request, $id){
-
+    public function updateComplaints(Request $request, $id)
+    {
         $data = $request->all();
 
+        // Lấy khiếu nại dựa vào ID
         $complaint = Complaints::findOrFail($id);
+        
+        // lấy ra đơn hàng
+        $order = Order::find($complaint->order_id);
 
-        // Các trạng thái hợp lệ theo quy tắc
-        $validStatuses = ['Chờ xử lý', 'Đang xử lý', 'Giải quyết thành công', 'Giải quyết thất bại', 'Đã hủy'];
-    
-        $currentStatus = $complaint->status;
-        $newStatus = $data['status'];
-    
+        $currentStatus = $complaint->status;    //lưu trạng thái khiếu nại ban đầu
+
+        $newStatus = $data['status'] ?? $currentStatus; // Nếu không có trạng thái mới, giữ nguyên trạng thái hiện tại
+
+        $response = $data['response'] ?? $complaint->response; // Nếu không có phản hồi mới, giữ nguyên phản hồi hiện tại
+
+        // Danh sách trạng thái yêu cầu phản hồi
+        $statusesRequireResponse = ['Giải quyết thành công', 'Đã hủy'];
+
         // Kiểm tra điều kiện chuyển đổi trạng thái
         if ($currentStatus === 'Chờ xử lý' && $newStatus === 'Đang xử lý') {
+            // Cho phép cập nhật trạng thái, phản hồi không bắt buộc
             $complaint->status = $newStatus;
-            $complaint->response = $data['response'];
+            $complaint->response = $response; // Lưu phản hồi nếu có
 
-        } elseif ($currentStatus === 'Đang xử lý' && in_array($newStatus, ['Giải quyết thành công', 'Giải quyết thất bại', 'Đã hủy'])) {
+        } elseif ($currentStatus === 'Đang xử lý' && in_array($newStatus,$statusesRequireResponse)) {
+            // Yêu cầu phản hồi khi chuyển sang trạng thái hoàn tất hoặc hủy
+            if (in_array($newStatus, $statusesRequireResponse) && empty($response)) {
+                return redirect()->back()->with('error', 'Vui lòng nhập phản hồi trước khi cập nhật trạng thái này.');
+            }
+
             $complaint->status = $newStatus;
-            $complaint->response = $data['response'];
+            $complaint->response = $response;
+            $order->status_id = 5;
+            $order->save();
 
+        } elseif ($currentStatus === $newStatus) {
+            // Cập nhật phản hồi mà không thay đổi trạng thái
+            $complaint->response = $response;
         } else {
-            // Chuyển hướng lại với thông báo lỗi nếu không hợp lệ
-            return redirect()->back()->with('error', 'Cập nhập trạng thái không hợp lệ!');
+            // Trạng thái không hợp lệ
+            return redirect()->back()->with('error', 'Cập nhật trạng thái không hợp lệ!');
         }
-    
+
+        // Lưu cập nhật vào cơ sở dữ liệu
         $complaint->save();
-    
+
         // Chuyển hướng lại với thông báo thành công
-        return redirect()->back()->with('success', 'Cập nhật trạng thái thành công!');
+        return redirect()->back()->with('success', 'Cập nhật thành công!');
     }
+
     
 
 

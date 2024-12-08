@@ -30,7 +30,7 @@
                 <div class="card-header">
                     <div class="card card-gray">
                         <div class="card-header">
-                            <h3 class="card-title">Thêm vai trò </h3>
+                            <h3 class="card-title">Thêm quyền</h3>
                         </div>
                         <!-- /.card-header -->
                         <!-- form start -->
@@ -41,18 +41,24 @@
                                 <div class="form-group">
                                     <label for="" class="form-label">Tên quyền:</label>
                                     <input type="text" class="form-control" name="name" id="name">
+                                    @error('name')
+                                            <div class="text-danger mt-3">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="form-group">
                                     <label for="" class="form-label" >Mô tả quyền:</label>
                                     <input type="text" class="form-control" name="display_name" id="display_name">
+                                    @error('display_name')
+                                            <div class="text-danger mt-3">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Chọn module cha</label>
                                     <select name="parent_id" id="" class="form-control">
-                                        <option value="0">--Chọn tên module--</option>
-                                        @foreach($list_permission as $key => $moduleItem)
-                                            <option value="{{ $moduleItem->id }}"> {{ $moduleItem->name }}</option>
-                                        @endforeach
+                                        <option value="0">Chọn module cha</option>
+                                        
+                                        {!! $htmlOption !!}
+                                        
                                     </select>
                                 </div>
                             

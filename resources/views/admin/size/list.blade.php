@@ -23,7 +23,9 @@
         <section class="content">
 
             <!-- Default box -->
-            <a href="{{route('admin.size.create')}}" class="btn btn-success mb-3">Thêm mới</a>
+            @can('create',App\Models\Size::class)
+                <a href="{{route('admin.size.create')}}" class="btn btn-success mb-3">Thêm mới</a>
+            @endcan
 
             <div class="card">
                 <div class="card-header">
@@ -55,8 +57,12 @@
                                     <td>{{$key + 1}}</td>
                                     <td>{{$item->name}}</td>
                                     <td>
-                                        <a href="{{route('admin.size.edit',['id'=>$item->id])}}"class="btn btn-warning">Sửa</a>
-                                        <a href="{{route('admin.size.delete',['id'=>$item->id])}}"class="btn btn-danger"onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa</a>
+                                        @can('view',App\Models\Size::class)
+                                            <a href="{{route('admin.size.edit',['id'=>$item->id])}}"class="btn btn-warning">Sửa</a>
+                                        @endcan
+                                        @can('delete',App\Models\Size::class)
+                                            <a href="{{route('admin.size.delete',['id'=>$item->id])}}"class="btn btn-danger"onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa</a>
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach

@@ -4,12 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Permission;
 use App\Models\Role;
+use App\Http\Requests\RoleRequest;
+use App\Http\Requests\UpdateRoleRequest;
+
 use Illuminate\Http\Request;
+
+
 
 class RoleController extends Controller
 {
     public function index(){
-        $list_role = Role::orderBy('id','desc')->get();
+        $list_role = Role::all();
         return view('admin.role.list',compact('list_role'));
     }
 
@@ -18,8 +23,8 @@ class RoleController extends Controller
         return view('admin.role.add',compact('permission'));
     }
 
-    public function store(Request $request){
-        $data = $request->all();
+    public function store(RoleRequest $request){
+        $data = $request->validated();
 
         $role = new Role();
         $role->name = $data['name'];
@@ -39,8 +44,8 @@ class RoleController extends Controller
         return view('admin.role.edit',compact('permission','role','permissionChecked'));
     }
 
-    public function update(Request $request , $id){
-        $data = $request->all();
+    public function update(UpdateRoleRequest $request , $id){
+        $data = $request->validated();
 
         $role = Role::find($id);
         $role->name = $data['name'];

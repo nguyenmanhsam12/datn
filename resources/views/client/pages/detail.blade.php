@@ -11,6 +11,13 @@
 
 
     <style>
+        .post-title a {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
         input[type="text"] {
             background: #f6f6f6;
             border: medium none;
@@ -193,7 +200,7 @@
                                 </div>
                                 <button class="btn btn-outline-secondary btn__addCart icon-group">
                                     <i class="zmdi zmdi-shopping-cart-plus icon-group__icon"></i>
-                                    <span class="btn__title">ADD TO CART</span>
+                                    <span class="btn__title">Thêm giỏ hàng</span>
                                 </button>
                             </div>
                             <!-- Single-pro-slider Small-photo start -->
@@ -500,14 +507,6 @@
             const quantityInput = document.querySelector('input[name="qtybutton"]');
             const cartCountElement = document.querySelector('.cart-count'); // Phần tử hiển thị số lượng sản phẩm
 
-            // Cấu hình Toastr
-            toastr.options = {
-                "closeButton": true,
-                "progressBar": true,
-                "positionClass": "toast-top-right",
-                "timeOut": "3000"
-            };
-
 
             addToCartButton.addEventListener('click', function(e) {
 
@@ -542,12 +541,8 @@
                     .then(response => response.json())
                     .then(data => {
 
-                        console.log(data);
-
-
                         if (data.error) {
-                            toastr.error(data.error); // Hiển thị lỗi yêu cầu đăng nhập bằng toastr
-                            return;
+                            alert(data.error);
                         }
 
                         if (data.message) {
@@ -568,7 +563,6 @@
                                     console.log('Người dùng chọn xem tiếp sản phẩm');
                                 }
                             });
-                            // Cập nhật số lượng sản phẩm trên thanh header
                             // Cập nhật số lượng sản phẩm trên thanh header bằng dữ liệu từ server
                             if (data.cartItemCount !== undefined) {
                                 cartCountElement.textContent = data.cartItemCount;
@@ -585,21 +579,7 @@
     </script>
 
     <script type="module">
-        document.addEventListener('DOMContentLoaded', function() {
-            // Lắng nghe sự kiện từ kênh 'product-{id}'
-            const stockElement = document.querySelector('.product-stock');
-            const variantId = stockElement.getAttribute('data-variant-id'); // Lấy variantId của sản phẩm hiện tại
-
-            if (variantId) {
-                Echo.channel(`product-${variantId}`)
-                    .listen('ProductStockUpdated', (event) => {
-                        console.log('Stock update received: ', event);
-
-                        // Cập nhật số lượng tồn kho
-                        stockElement.textContent = `Số lượng: ${event.stock}`;
-                    });
-            }
-        });
+     
 
 
         $(document).ready(function() {

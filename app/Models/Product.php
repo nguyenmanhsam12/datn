@@ -10,10 +10,11 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\User;
 use App\Models\ProductVariants;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory , HasSlug ;
+    use HasFactory , HasSlug , SoftDeletes ;
 
     protected $table = 'products';
 
@@ -30,9 +31,9 @@ class Product extends Model
 
     // lấy ra 1 sản phẩm chính của biến thể
     public function mainVariant(){
-        return $this->hasOne(ProductVariants::class)->orderBy('price','asc');
+        return $this->hasOne(ProductVariants::class);
     }
-
+ 
     public function variants()
     {
         return $this->hasMany(ProductVariants::class);

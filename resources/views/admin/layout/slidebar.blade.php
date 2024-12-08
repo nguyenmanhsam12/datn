@@ -1,9 +1,9 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="index3.html" class="brand-link">
+    <a href="{{ route('dashboard') }}" class="brand-link">
         <img src="{{ asset('backend/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo"
             class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">AdminLTE 3</span>
+        <span class="brand-text font-weight-light">Admin</span>
     </a>
 
     <!-- Sidebar -->
@@ -15,7 +15,7 @@
                     alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block">Alexander Pierce</a>
+                <a href="#" class="d-block">{{ Auth::user()->name }}</a>
             </div>
         </div>
 
@@ -66,34 +66,40 @@
                                 <p>Danh sách Tài Khoản</p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{route('admin.user.create')}}" class="nav-link">
-                                <p>Thêm Tài Khoản</p>
-                            </a>
-                        </li>
+                        @can('create',App\Models\User::class)
+                            <li class="nav-item">
+                                <a href="{{route('admin.user.create')}}" class="nav-link">
+                                    <p>Thêm Tài Khoản</p>
+                                </a>
+                            </li>
+                        @endcan
                     </ul>
                 </li>
 
                 {{-- vai trò --}}
                 <li class="nav-item ">
                     <a href="#" class="nav-link ">
-                        <i class="nav-icon fas fa-users"></i>
+                        <i class="nav-icon fas fa-user-shield"></i>
                         <p>
                             Vai trò
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{route('admin.role.index')}}" class="nav-link">
-                                <p>Danh sách vai trò</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{route('admin.permission.createPermission')}}" class="nav-link">
-                                <p>Thêm quyền</p>
-                            </a>
-                        </li>
+                        @can('viewAny',App\Models\Role::class)
+                            <li class="nav-item">
+                                <a href="{{route('admin.role.index')}}" class="nav-link">
+                                    <p>Danh sách vai trò</p>
+                                </a>
+                            </li>
+                        @endcan
+                        @can('create',App\Models\Permission::class)
+                            <li class="nav-item">
+                                <a href="{{route('admin.permission.createPermission')}}" class="nav-link">
+                                    <p>Thêm quyền</p>
+                                </a>
+                            </li>
+                        @endcan
                     </ul>
                 </li>
                 
@@ -107,17 +113,21 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{route('admin.brand.index')}}" class="nav-link">
+                        @can('brand_list')
+                            <li class="nav-item">
+                                <a href="{{route('admin.brand.index')}}" class="nav-link">
 
-                                <p>Danh sách thương hiệu</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{route('admin.brand.create')}}" class="nav-link">
-                                <p>Thêm thương hiệu</p>
-                            </a>
-                        </li>
+                                    <p>Danh sách thương hiệu</p>
+                                </a>
+                            </li>
+                        @endcan
+                        @can('brand_add')
+                            <li class="nav-item">
+                                <a href="{{route('admin.brand.create')}}" class="nav-link">
+                                    <p>Thêm thương hiệu</p>
+                                </a>
+                            </li>
+                        @endcan
                     </ul>
                 </li>
 
@@ -131,17 +141,21 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{route('admin.size.index')}}" class="nav-link">
-
-                                <p>Danh sách kích cỡ</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{route('admin.size.create')}}" class="nav-link">
-                                <p>Thêm kích cỡ</p>
-                            </a>
-                        </li>
+                        @can('viewAny',App\Models\Size::class)
+                            <li class="nav-item">
+                                <a href="{{route('admin.size.index')}}" class="nav-link">
+                                    
+                                    <p>Danh sách kích cỡ</p>
+                                </a>
+                            </li>
+                        @endcan
+                        @can('create',App\Models\Size::class)
+                            <li class="nav-item">
+                                <a href="{{route('admin.size.create')}}" class="nav-link">
+                                    <p>Thêm kích cỡ</p>
+                                </a>
+                            </li>
+                        @endcan
                     </ul>
                 </li>
 
@@ -155,17 +169,20 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        @can('viewAny',App\Models\Category::class)
                         <li class="nav-item">
                             <a href="{{route('admin.category.index')}}" class="nav-link">
-
                                 <p>Danh sách danh mục</p>
                             </a>
                         </li>
+                        @endcan
+                        @can('create',App\Models\Category::class)
                         <li class="nav-item">
                             <a href="{{route('admin.category.create')}}" class="nav-link">
                                 <p>Thêm danh mục</p>
                             </a>
                         </li>
+                        @endcan
                     </ul>
                 </li>
 
@@ -179,17 +196,21 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        @can('viewAny',App\Models\Product::class)
                         <li class="nav-item">
                             <a href="{{route('admin.product.index')}}" class="nav-link">
 
                                 <p>Danh sách sản phẩm</p>
                             </a>
                         </li>
+                        @endcan
+                        @can('create',App\Models\Product::class)
                         <li class="nav-item">
                             <a href="{{route('admin.product.create')}}" class="nav-link">
                                 <p>Thêm sản phẩm</p>
                             </a>
                         </li>
+                        @endcan
                     </ul>
                 </li>
 
@@ -203,11 +224,13 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{route('admin.variant.index')}}" class="nav-link">
-                                <p>Danh sách thuộc tính</p>
-                            </a>
-                        </li>
+                        @can('viewAny',App\Models\ProductVariants::class)
+                            <li class="nav-item">
+                                <a href="{{route('admin.variant.index')}}" class="nav-link">
+                                    <p>Danh sách thuộc tính</p>
+                                </a>
+                            </li>
+                        @endcan
                     </ul>
                 </li>
 
@@ -240,12 +263,16 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{route('admin.coupons.index')}}" class="nav-link">
-                                <p>Danh Sách Mã</p>
-                            </a>
-                            <a href="{{route('admin.coupons.create')}}" class="nav-link">
-                                <p>Thêm mã giảm giá</p>
-                            </a>
+                            @can('viewAny',App\Models\Coupon::class)
+                                <a href="{{route('admin.coupons.index')}}" class="nav-link">
+                                    <p>Danh Sách Mã</p>
+                                </a>
+                            @endcan
+                            @can('create',App\Models\Coupon::class)
+                                <a href="{{route('admin.coupons.create')}}" class="nav-link">
+                                    <p>Thêm mã giảm giá</p>
+                                </a>
+                            @endcan
                         </li>
                     </ul>
                 </li>
@@ -272,7 +299,7 @@
                        {{-- Đánh giá --}}
                        <li class="nav-item ">
                         <a href="#" class="nav-link ">
-                            <i class="nav-icon fas fa-gift"></i>
+                            <i class="nav-icon fas fa-star"></i>
                             <p>
                                 Đánh giá
                                 <i class="right fas fa-angle-left"></i>
@@ -290,7 +317,7 @@
                                                                {{--  Bài viết --}}
                                                                <li class="nav-item ">
                                                                 <a href="#" class="nav-link ">
-                                                                    <i class="nav-icon fas fa-gift"></i>
+                                                                    <i class="nav-icon fas fa-pen-nib"></i>
                                                                     <p>
                                                                        Bài viết
                                                                         <i class="right fas fa-angle-left"></i>

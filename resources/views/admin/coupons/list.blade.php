@@ -23,7 +23,9 @@
         <section class="content">
 
             <!-- Default box -->
-            <a href="{{route('admin.coupons.create')}}" class="btn btn-success mb-3">Thêm mới</a>
+            @can('create',App\Models\Coupon::class)
+                <a href="{{route('admin.coupons.create')}}" class="btn btn-success mb-3">Thêm mới</a>
+            @endcan
 
             <div class="card">
                 <div class="card-header">
@@ -67,10 +69,14 @@
                                     <td>{{ $coupon->end_date }}</td>
                                     <td>{{ $coupon->status  }}</td>
                                     <td>
-                                        <a href="{{ route('admin.coupons.edit',['id'=>$coupon->id]) }}" class="btn btn-warning">Sửa</a>
+                                        @can('view',App\Models\Coupon::class)
+                                            <a href="{{ route('admin.coupons.edit',['id'=>$coupon->id]) }}" class="btn btn-warning">Sửa</a>
+                                        @endcan
+                                        @can('delete',App\Models\Coupon::class)
                                         <a href="{{ route('admin.coupons.delete',['id'=>$coupon->id]) }}" class="btn btn-danger"
                                             onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))"
                                             >Xóa</a>
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach

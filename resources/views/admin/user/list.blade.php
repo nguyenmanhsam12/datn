@@ -25,7 +25,9 @@
         <section class="content">
 
             <!-- Default box -->
-            <a href="{{route('admin.user.create')}}" class="btn btn-success mb-3">Thêm mới</a>
+            @can('create',App\Models\User::class)
+                <a href="{{route('admin.user.create')}}" class="btn btn-success mb-3">Thêm mới</a>
+            @endcan
 
             <div class="card">
                 <div class="card-header">
@@ -50,7 +52,6 @@
                                 <th>Tên người dùng</th>
                                 <th>Email</th>
                                 <th>Số điện thoại</th>
-                              
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
@@ -62,8 +63,13 @@
                                     <td>{{ $item->email }}</td>
                                     <td>{{ $item->phone_number }}</td>
                                     <td>
-                                        <a href="{{route('admin.user.edit',['id'=>$item->id])}}"class="btn btn-warning">Sửa</a>
-                                        <a href="{{route('admin.user.delete',['id'=>$item->id])}}"class="btn btn-danger"onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa</a>
+                                            @can('view', [App\Models\User::class, $item->id])
+                                                <a href="{{route('admin.user.edit',['id'=>$item->id])}}"class="btn btn-warning">Sửa</a>
+                                            @endcan
+
+                                        @can('delete',App\Models\User::class)
+                                            <a href="{{route('admin.user.delete',['id'=>$item->id])}}"class="btn btn-danger"onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa</a>
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach

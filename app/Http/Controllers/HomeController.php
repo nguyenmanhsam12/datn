@@ -12,12 +12,15 @@ use App\Models\Post;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
 
 class HomeController extends Controller
 {
     public function index()
     {
-        $list_product = Product::whereHas('mainVariant')
+        $list_product = Product::whereNotNull('category_id')
+            ->whereHas('mainVariant')
             ->orderBy('id', 'desc')
             ->limit(8)
             ->get();
@@ -37,11 +40,15 @@ class HomeController extends Controller
     public function getProductsByCategory($category_id)
     {
         // Lấy 8 sản phẩm mới nhất theo danh mục
-        $list_product = Product::with('mainVariant')
-            ->where('category_id', $category_id)
-            ->orderBy('id', 'desc')
-            ->limit(8)
-            ->get();
+        $list_product = Product::where('category_id', $category_id)
+        ->whereHas('mainVariant') // Chỉ lấy sản phẩm có biến thể
+        ->orderBy('id', 'desc')
+        ->limit(8)
+        ->get();
+
+        foreach ($list_product as $product) {
+            Log::info('Biến thể:', ['variant' => $product->mainVariant->toArray()]);
+        }
 
         return response()->json($list_product);
     }
@@ -165,6 +172,24 @@ class HomeController extends Controller
             'status' => 'success',
             'message' => 'Đánh giá đã được xóa thành công!'
         ]);
+    }
+
+    // tìm kiếm
+    public function serachProduct(Request $request){
+        $data = $request->all();
+
+        $products = Product::where('name','LIKE','%'.$data['query'].'%')->get();
+
+        // Thêm đường dẫn đầy đủ cho hình ảnh
+        $products = $products->map(function ($product) {
+            return [
+                'name' => $product->name,
+                'image' => asset($product->image), 
+                'slug' => $product->slug,
+            ];
+        });
+
+        return response()->json($products);
     }
 }
      

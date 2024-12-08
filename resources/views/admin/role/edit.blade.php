@@ -99,6 +99,9 @@
                                             </div>
                                         </div>
                                     @endforeach
+                                    @error('permission_id')
+                                        <div class="text-danger mt-3">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
 
@@ -128,6 +131,29 @@
         const moduleCheckboxes = document.querySelectorAll('.checkbox-wrapper');
         const checkAll = document.querySelector('.checkall'); // Checkbox "CheckAll"
         const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+        const childCheckboxes = document.querySelectorAll('.checkbox-childrent'); // Tất cả checkbox con
+
+       
+          // Kiểm tra lại trạng thái của checkbox "CheckAll" khi có thay đổi ở bất kỳ checkbox nào
+        function checkCheckAll() {
+            const allSelected = Array.from(childCheckboxes).every(checkbox => checkbox.checked);
+            checkAll.checked = allSelected; // Nếu tất cả checkbox đều được chọn thì đánh dấu "CheckAll"
+        }
+
+        // Cập nhật trạng thái checkbox cha khi trang được tải lại
+        moduleCheckboxes.forEach(moduleCheckbox => {
+            const parent = moduleCheckbox.closest('.card');
+            const childCheckboxes = parent.querySelectorAll('.checkbox-childrent');
+            
+            const allChecked = Array.from(childCheckboxes).every(checkbox => checkbox.checked);
+            if (allChecked) {
+                moduleCheckbox.checked = true; // Đánh dấu checkbox cha là được chọn nếu tất cả checkbox con đều được chọn
+            }
+        });
+
+        // Kiểm tra trạng thái của checkbox "CheckAll" khi vào trang
+        checkCheckAll();
+
 
         checkAll.addEventListener('change', function () {
                     allCheckboxes.forEach(checkbox => {
@@ -144,6 +170,32 @@
                 });
             });
         });
+
+        // Lắng nghe sự kiện thay đổi trạng thái của các checkbox con
+        childCheckboxes.forEach(childCheckbox => {
+            childCheckbox.addEventListener('change', function () {
+                const parent = childCheckbox.closest('.card');
+                const parentModuleCheckbox = parent.querySelector('.checkbox-wrapper');
+
+                // Kiểm tra nếu tất cả checkbox con của quyền cha không được chọn thì bỏ tích checkbox cha
+                const allChecked = Array.from(parent.querySelectorAll('.checkbox-childrent')).every(checkbox => checkbox.checked);
+                parentModuleCheckbox.checked = allChecked; // Bỏ tích checkbox cha nếu không còn checkbox con nào được chọn
+                checkAll.checked = allChecked;
+                
+
+            });
+        });
+
+        // Kiểm tra lại trạng thái của checkbox "CheckAll" khi có thay đổi ở bất kỳ checkbox con nào
+        allCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                // Kiểm tra nếu tất cả checkbox con đã được chọn thì "CheckAll" cũng sẽ được chọn
+                const allSelected = Array.from(allCheckboxes).every(checkbox => checkbox.checked);
+                checkAll.checked = allSelected; // Nếu tất cả checkbox đều được chọn thì đánh dấu "CheckAll"
+            });
+        });
+
+        
     });
 </script>
 @endpush

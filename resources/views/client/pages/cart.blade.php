@@ -185,18 +185,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="shopping-cart">
-                        <!-- Continue Shopping Link -->
-                        {{-- <div class="shopping__notice mt-4 mb-4">
-                            <h6 class="notice__title">
-                                <p>Chỉ cần thêm <strong>200.000 VND</strong> nữa để được miễn phí vận chuyển!</p>
-                            </h6>
-                            <a class="notice__subtitle" href="">
-                                <div>Tiếp tục mua sắm</div>
-                                <div><i class="zmdi zmdi-arrow-right"></i></div>
-                            </a>
-                        </div> --}}
-
-                        <!-- Cart Table -->
+                        
                         <div class="shop-cart-table">
                             <div class="table-content table-responsive">
                                 <table>
@@ -222,7 +211,7 @@
                                                         <div class="product-info">
                                                             <h4 class="post-title"><a class="text-light-black"
                                                                     href="#">{{ $item['name'] }}</a></h4>
-                                                            <p class="mb-0">{{ $item['size'] }}</p>
+                                                            <p class="mb-0">Size:{{ $item['size'] }}</p>
                                                         </div>
                                                     </div>
                                                     <!-- Single-product end -->
@@ -267,17 +256,14 @@
                                 <div class="coupon-section p-4 border">
                                     <h4>Mã Giảm Giá</h4>
                                     <p>Nhập mã giảm giá của bạn nếu có:</p>
-                                    <input type="text" class="form-control mb-3" id="couponCode" placeholder="Mã giảm giá">
-                                    @if (session()->has('coupon_id'))
-                                         <!-- Nút Xóa Mã Giảm Giá -->
-                                         <button id="cancelCoupon" class="submit-button button-one mt-2" data-text="Hủy mã giảm giá"
-                                         >Hủy mã giảm giá</button>
-                                    @else
-                                        <button id="applyCoupon" class="submit-button button-one" data-text="Áp dụng">Áp
-                                            dụng</button>
-                                    @endif
-                                    <span id="coupon_message" class="text-success mt-3" style="display: none;"></span>
-                                </div>
+                                    <input type="text" class="form-control mb-3" id="couponCode" placeholder="Mã giảm giá" 
+                                           style="{{ session()->has('coupon_id') ? 'display:none;' : '' }}">
+                                    <button id="applyCoupon" class="submit-button button-one" data-text="Áp dụng" 
+                                            style="{{ session()->has('coupon_id') ? 'display:none;' : '' }}">Áp dụng</button>
+                                    <button id="cancelCoupon" class="submit-button button-one mt-2" data-text="Hủy mã giảm giá" 
+                                            style="{{ session()->has('coupon_id') ? '' : 'display:none;' }}">Hủy mã giảm giá</button>
+                                    <span id="coupon_message" class="mt-3" style="display: none;"></span>
+                                </div>                                
                             </div>
 
                             <!-- Payment Details -->
@@ -304,7 +290,7 @@
                                                         @if(session()->has('newTotal'))
                                                             {{ number_format(session('newTotal', 0), 0, ',', '.').' VNĐ' }}
                                                         @else
-                                                            {{ number_format($finalTotal,0,',','.').' VNĐ' }}
+                                                            0VNĐ
                                                         @endif
                                                     </strong>
                                                     
@@ -343,6 +329,11 @@
                 // Thêm đuôi "VNĐ"
                 return formattedPrice + " VNĐ";
             }
+
+            function convertToVND(amount) {
+                return new Intl.NumberFormat('vi-VN', { style: 'decimal' }).format(amount) + ' VNĐ';
+            }
+
             // Xử lý tăng số lượng
             document.querySelectorAll('.increase-quantity').forEach(function(button) {
                 button.addEventListener('click', function() {
@@ -384,7 +375,7 @@
                                 updateCartIconQuantity(data.quantityCartIcon);
                                 totalAmount.textContent = formatPrice(data.total);
                                 totalItems.textContent = formatPrice(data.totalCartPrice);
-                                document.querySelector('.text-end').textContent = formatPrice(data.discount);
+                                document.querySelector('.text-end').textContent = convertToVND(data.discount);
 
                             }
                         })
@@ -430,7 +421,7 @@
                                 updateCartIconQuantity(data.quantityCartIcon);
                                 totalAmount.textContent = formatPrice(data.total);
                                 totalItems.textContent = formatPrice(data.totalCartPrice);
-                                document.querySelector('.text-end').textContent = formatPrice(data.discount);
+                                document.querySelector('.text-end').textContent = convertToVND(data.discount);
                             }
                         })
                         .catch(error => console.error('Error:', error));
@@ -514,7 +505,7 @@
                                 updateCartIconQuantity(data.quantityCartIcon);
                                 totalAmount.textContent = formatPrice(data.total);
                                 totalItems.textContent = formatPrice(data.totalCartPrice);
-                                document.querySelector('.text-end').textContent = formatPrice(data.discount);
+                                document.querySelector('.text-end').textContent = convertToVND(data.discount);
 
                             }
                         })
@@ -553,78 +544,102 @@
                 }
 
             });
+        });
+    </script>
 
-            // Lắng nghe sự kiện click vào nút áp dụng
-            document.getElementById('applyCoupon')?.addEventListener('click', function() {
-                var couponCode = document.getElementById('couponCode').value;
-                let coupon_message = document.getElementById('coupon_message');
+    {{-- áp mã và xóa mã giảm giá --}}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+                const applyButton = document.getElementById("applyCoupon");
+                const cancelButton = document.getElementById("cancelCoupon");
+                const couponInput = document.getElementById("couponCode");
+                const couponMessage = document.getElementById("coupon_message");
+                const discountDisplay = document.querySelector(".text-end");
+                const totalDisplay = document.querySelector(".total-items");
 
-                if (couponCode) {
-                    // Gửi mã giảm giá đến backend thông qua AJAX
-                    fetch('{{ route('applyCoupon') }}', {
-                            method: 'POST',
+                // Format giá tiền
+                function formatPrice(price) {
+                    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VNĐ";
+                }
+
+                function convertToVND(amount) {
+                    return new Intl.NumberFormat('vi-VN', { style: 'decimal' }).format(amount) + ' VNĐ';
+                }
+
+                // Áp dụng mã giảm giá
+                applyButton?.addEventListener("click", function () {
+                    const couponCode = couponInput.value;
+
+                    if (couponCode) {
+                        fetch("{{ route('applyCoupon') }}", {
+                            method: "POST",
                             headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                    .getAttribute('content')
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
                             },
-                            body: JSON.stringify({
-                                code: couponCode
-                            })
+                            body: JSON.stringify({ code: couponCode }),
                         })
-                        .then(response => response.json())
-                        .then(data => {
+                            .then((response) => response.json())
+                            .then((data) => {
+                                if (data.success) {
+                                    // Cập nhật giao diện khi mã giảm giá hợp lệ
+                                    couponMessage.innerText = data.message;
+                                    couponMessage.classList.remove("text-danger");
+                                    couponMessage.classList.add("text-success");
+                                    couponMessage.style.display = "block";
+
+                                    // Cập nhật số tiền giảm giá và tổng đơn hàng
+                                    discountDisplay.textContent = convertToVND(data.discount);
+                                    totalDisplay.textContent = formatPrice(data.new_total);
+
+                                    // Ẩn nút áp dụng, hiện nút hủy mã giảm giá
+                                    applyButton.style.display = "none";
+                                    couponInput.style.display = "none";
+                                    cancelButton.style.display = "inline-block";
+                                } else {
+                                    // Hiển thị lỗi nếu mã giảm giá không hợp lệ
+                                    couponInput.value = "";
+                                    couponMessage.textContent = data.error;
+                                    couponMessage.classList.remove("text-success");
+                                    couponMessage.classList.add("text-danger");
+                                    couponMessage.style.display = "block";
+                                }
+                            })
+                            .catch((error) => console.error("Error:", error));
+                    }
+                });
+
+                // Hủy mã giảm giá
+                cancelButton?.addEventListener("click", function () {
+                    fetch("{{ route('removeCoupon') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                        },
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
                             if (data.success) {
-                                // Cập nhật thông báo và tổng tiền sau giảm giá
-                                coupon_message.innerText = data.message;
-                                coupon_message.classList.remove('text-danger');
-                                coupon_message.classList.add('text-success');
-                                coupon_message.style.display = 'block';
-                                document.querySelector('.text-end').textContent = formatPrice(data.discount);
-                                document.querySelector('.total-items').textContent = formatPrice(data.new_total);    
-                                location.reload();
-                            } else {
-                                // Hiển thị lỗi nếu mã giảm giá không hợp lệ
-                                document.getElementById('couponCode').value = '';
-                                coupon_message.textContent = data.error;
-                                coupon_message.classList.remove('text-success');
-                                coupon_message.classList.add('text-danger');
-                                coupon_message.style.display = 'block';
+                                // Cập nhật giao diện sau khi hủy mã giảm giá
+                                couponMessage.innerText = "Mã giảm giá đã được hủy!";
+                                couponMessage.classList.remove("text-danger");
+                                couponMessage.classList.add("text-success");
+                                couponMessage.style.display = "block";
+
+                                // Khôi phục lại số tiền ban đầu
+                                discountDisplay.textContent = "0 VNĐ";
+                                totalDisplay.textContent = formatPrice(data.original_total);
+
+                                // Hiển thị lại nút áp dụng và ô nhập mã giảm giá
+                                applyButton.style.display = "inline-block";
+                                couponInput.value = '';
+                                couponInput.style.display = "block";
+                                cancelButton.style.display = "none";
                             }
                         })
-                        .catch(error => console.error('Error:', error));
-                } else {
-                    console.error('Error:', error);
-                    coupon_message.textContent = 'Đã xảy ra lỗi khi áp dụng mã giảm giá';
-                    coupon_message.style.display = 'block';
-                }
-            });
-
-            // xóa mã giảm giá
-            document.getElementById('cancelCoupon')?.addEventListener('click', function() {
-
-                fetch('{{ route('removeCoupon') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById('coupon_message').innerText = 'Mã giảm giá đã được hủy!';
-                        document.querySelector('.total-items').textContent = formatPrice(data.original_total);
-
-                        // Reload trang để cập nhật giao diện dựa trên session
-                        location.reload();
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            });
-
-            
-
+                        .catch((error) => console.error("Error:", error));
+                });
         });
     </script>
 
@@ -638,88 +653,91 @@
                 return formattedPrice + " VNĐ";
             }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const removeButtons = document.querySelectorAll('.remove-from-cart');
+            document.addEventListener('DOMContentLoaded', function() {
+                const removeButtons = document.querySelectorAll('.remove-from-cart');
 
-            removeButtons.forEach(button => {
-                button.addEventListener('click', handleRemoveFromCart);
-            });
+                removeButtons.forEach(button => {
+                    button.addEventListener('click', handleRemoveFromCart);
+                });
 
-            function handleRemoveFromCart(event) {
-                event.preventDefault(); // Ngăn chặn hành động mặc định của liên kết
+                function handleRemoveFromCart(event) {
+                    event.preventDefault(); // Ngăn chặn hành động mặc định của liên kết
 
-                const cartItemId = this.getAttribute('data-cart-item-id');
-                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    const cartItemId = this.getAttribute('data-cart-item-id');
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                // Xác nhận xóa sản phẩm
-                Swal.fire({
-                    title: 'Bạn có chắc chắn?',
-                    text: "Bạn sẽ không thể khôi phục lại sản phẩm này!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Có, xóa nó!',
-                    cancelButtonText: 'Không, hủy!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Gọi API để xóa sản phẩm
-                        fetch('{{ route('removeFromCart') }}', {
-                                method: 'DELETE',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': csrfToken,
-                                },
-                                body: JSON.stringify({
-                                    cart_item_id: cartItemId
+                    // Xác nhận xóa sản phẩm
+                    Swal.fire({
+                        title: 'Bạn có chắc chắn?',
+                        text: "Bạn sẽ không thể khôi phục lại sản phẩm này!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Có, xóa nó!',
+                        cancelButtonText: 'Không, hủy!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Gọi API để xóa sản phẩm
+                            fetch('{{ route('removeFromCart') }}', {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': csrfToken,
+                                    },
+                                    body: JSON.stringify({
+                                        cart_item_id: cartItemId
+                                    })
                                 })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    // Cập nhật giao diện: xóa sản phẩm khỏi bảng
-                                    this.closest('tr').remove(); // Xóa hàng khỏi bảng
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        // Cập nhật giao diện: xóa sản phẩm khỏi bảng
+                                        this.closest('tr').remove(); // Xóa hàng khỏi bảng
 
-                                    updateCartIconQuantity(data .newQuantityCart); // Cập nhật số lượng trên biểu tượng giỏ hàng
-                                    // Cập nhật tổng tiền và tổng số đơn hàng
-                                    data.newTotalAmount, data.newTotalAmount
-                                    
-                                    document.querySelector('.total-amount').textContent = formatPrice(data.newTotalAmount);
-                                    document.querySelector('.total-items').textContent = formatPrice(data.newTotalAmount);
-                                    document.querySelector('.text-end').textContent = formatPrice(data.discount);
+                                        updateCartIconQuantity(data.newQuantityCart); // Cập nhật số lượng trên biểu tượng giỏ hàng
 
-                                    // Hiển thị thông báo thành công
-                                    Swal.fire(
-                                        'Đã xóa!',
-                                        'Sản phẩm đã được xóa khỏi giỏ hàng.',
-                                        'success'
-                                    );
-                                } else {
+                                        // Cập nhật tổng tiền và tổng số đơn hàng
+                                        
+                                        // dom của tổng tiền
+                                        document.querySelector('.total-amount').textContent = formatPrice(data.newTotalAmount);
+                                        // dom của tổng đơn hàng
+                                        document.querySelector('.total-items').textContent = formatPrice(data.finalTotal);
+                                        // dom của giảm giá
+                                        document.querySelector('.text-end').textContent = formatPrice(data.discount);
+
+                                        // Hiển thị thông báo thành công
+                                        Swal.fire(
+                                            'Đã xóa!',
+                                            'Sản phẩm đã được xóa khỏi giỏ hàng.',
+                                            'success'
+                                        );
+                                    } else {
+                                        Swal.fire(
+                                            'Lỗi!',
+                                            'Không thể xóa sản phẩm khỏi giỏ hàng.',
+                                            'error'
+                                        );
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Có lỗi xảy ra:', error);
                                     Swal.fire(
                                         'Lỗi!',
-                                        'Không thể xóa sản phẩm khỏi giỏ hàng.',
+                                        'Có lỗi xảy ra. Vui lòng thử lại.',
                                         'error'
                                     );
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Có lỗi xảy ra:', error);
-                                Swal.fire(
-                                    'Lỗi!',
-                                    'Có lỗi xảy ra. Vui lòng thử lại.',
-                                    'error'
-                                );
-                            });
-                    }
-                });
-            }
+                                });
+                        }
+                    });
+                }
 
-            function updateCartIconQuantity(newQuantityCart) {
-                const cartCount = document.querySelector('.cart-count');
-                cartCount.textContent = newQuantityCart
-            }
+                function updateCartIconQuantity(newQuantityCart) {
+                    const cartCount = document.querySelector('.cart-count');
+                    cartCount.textContent = newQuantityCart
+                }
 
-            
-        });
+                
+            });
     </script>
 @endpush

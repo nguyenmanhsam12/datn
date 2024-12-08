@@ -18,6 +18,10 @@ class CheckAdmin
     {   
         $user = Auth::user();
 
+        if(!$user){
+            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập trước');
+        }
+
         // Kiểm tra nếu người dùng tồn tại và chỉ có duy nhất một vai trò là 'guest'
         // hàm first này giúp này 1 phần tử đầu tiên của 1 collection
         if ($user && $user->roles->count() === 1 && $user->roles->first()->name === 'guest') {
