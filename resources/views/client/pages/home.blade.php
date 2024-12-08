@@ -232,58 +232,7 @@
             </div>
             <!-- Section-title end -->
             <div class="row">
-                <!-- Single-blog start -->
-                {{-- <div class="col-lg-4 col-md-6 col-12">
-                    <div class="single-blog mt-30">
-                        <div class="blog-photo">
-                            <a href="#"><img src="img/blog/1.webp" alt="" /></a>
-                        </div>
-                        <div class="blog-info">
-                            <div class="post-meta fix">
-                                <div class="post-year floatleft">
-                                    <h4 class="post-title"><a href="#" tabindex="0">Sweet Street Life 2022</a>
-                                    </h4>
-                                </div>
-                            </div>
-                            <div class="like-share fix">
-                                <a href="#"><i class="zmdi zmdi-favorite"></i><span>89 Like</span></a>
-                                <a href="#"><i class="zmdi zmdi-comments"></i><span>59 Comments</span></a>
-                                <a href="#"><i class="zmdi zmdi-share"></i><span>29 Share</span></a>
-                            </div>
-                            <p>There are many variations of passages of Lorem Ipsum alteratio available, but the majority
-                                have suffered If you are going to use a passage Lorem Ipsum, you alteration in some form.
-                            </p>
-                            <a href="#" class="button-2 text-dark-red">Read more...</a>
-                        </div>
-                    </div>
-                </div> --}}
-                <!-- Single-blog end -->
-                <!-- Single-blog start -->
-                {{-- <div class="col-lg-4 col-md-6 col-12">
-                    <div class="single-blog mt-30">
-                        <div class="blog-photo">
-                            <a href="#"><img src="img/blog/2.webp" alt="" /></a>
-                        </div>
-                        <div class="blog-info">
-                            <div class="post-meta fix">
-                                <div class="post-year floatleft">
-                                    <h4 class="post-title"><a href="#" tabindex="0">Designer`s look 2022</a>
-                                    </h4>
-                                </div>
-                            </div>
-                            <div class="like-share fix">
-                                <a href="#"><i class="zmdi zmdi-favorite"></i><span>45 Like</span></a>
-                                <a href="#"><i class="zmdi zmdi-comments"></i><span>56 Comments</span></a>
-                                <a href="#"><i class="zmdi zmdi-share"></i><span>27 Share</span></a>
-                            </div>
-                            <p>There are many variations of passages of Lorem Ipsum alteratio available, but the majority
-                                have suffered If you are going to use a passage Lorem Ipsum, you alteration in some form.
-                            </p>
-                            <a href="#" class="button-2 text-dark-red">Read more...</a>
-                        </div>
-                    </div>
-                </div> --}}
-                <!-- Single-blog end -->
+             
                 @if($posts->isEmpty())
                 <p>Không có bài viết nào.</p>
             @else

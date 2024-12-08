@@ -40,7 +40,7 @@
                     <!-- Mẫu đơn hàng -->
                     @foreach ($orders as $key => $order)
                         @php
-                            $finalTotal = $order->total_amount + $order->shipping_fee + $order->discount_amount;
+                            $finalTotal = $order->total_amount + $order->shipping_fee - $order->discount_amount;
                         @endphp
                         <tr>
                             <td>{{ $order->id }}</td>

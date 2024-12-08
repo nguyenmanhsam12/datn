@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -55,6 +56,9 @@ class BrandController extends Controller
 
     public function deleteBrand($id){
         $brand = Brand::find($id);
+
+        Product::where('brand_id',$brand->id)->update(['brand_id'=>null]);
+
         $brand->delete();
 
         return redirect()->route('admin.brand.index')->with('success','Xóa thành công');

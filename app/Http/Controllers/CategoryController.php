@@ -62,12 +62,7 @@ class CategoryController extends Controller
     public function delete($id){
         $category = Category::find($id);
 
-        $product = Product::where('category_id',$category->id)->first();
-
-        if($product){
-            $product->category_id = null;
-            $product->save();
-        }
+        Product::where('category_id',$category->id)->update(['category_id'=>null]);
         
         $category->delete();
         return redirect()->route('admin.category.index')->with('success','Xóa thành công');

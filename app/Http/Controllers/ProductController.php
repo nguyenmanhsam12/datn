@@ -120,8 +120,6 @@ class ProductController extends Controller
                 }
             }
 
-            
-    
             return redirect()->route('admin.product.index')->with('success','Thêm sản phẩm thành công');
         } catch (\Exception  $e) {
             // Ghi log lỗi
@@ -216,25 +214,49 @@ class ProductController extends Controller
     public function delete($id){
         $product = Product::find($id);
 
-        // if ($product->image && file_exists(public_path($product->image))) {
-        //     unlink(public_path($product->image)); // Xóa ảnh chính
-        // }
-
-        // // Thêm các ảnh trong gallery vào danh sách xóa
-        // if ($product->gallary) {
-        //     $galleryImages = json_decode($product->gallary, true);
-        //     foreach ($galleryImages as $galleryImage) {
-        //         if ($galleryImage && file_exists(public_path($galleryImage))) {
-        //             unlink(public_path($galleryImage)); // Xóa ảnh trong gallery
-        //         }
-        //     }
-        // }
-        
         if($product){
             $product->delete();
         }
         
         return redirect()->route('admin.product.index')->with('success','Xóa thành công');
+    }
+
+    public function deleteAt(){
+        $softProduct = Product::withTrashed()->where('deleted_at', '!=', null)->get();
+        return view('admin.product.delete',compact('softProduct'));
+    }
+
+    public function restore($id){
+        $product = Product::onlyTrashed()->find($id); // Lấy bản ghi bị xóa mềm
+        if ($product) {
+            $product->restore(); // Khôi phục bản ghi
+            return redirect()->back()->with('success', 'Sản phẩm đã được khôi phục!');
+        }
+        return redirect()->back()->with('error', 'Sản phẩm không tồn tại hoặc không bị xóa mềm.');
+    }
+
+    public function forceDeleteProduct($id){
+        $product = Product::onlyTrashed()->find($id); // Lấy bản ghi bị xóa mềm
+        if ($product) {
+
+            if ($product->image && file_exists(public_path($product->image))) {
+                unlink(public_path($product->image)); // Xóa ảnh chính
+            }
+    
+            // Thêm các ảnh trong gallery vào danh sách xóa
+            if ($product->gallary) {
+                $galleryImages = json_decode($product->gallary, true);
+                foreach ($galleryImages as $galleryImage) {
+                    if ($galleryImage && file_exists(public_path($galleryImage))) {
+                        unlink(public_path($galleryImage)); // Xóa ảnh trong gallery
+                    }
+                }
+            }
+
+            $product->forceDelete(); // Xóa vĩnh viễn
+            return redirect()->back()->with('success', 'Sản phẩm đã được xóa vĩnh viễn!');
+        }
+        return redirect()->back()->with('error', 'Sản phẩm không tồn tại hoặc không bị xóa mềm.');
     }
 
 }

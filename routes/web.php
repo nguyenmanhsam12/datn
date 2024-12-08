@@ -250,6 +250,11 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::get('/edit/{id}',[ProductController::class,'edit'])->name('admin.product.edit')->middleware('can:view,App\Models\Product,id');
         Route::put('/update/{id}',[ProductController::class,'update'])->name('admin.product.update');
         Route::get('/delete/{id}',[ProductController::class,'delete'])->name('admin.product.delete')->middleware('can:delete,App\Models\Product,id');
+        Route::get('/deleteAt',[ProductController::class,'deleteAt'])->name('admin.product.deleteAt');
+        Route::get('/restore/{id}',[ProductController::class,'restore'])->name('admin.product.restore');
+        Route::get('/forceDeleteProduct/{id}',[ProductController::class,'forceDeleteProduct'])->name('admin.product.forceDeleteProduct');
+
+
     });
 
     Route::prefix('variant')->group(function(){

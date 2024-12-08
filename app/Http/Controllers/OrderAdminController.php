@@ -26,7 +26,7 @@ class OrderAdminController extends Controller
     public function detail($id)
     {
         $order = Order::with('user', 'payment', 'orderStatus', 'orderAddress', 'cartItems')->find($id);
-        $finalTotal = $order->total_amount + $order->shipping_fee + $order->discount_amount;
+        $finalTotal = $order->total_amount + $order->shipping_fee - $order->discount_amount;
         $order_status = OrderStatus::all();
         return view('admin.order.detailOrder', compact('order', 'order_status','finalTotal'));
     }
