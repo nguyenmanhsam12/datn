@@ -113,11 +113,14 @@ class HomeController extends Controller
         $product = Product::findOrFail($request->product_id);
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'rating' => 'nullable|integer|between:1,5',
-            'message' => 'nullable|string|max:1000',
+            'rating' => 'required|integer|between:1,5', // Rating là bắt buộc
+            'message' => 'required|string|max:1000',   // Nội dung là bắt buộc
         ], [
-            'rating.required_without' => 'Bạn phải chọn ít nhất một trong hai: Đánh giá sao hoặc đánh giá văn bản.',
-            'message.required_without' => 'Bạn phải chọn ít nhất một trong hai: Đánh giá sao hoặc đánh giá văn bản.',
+            'rating.required' => 'Bạn phải chọn số sao để đánh giá.',
+            'rating.integer' => 'Đánh giá sao phải là một số nguyên.',
+            'rating.between' => 'Đánh giá sao phải nằm trong khoảng từ 1 đến 5.',
+            'message.required' => 'Bạn phải nhập nội dung đánh giá.',
+            'message.max' => 'Nội dung đánh giá không được vượt quá 1000 ký tự.',
         ]);
         if (!$request->rating && !$request->message) {
 
