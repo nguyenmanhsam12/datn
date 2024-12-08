@@ -88,33 +88,79 @@
 <div class="container">
     <h2>Đặt lại mật khẩu mới</h2>
 
-<form method="POST" action="{{ route('password.verifyOtp') }}"  class="form-register">
-    @csrf
-    <div class="form-group">
-        <label for="otp">Mã OTP</label>
-        <input type="text" name="otp" id="otp" class="form-control @error('otp') is-invalid @enderror" required>
-        @error('otp')
-            <span class="invalid-feedback" role="alert">
-                <strong>{{ $message }}</strong>
-            </span>
-        @enderror
-    </div>
-
-    <div class="form-group">
-        <label for="password">Mật khẩu mới</label>
-        <input type="password" name="password" id="password" class="form-control" required>
-    </div>
-
-    <div class="form-group">
-        <label for="password_confirmation">Xác nhận mật khẩu</label>
-        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Đặt lại mật khẩu</button>
-</form>
-
+    <form id="reset-password-form" class="form-register">
+        @csrf
+        <div class="form-group">
+            <label for="otp">Mã OTP</label>
+            <input type="text" name="otp" id="otp" class="form-control" required>
+            <span id="otp-error" class="invalid-feedback" style="display:none;"></span>
+        </div>
+    
+        <div class="form-group">
+            <label for="password">Mật khẩu mới</label>
+            <input type="password" name="password" id="password" class="form-control" required>
+            <div id="password-error" class="invalid-feedback" style="display:none;"></div>
+    
+        <div class="form-group">
+            <label for="password_confirmation">Xác nhận mật khẩu</label>
+            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
+        </div>
+    
+        <button type="submit" class="btn btn-primary">Đặt lại mật khẩu</button>
+    </form>
+    
+    <div id="success-message" class="alert alert-success" style="display:none;"></div>
+    
 
     
 </div>
 </div>
+
 @endsection
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#reset-password-form').on('submit', function(event) {
+        event.preventDefault(); // Ngăn chặn hành vi mặc định của form
+
+        // Xóa thông báo lỗi trước đó
+        $('#otp-error').hide();
+        $('#password-error').hide();
+        $('#success-message').hide();
+
+        // Lấy dữ liệu từ form
+        const formData = {
+            otp: $('#otp').val(),
+            password: $('#password').val(),
+            password_confirmation: $('#password_confirmation').val(),
+            _token: $('input[name="_token"]').val()
+        };
+
+        $.ajax({
+            url: '{{ route("password.verifyOtp") }}',
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                // Hiển thị thông báo thành công
+                $('#success-message').text(response.status).show();
+                window.location.href = response.redirect;
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    // Nếu có lỗi validation, hiển thị thông báo lỗi
+                    const errors = xhr.responseJSON.errors;
+                    if (errors.otp) {
+                        $('#otp-error').text(errors.otp).show();
+                    }
+                    if (errors.password) {
+                        $('#password-error').text(errors.password).show();
+                    }
+                } else {
+                    // Xử lý các lỗi khác nếu cần
+                    console.error('Có lỗi xảy ra:', xhr);
+                }
+            }
+        });
+    });
+});
+</script>

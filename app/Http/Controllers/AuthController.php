@@ -78,6 +78,7 @@ class AuthController extends Controller
    //otp
    public function sendResetLink(Request $request)
    {
+   
       
        $request->validate([
            'email' => 'required|email|exists:users,email',
@@ -98,23 +99,48 @@ class AuthController extends Controller
 // form có otp
    public function showOtpForm()
    {
-       return view('client.pages.otp');
+    $list_brand = Brand::orderBy('id','desc')->get();
+    $list_category = Category::orderBy('id','desc')->get();
+       return view('client.pages.otp',compact('list_brand','list_category'));
    }
 
    public function verifyOtp(Request $request)
    {
+       // Xác thực dữ liệu đầu vào
        $request->validate([
            'otp' => 'required|string|size:6',  
            'password' => 'required|string|min:8|confirmed',
-       ]);
-       if (session('otp') !== $request->otp || now()->greaterThan(session('otp_expiry'))) {
-           return back()->withErrors(['otp' => 'Mã OTP không hợp lệ hoặc đã hết hạn.']);
+       ],[
+        'otp.required' => 'Mã OTP là bắt buộc.',
+        'otp.size' => 'Mã OTP phải có đúng 6 ký tự.',
+        'password.required' => 'Mật khẩu mới là bắt buộc.',
+        'password.min' => 'Mật khẩu mới phải có ít nhất 8 ký tự.',
+        'password.confirmed' => 'Xác nhận mật khẩu không khớp.',
+    ]);
+
+       // Kiểm tra mã OTP
+       $isValidOtp = session('otp') === $request->otp;
+       $isExpired = now()->greaterThan(session('otp_expiry'));
+
+       if (!$isValidOtp || $isExpired) {
+        return response()->json(['errors' => ['otp' => 'Mã OTP không hợp lệ hoặc đã hết hạn.']], 422);
        }
+
+       // Cập nhật mật khẩu cho người dùng
        $user = User::where('email', session('email'))->first();
+
+       // Kiểm tra xem người dùng có tồn tại không
+       if (!$user) {
+             return response()->json(['errors' => ['otp' => 'Không tìm thấy người dùng.']], 422);
+       }
+
+       // Cập nhật mật khẩu
        $user->update(['password' => Hash::make($request->password)]);
+
+       // Xóa thông tin OTP khỏi session
        session()->forget(['otp', 'otp_expiry', 'email']);
 
-       return redirect()->route('login')->with('status', 'Mật khẩu đã được cập nhật!');
+       return response()->json(['status' => 'Mật khẩu đã được cập nhật!', 'redirect' => route('login')]);
    }
 
    // form ko co otp
