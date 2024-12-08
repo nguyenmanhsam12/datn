@@ -13,6 +13,7 @@ use App\Models\Payment_Methods;
 use App\Models\ProductVariants;
 use Illuminate\Http\Request;
 use App\Models\Review;
+use App\Models\Complaints;
 use Carbon\Carbon;
 use DB;
 
@@ -24,13 +25,14 @@ class DashboardController extends Controller
 $totalReviewsCount = Review::count();
         // Đếm số lượng tổng quanssldh
         $sldh = Order::count();
+        $khieuNai=Complaints::count();
         $totalProducts = Product::count();
         $totalAdmins = User::count();
-
-        // Tính tổng doanh thu cho các đơn hàng Hoàn tất
         $doanhThu = Order::whereHas('orderStatus', function ($query) {
             $query->where('name', 'Hoàn tất');
-        })->sum('total_amount');
+        })->get()->reduce(function ($carry, $order) {
+            return $carry + ($order->total_amount - $order->discount_amount + $order->shipping_fee);
+        }, 0);
 
         // Số lượng mã giảm giá còn hạn và đã hết hạn
         $activeCouponsCount = Coupon::where('end_date', '>', now())->count();
@@ -69,7 +71,7 @@ $totalReviewsCount = Review::count();
         ->where('order_status.name', 'Hoàn tất')  
         ->select('order_address.province', 
                  DB::raw('SUM(order_items.quantity) as total_sales'),
-                 DB::raw('SUM(order_items.quantity * order_items.price) as total_revenue'))
+                 DB::raw('SUM(order_items.quantity * order_items.price - orders.discount_amount + orders.shipping_fee) as total_revenue'))
         ->groupBy('order_address.province')
         ->get();
 
@@ -169,7 +171,7 @@ $totalReviewsCount = Review::count();
         ->whereHas('orderStatus', function ($query) {
             $query->where('name', 'Hoàn tất'); // Lọc chỉ lấy đơn hàng Hoàn tất
         })
-        ->selectRaw('DATE(created_at) as date, SUM(total_amount) as total')
+        ->selectRaw('DATE(created_at) as date, SUM(total_amount - discount_amount + shipping_fee) as total')
         ->groupBy('date')
         ->orderBy('date')
         ->get();
@@ -218,7 +220,7 @@ $totalReviewsCount = Review::count();
              'revenues',
              'revenueAndSalesData',
              'sanPham',
-             'totalReviewsCount','sldh'
+             'totalReviewsCount','sldh','khieuNai'
             
         ));
     }

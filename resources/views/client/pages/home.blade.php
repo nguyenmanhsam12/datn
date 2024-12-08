@@ -62,6 +62,81 @@
             height: 200px;
             object-fit: cover; /* Đảm bảo ảnh đồng nhất kích thước */
         }
+        #wishlist-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            /* Màu nền tối hơn */
+            color: #fff;
+            /* Màu chữ trắng */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            /* Đổ bóng cho thông báo */
+            z-index: 1000;
+            text-align: center;
+            font-size: 16px;
+            max-width: 600px;
+            display: none;
+            height: 10px;
+            animation: slideIn 0.5s ease-out;
+            display: flex;
+            /* Sử dụng flexbox để căn giữa nội dung */
+            justify-content: space-between;
+            /* Căn chỉnh nút và chữ */
+            align-items: center;
+            /* Căn giữa theo chiều dọc */
+        }
+
+        /* Hiệu ứng khi thông báo xuất hiện */
+        @keyframes slideIn {
+            0% {
+                transform: translateX(-50%) translateY(30px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        #wishlist-notification p {
+            margin: 0;
+            font-weight: bold;
+            font-size: 16px;
+            line-height: 1.4;
+            flex-grow: 1;
+        }
+
+        #wishlist-notification a {
+            background-color: #fff;
+            color: #5e5e5e;
+            padding: 2px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            border: 2px solid #333;
+            margin-left: 15px;
+            height: 30px;
+        }
+
+        #wishlist-notification a:hover {
+            background-color: #fd3939;
+            color: #fff;
+        }
+
+        #wishlist-notification a {
+            transition: transform 0.3s ease;
+        }
+
+        #wishlist-notification a:hover {
+            transform: translateX(5px);
+            /* Chuyển động nút khi hover */
+        }
     </style>
 @endpush
 
@@ -93,10 +168,12 @@
                                                 src="{{ $pr->image }}" alt="" /></a>
                                         <div class="product-action clearfix">
                                             <a>
-                                                <form action="{{ route('wishlist.add') }}" method="POST">
+                                                <form action="{{ route('wishlist.store') }}" method="POST"
+                                                    class="wishlist-form">
                                                     @csrf
                                                     <input type="hidden" name="product_id" value="{{ $pr->id }}">
-                                                    <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
+                                                    <button type="submit" class="btn-link wishlist-btn"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
                                                         <i class="zmdi zmdi-favorite-outline"></i>
                                                     </button>
                                                 </form>
@@ -270,6 +347,10 @@
         </div>
     </div>
     <!-- BLGO-AREA END -->
+    <div id="wishlist-notification" class="wishlist-notification" style="display: none;">
+        <p>Sản phẩm đã được thêm vào danh sách yêu thích.</p>
+        <a href="#" id="view-wishlist-btn" class="btn btn-primary">Xem</a>
+    </div>
 @endsection
 
 @push('script')
@@ -308,14 +389,8 @@
                                         <img src="${product.image}" alt="" />
                                     </a>
                                     <div class="product-action clearfix">
-                                        <a>
-                                                <form action="{{ route('wishlist.add') }}" method="POST">
-                                                    @csrf
-                                                    <input type="hidden" name="product_id" value="{{ $pr->id }}">
-                                                    <button type="submit" class="btn btn-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
-                                                        <i class="zmdi zmdi-favorite-outline"></i>
-                                                    </button>
-                                                </form>
+                                      <a>
+                                               <button  onclick="add_wishlist({{ $pr->id }})" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist"><i class="zmdi zmdi-favorite-outline"></i></button>
                                             </a>
                                         <a href="#" data-bs-toggle="modal" data-bs-target="#productModal" title="Quick View">
                                             <i class="zmdi zmdi-zoom-in"></i>
@@ -381,5 +456,76 @@
             iframe.src = iframe.src;  // Reset src để dừng video
         });
     </script>
-    
+    <script>
+        $('.wishlist-form').on('submit', function(e) {
+            e.preventDefault(); // Ngừng hành động mặc định của form
+
+            var form = $(this);
+            var button = form.find('button'); // Lấy nút yêu thích
+
+            // Gửi yêu cầu AJAX
+            $.ajax({
+                url: form.attr('action'),
+                method: 'POST',
+                data: form.serialize(),
+                success: function(response) {
+                    // Hiển thị thông báo
+                    $('#wishlist-notification').fadeIn();
+
+                    // Khi người dùng nhấn "Xem", điều hướng đến wishlist
+                    $('#view-wishlist-btn').on('click', function() {
+                        window.location.href = response
+                            .redirect_to_wishlist; // Điều hướng đến trang wishlist
+                    });
+
+                    // Thay đổi màu sắc của nút yêu thích
+                    button.addClass('active'); // Thêm lớp 'active' để thay đổi màu
+
+                    // Ẩn thông báo sau 5 giây
+                    setTimeout(function() {
+                        $('#wishlist-notification').fadeOut();
+                    }, 5000);
+                },
+                error: function(response) {
+                    // Hiển thị thông báo lỗi
+                    alert(response.responseJSON.message);
+                }
+            });
+        });
+
+        function add_wishlist(id) {
+            // var formdata = new FormData()
+            var data = {
+                "_token": "{{ csrf_token() }}",
+                "product_id": id
+            }
+            $.ajax({
+                url: '{{ route('wishlist.store') }}',
+                method: 'POST',
+                data: data,
+                success: function(response) {
+                    // Hiển thị thông báo
+                    $('#wishlist-notification').fadeIn();
+
+                    // Khi người dùng nhấn "Xem", điều hướng đến wishlist
+                    $('#view-wishlist-btn').on('click', function() {
+                        window.location.href = response
+                            .redirect_to_wishlist; // Điều hướng đến trang wishlist
+                    });
+
+                    // Thay đổi màu sắc của nút yêu thích
+                    button.addClass('active'); // Thêm lớp 'active' để thay đổi màu
+
+                    // Ẩn thông báo sau 5 giây
+                    setTimeout(function() {
+                        $('#wishlist-notification').fadeOut();
+                    }, 5000);
+                },
+                error: function(response) {
+                    // Hiển thị thông báo lỗi
+                    alert(response.responseJSON.message);
+                }
+            });
+        }
+    </script>
 @endpush
