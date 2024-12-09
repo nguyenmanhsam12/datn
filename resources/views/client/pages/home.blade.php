@@ -125,7 +125,7 @@
         }
 
         #wishlist-notification a:hover {
-            background-color: #fd3939;
+            background-color: #d63384;
             color: #fff;
         }
 
@@ -136,6 +136,18 @@
         #wishlist-notification a:hover {
             transform: translateX(5px);
             /* Chuyển động nút khi hover */
+        }
+        form button i{
+            color: #666;
+        }
+        form button i:hover{
+            color: #d63384;
+        }
+        a button i{
+            color: #666;
+        }
+        a button i:hover{
+            color: #d63384;
         }
     </style>
 @endpush
@@ -164,6 +176,17 @@
                                 <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}">
                                     <div class="product-img">
                                         <span class="pro-label new-label">new</span>
+                                        <a class="pro-price-2">
+                                            <form action="{{ route('wishlist.store') }}" method="POST"
+                                                class="wishlist-form">
+                                                @csrf
+                                                <input type="hidden" name="product_id" value="{{ $pr->id }}">
+                                                <button type="submit" class=" wishlist-btn"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
+                                                    <i class="zmdi zmdi-favorite-outline"></i>
+                                                </button>
+                                            </form>
+                                        </a>
                                         <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}"><img
                                                 src="{{ $pr->image }}" alt="" /></a>
                                         <div class="product-action clearfix">
@@ -179,10 +202,13 @@
                                                 </form>
                                             </a>
                                             <a href="#" data-bs-toggle="modal" data-bs-target="#productModal{{ $pr->id }}"
+                                        {{-- <div class="product-action clearfix">
+                                            
+                                            <a href="#" data-bs-toggle="modal" data-bs-target="#productModal"
                                                 title="Quick View"><i class="zmdi zmdi-zoom-in"></i></a>
                                             <a href="#" data-bs-toggle="tooltip" data-bs-placement="top"
                                                 title="Compare"><i class="zmdi zmdi-refresh"></i></a>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                     <div class="product-info clearfix">
                                         <div class="fix">
@@ -440,20 +466,12 @@
                             <div class="single-product col-xl-3 col-md-4 col-12">
                                 <div class="product-img">
                                     <span class="pro-label new-label">new</span>
+                                    <a class="pro-price-2">
+                                               <button  onclick="add_wishlist(${product.id})" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist"><i class="zmdi zmdi-favorite-outline"></i></button>
+                                            </a>
                                     <a href="${productUrl}">
                                         <img src="${product.image}" alt="" />
                                     </a>
-                                    <div class="product-action clearfix">
-                                      <a>
-                                               <button  onclick="add_wishlist({{ $pr->id }})" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist"><i class="zmdi zmdi-favorite-outline"></i></button>
-                                            </a>
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#productModal" title="Quick View">
-                                            <i class="zmdi zmdi-zoom-in"></i>
-                                        </a>
-                                        <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Compare">
-                                            <i class="zmdi zmdi-refresh"></i>
-                                        </a>
-                                    </div>
                                 </div>
                                 <div class="product-info clearfix">
                                     <div class="fix">
