@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\VariantUpdated;
 use App\Models\ProductVariants;
 use App\Models\Size;
 use Illuminate\Http\Request;
@@ -48,6 +49,8 @@ class VariantController extends Controller
         }
 
         $variant->update($data);
+
+        broadcast(new VariantUpdated($variant));
 
         return redirect()->route('admin.variant.index')->with('success','Cập nhập thành công');
 

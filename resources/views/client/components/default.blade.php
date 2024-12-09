@@ -213,7 +213,6 @@
         <!-- FOOTER END -->
         <!-- QUICKVIEW PRODUCT -->
 
-        @include('client.components.quickview')
         <!-- END QUICKVIEW PRODUCT -->
 
     </div>

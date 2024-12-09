@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Models\Product;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,5 +37,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('brand_delete',function($user){  
             return $user->checkPermissionAccess(config('permission.access.delete-brand'));
         });
+        Paginator::useBootstrap();
+
     }
 }

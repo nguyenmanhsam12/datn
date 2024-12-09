@@ -38,7 +38,7 @@ class Handler extends ExceptionHandler
             if ($exception instanceof ValidationException) {
                 return response()->json([
                     'errors' => $exception->errors(),
-                ], 400); // Trả về mã lỗi 400
+                ], 422); // Trả về mã lỗi 400
             }    
         }
 

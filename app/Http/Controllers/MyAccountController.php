@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateProfileRequest;
 use App\Models\Category;
 use App\Models\Brand;
 use App\Models\Complaints;
@@ -12,14 +13,14 @@ use App\Models\Province;
 use App\Models\Transactions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class MyAccountController extends Controller
 {
-    public function myAccount()
+    public function myAccount(Request $request)
     {
-        $user = Auth::user()->load(['ward', 'city', 'province']);
+        $user = Auth::user();
         
-
         if (!$user) {
             return redirect()->route('login')->with('error', 'Vui lòng đăng nhập trước');
         }
@@ -27,14 +28,20 @@ class MyAccountController extends Controller
         $status = OrderStatus::all();
         $list_brand = Brand::orderBy('id','desc')->get();
         $list_category = Category::orderBy('id','desc')->get();
+        
         $order =  Order::with('cartItems', 'orderStatus','orderAddress','complaint')
             ->where('user_id', $user->id)
             ->orderBy('id','desc')
             ->get();
         $list_provice = Province::all();
+
+        // Nếu là request Ajax, chỉ trả về view nhỏ của danh sách đơn hàng
+        if ($request->ajax()) {
+            return view('client.pages.partials-order_list', compact('order'))->render();
+        }
         
-        return view('client.pages.myaccount', compact('status', 'order', 'user','list_brand','list_category'
-            ,'list_provice'
+        return view('client.pages.myaccount', compact('status','user','list_brand','list_category'
+            ,'list_provice','order'
         ));
     }
 
@@ -151,17 +158,24 @@ class MyAccountController extends Controller
     }
 
     // update profile
-    public function updateProfile(Request $request){
-
-        $data = $request->all();
-
-        $user = auth()->user();
-
-        $newUser = User::find($user->id);
-
-        $newUser->update($data);
-
-        return response()->json(['success' => true, 'message' => 'Thông tin cập nhật thành công']);
-
+    public function updateProfile(UpdateProfileRequest $request)
+    {
+        // Kiểm tra xem dữ liệu có đúng không
+        try {
+            $data = $request->validated();
+            $user = auth()->user();
+            $newUser = User::find($user->id);
+    
+            // Cập nhật thông tin người dùng
+            $newUser->update($data);
+    
+            return response()->json(['success' => true, 'message' => 'Thông tin cập nhật thành công']);
+        } catch (\Exception $e) {
+            // Log lỗi chi tiết nếu có
+            Log::error($e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Đã xảy ra lỗi khi cập nhật thông tin']);
+        }
     }
+    
 }
+

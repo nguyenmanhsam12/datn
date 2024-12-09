@@ -87,13 +87,16 @@ Route::post('/apply-coupon', [CartController::class, 'applyCoupon'])->name('appl
 // hủy mã giảm giá
 Route::post('/remove-coupon', [CartController::class, 'removeCoupon'])->name('removeCoupon');
 
-
 // xử lí đơn vị hành chính
 Route::post('/selectProvince',[CheckoutController::class,'selectProvince'])->name('selectProvince');
 Route::post('/selectCity',[CheckoutController::class,'selectCity'])->name('selectCity');
 
-
 Route::get('/my-account',[MyAccountController::class,'myAccount'])->name('myAccount');
+
+// routes/web.php
+Route::get('/user/orders', [MyAccountController::class, 'getOrders'])->name('user.orders');
+
+
 Route::get('/checkout',[CheckoutController::class,'checkout'])->name('checkout');
 // xác nhận đã nhận hàng 
 Route::post('/order/confirm', [MyAccountController::class, 'confirmOrder'])->name('confirmOrder');

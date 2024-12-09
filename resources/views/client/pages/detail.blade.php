@@ -457,7 +457,9 @@
 
                 // Lấy giá từ data attribute và cập nhật
                 const price = this.getAttribute('data-price');
+
                 updatePrice(price);
+
                 const stock = this.getAttribute('data-stock');
                 stockElement.textContent = `Số lượng : ${stock}`
 
@@ -470,21 +472,28 @@
                         // Hủy kênh cũ nếu đã đăng ký
                         if (currentVariantId) {
                             Echo.leave(`product-${currentVariantId}`);
+                            Echo.leave(`variant-update-${currentVariantId}`);
                         }
 
                         // Cập nhật variantId hiện tại
                         currentVariantId = variantId;
 
 
-                        // Đăng ký kênh mới để lắng nghe sự kiện
+                        // khi đặt hàng sẽ lắng nghe sự kiện này
                         Echo.channel(`product-${currentVariantId}`)
                             .listen('ProductStockUpdated', (event) => {
-                                console.log('Stock update received: ', event);
-
                                 // Cập nhật số lượng tồn kho nếu sự kiện trùng variant
                                 if (event.variantId == currentVariantId) {
                                     stockElement.textContent = `Số lượng: ${event.stock}`;
                                     console.log(stockElement);
+                                }
+                            });
+                        // cập nhập số lượng và giá trong trang quản trị
+                        Echo.channel(`variant-update-${currentVariantId}`)
+                            .listen('VariantUpdated',(event) => {
+                                if (event.id == currentVariantId) {
+                                    stockElement.textContent = `Số lượng: ${event.stock}`;
+                                    updatePrice(event.price); // Cập nhật giá từ sự kiện
                                 }
                             });
                     }
@@ -579,9 +588,6 @@
     </script>
 
     <script type="module">
-     
-
-
         $(document).ready(function() {
             // Xử lý sự kiện click khi chọn sao đánh giá
             $('.star').click(function() {
