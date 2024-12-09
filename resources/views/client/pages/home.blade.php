@@ -57,11 +57,14 @@
             color: white;
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
         }
+
         .blog-photo img {
             width: 100%;
             height: 200px;
-            object-fit: cover; /* Đảm bảo ảnh đồng nhất kích thước */
+            object-fit: cover;
+            /* Đảm bảo ảnh đồng nhất kích thước */
         }
+
         #wishlist-notification {
             position: fixed;
             bottom: 20px;
@@ -137,16 +140,20 @@
             transform: translateX(5px);
             /* Chuyển động nút khi hover */
         }
-        form button i{
+
+        form button i {
             color: #666;
         }
-        form button i:hover{
+
+        form button i:hover {
             color: #d63384;
         }
-        a button i{
+
+        a button i {
             color: #666;
         }
-        a button i:hover{
+
+        a button i:hover {
             color: #d63384;
         }
     </style>
@@ -181,8 +188,8 @@
                                                 class="wishlist-form">
                                                 @csrf
                                                 <input type="hidden" name="product_id" value="{{ $pr->id }}">
-                                                <button type="submit" class=" wishlist-btn"
-                                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
+                                                <button type="submit" class=" wishlist-btn" data-bs-toggle="tooltip"
+                                                    data-bs-placement="top" title="Wishlist">
                                                     <i class="zmdi zmdi-favorite-outline"></i>
                                                 </button>
                                             </form>
@@ -208,15 +215,11 @@
                                             </span>
                                         </div>
                                     </div>
-</a>
+                                </a>
                             </div>
-
-
                             {{-- modal --}}
                         @endforeach
-
-                        <!-- Single-product end -->
-
+                       <!-- Single-product end -->
                     </div>
                 </div>
             </div>
@@ -239,8 +242,6 @@
             </div>
         </div>
     </div>
-
-
     <!-- Video Modal -->
     <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -261,10 +262,6 @@
             </div>
         </div>
     </div>
-
-
-
-
     <!-- PURCHASE-ONLINE-AREA START -->
     <div class="purchase-online-area pt-80">
         <div class="container">
@@ -315,47 +312,47 @@
             </div>
             <!-- Section-title end -->
             <div class="row">
-             
-                @if($posts->isEmpty())
-                <p>Không có bài viết nào.</p>
-            @else
-                @foreach ($posts as $post)
-                <!-- Single-blog start -->
-                <div class="col-lg-4 col-md-6 col-12">
-                    <div class="single-blog mb-30">
-                        <div class="blog-photo">
-                            <a href="{{ route('blog.show', $post->id) }}" class="blog-photo">
-                            <img src="{{ asset($post->thumbnail) }}" alt="Hình ảnh bài viết" style="max-width: 350px; "></a>
-                            <div class="like-share text-center fix">
-                                <a href="javascript:void(0);" class="like-button" data-post-id="{{ $post->id }}">
-                                    <i class="zmdi zmdi-favorite"></i>
-                                    <span>Like</span>
-                                </a>
-                                <a href="#"><i class="zmdi zmdi-comments"></i><span> Comments</span></a>
-                                <a href="#"><i class="zmdi zmdi-share"></i><span>Share</span></a>
-                            </div>
-                        </div>
-                        <div class="blog-info"> 
-                            <div class="post-meta fix">
-                                <div class="post-year floatleft">
-                                    <h4 class="post-title"><a href="{{ route('blog.show', $post->id) }}" tabindex="0">{{ $post->title }}</a></h4>
+
+                @if ($posts->isEmpty())
+                    <p>Không có bài viết nào.</p>
+                @else
+                    @foreach ($posts as $post)
+                        <!-- Single-blog start -->
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <div class="single-blog mb-30">
+                                <div class="blog-photo">
+                                    <a href="{{ route('blog.show', $post->id) }}" class="blog-photo">
+                                        <img src="{{ asset($post->thumbnail) }}" alt="Hình ảnh bài viết"
+                                            style="max-width: 350px; "></a>
+                                    <div class="like-share text-center fix">
+                                        <a href="javascript:void(0);" class="like-button"
+                                            data-post-id="{{ $post->id }}">
+                                            <i class="zmdi zmdi-favorite"></i>
+                                            <span>Like</span>
+                                        </a>
+                                        <a href="#"><i class="zmdi zmdi-comments"></i><span> Comments</span></a>
+                                        <a href="#"><i class="zmdi zmdi-share"></i><span>Share</span></a>
+                                    </div>
+                                </div>
+                                <div class="blog-info">
+                                    <div class="post-meta fix">
+                                        <div class="post-year floatleft">
+                                            <h4 class="post-title"><a href="{{ route('blog.show', $post->id) }}"
+                                                    tabindex="0">{{ $post->title }}</a></h4>
+                                        </div>
+                                    </div>
+                                    <p>{{ \Illuminate\Support\Str::limit($post->content, 200) }}</p>
+                                    <a href="{{ route('blog.show', $post->id) }}" class="button-2 text-dark-red">Read
+                                        more...</a>
                                 </div>
                             </div>
-                            <p>{{ \Illuminate\Support\Str::limit($post->content, 200) }}</p>
-                            <a href="{{ route('blog.show', $post->id) }}" class="button-2 text-dark-red">Read more...</a>
                         </div>
-                    </div>
-                </div>
-                @endforeach
+                    @endforeach
                 @endif
                 <!-- Single-blog end -->
             </div>
         </div>
     </div>
-
-    
-
-
     <!-- BLGO-AREA END -->
     <div id="wishlist-notification" class="wishlist-notification" style="display: none;">
         <p>Sản phẩm đã được thêm vào danh sách yêu thích.</p>
@@ -376,7 +373,7 @@
             $('.tab-menu .nav-link').removeClass('active');
             $(`.tab-menu .nav-link[data-category-id="${categoryId}"]`).addClass('active');
 
-            $.ajax({    
+            $.ajax({
                 url: '/getProductsByCategory/' + categoryId,
                 type: 'GET',
                 beforeSend: function() {
@@ -447,15 +444,13 @@
             // Khởi tạo tooltips
             $('[data-bs-toggle="tooltip"]').tooltip();
         });
-
-        
     </script>
     <script>
         // Tắt video khi modal đóng
         var videoModal = document.getElementById('videoModal');
-        videoModal.addEventListener('hidden.bs.modal', function () {
+        videoModal.addEventListener('hidden.bs.modal', function() {
             var iframe = videoModal.querySelector('iframe');
-            iframe.src = iframe.src;  // Reset src để dừng video
+            iframe.src = iframe.src; // Reset src để dừng video
         });
     </script>
     <script>
