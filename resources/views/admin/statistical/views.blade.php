@@ -141,6 +141,9 @@
                 @foreach ($revenueByStatus as $status)
                     <tr>
                         <td class="text-center font-weight-bold">{{ $status->name }}</td>
+                        @php
+                            
+                        @endphp
                         <td class="text-center font-weight-bold">{{ number_format($status->orders_sum_total_amount, 2) }} VND</td>
                     </tr>
                 @endforeach
