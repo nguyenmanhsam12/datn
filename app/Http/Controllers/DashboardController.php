@@ -112,7 +112,9 @@ $totalReviewsCount = Review::count();
 
         // Lấy dữ liệu đơn hàng và tính tổng doanh thu
         $orders = $ordersQuery->get();
-        $totalRevenue = $orders->sum('total_amount');
+        $totalRevenue = $orders->map(function ($order) {
+            return $order->total_amount - $order->discount_amount + $order->shipping_fee;
+        })->sum();
         $totalOrders = $orders->count();
 
         // Doanh thu theo phương thức thanh toán
