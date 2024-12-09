@@ -1,6 +1,6 @@
 @extends('client.components.default')
 @push('styles')
-    <style>
+    {{-- <style>
         .zmdi {
             line-height: 40px;
         }
@@ -250,6 +250,24 @@
         h2{
             color: black
         }
+    </style> --}}
+    <style>
+        .table {
+  font-size: 1rem;
+}
+
+.table img {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.table button {
+  transition: all 0.2s ease-in-out;
+}
+
+.table button:hover {
+  transform: scale(1.1);
+}
+
     </style>
 @endpush
 @section('content')
@@ -273,108 +291,58 @@
         </div>
     </div>
 
-    <div class="product-area pt-80 pb-80 product-style-2" style="background-color: rgba(245, 245, 245, 0.7);">
-        <div class="container">
-            <div class="row">
-                <h2>Danh sách sản phẩm yêu thích</h2>
-                <div class="shop-content">
-                    @if ($wishlists->count() > 0)
-                        <p>Bạn có {{ $wishlists->count() }} sản phẩm yêu thích</p>
-                        <div class="tab-content">
-                            <div class="tab-pane active show" id="grid-view" role="tabpanel">
-                                <div class="row" id="product-list">
-                                    @foreach ($wishlists as $wishlist)
-                                        <div class="col-lg-4 col-md-6 col-12">
-                                            <div class="single-product ">
-                                                <div class="product-img">
-                                                    <a
-                                                        href="{{ route('getDetailProduct', ['slug' => $wishlist->product->slug]) }}">
-                                                        <img src="{{ $wishlist->product->image }}"
-                                                            alt="{{ $wishlist->product->name }}" />
-                                                        <div class="product-action clearfix spor">
-
-                                                            <form action="{{ route('wishlist.remove', $wishlist->id) }}"
-                                                                method="POST">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="button" class="btn-remove-wishlist" data-wishlist-id="{{ $wishlist->id }}" data-url="{{ route('wishlist.remove', $wishlist->id) }}">
-                                                                    <i class="zmdi zmdi-favorite-outline"></i>
-                                                                </button>
-                                                            </form>
-
-                                                            <a href="#" data-bs-toggle="modal"
-                                                                data-bs-target="#productModal" title="Quick View">
-                                                                <i class="zmdi zmdi-zoom-in"></i>
-                                                            </a>
-                                                            <a href="#" data-bs-toggle="tooltip"
-                                                                data-bs-placement="top" title="Compare">
-                                                                <i class="zmdi zmdi-refresh"></i>
-                                                            </a>
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                                <div class="product-info clearfix">
-                                                    <h4>{{ $wishlist->product->name }}</h4>
-                                                    <span>{{ number_format(optional($wishlist->product->mainVariant)->price, 0, ',', '.') . ' VNĐ' }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Danh sách sản phẩm yêu thích</h1>
+        @if ($wishlists->count() > 0)
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" class="text-center">STT</th>
+                        <th scope="col" class="text-center">Sản phẩm</th>
+                        <th scope="col" class="text-center">Giá</th>
+                        <th scope="col" class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($wishlists as $index => $wishlist)
+                        <tr>
+                            <td class="text-center">{{ $index + 1 }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ $wishlist->product->image }}" 
+                                        alt="{{ $wishlist->product->name }}" 
+                                        class=" me-3" 
+                                        style="width: 60px; height: 60px; object-fit: cover;" />
+                                    <span>{{ $wishlist->product->name }}</span>
                                 </div>
-                                <div class="shop-pagination text-center">
-                                    <div class="pagination-wrapper pagination">
-                                        {{ $wishlists->links('pagination::bootstrap-4') }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @else
-                        <p>Không có sản phẩm trong danh sách yêu thích.</p>
-                    @endif
-                </div>
-            </div>
-
-            <!-- Thêm danh sách sản phẩm bán chạy -->
-            <div class="row mt-5">
-                <div class="col-12">
-                    <h2>Các sản phẩm có lẽ bạn sẽ thích</h2>
-                </div>
-                @foreach ($topSellingProducts as $product)
-                    <div class="col-lg-3 col-md-4 col-6">
-                        <div class="single-product">
-                            <div class="product-img">
-                                <a href="{{ route('getDetailProduct', ['slug' => $product->slug]) }}">
-                                    <img src="{{ $product->image }}" alt="{{ $product->name }}" />
-                                    <div class="product-action clearfix spor">
-                                        <form action="{{ route('wishlist.add') }}" method="POST">
-                                            @csrf
-                                            <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                            <!-- Corrected here -->
-                                            <button type="button" class="btn-add-wishlist" data-product-id="{{ $product->id }}" data-url="{{ route('wishlist.add') }}">
-                                                <i class="zmdi zmdi-favorite-outline"></i>
-                                            </button>
-                                        </form>
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#productModal"
-                                            title="Quick View">
-                                            <i class="zmdi zmdi-zoom-in"></i>
-                                        </a>
-                                        <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Compare">
-                                            <i class="zmdi zmdi-refresh"></i>
-                                        </a>
-                                    </div>
+                            </td>
+                            <td>{{ number_format($wishlist->product->mainVariant->price,0,',','.')}} VND</td>
+                            <td class="text-center">
+                                <!-- xem chi tiết -->
+                                <a href="{{route('getDetailProduct',['slug'=>$wishlist->product->slug])}}" class="btn btn-success btn-sm me-2">Xem Chi Tiết</a>
+                                <!-- Xóa khỏi yêu thích -->
+                                <a href="{{route('delWishlist',['id'=>$wishlist->id])}}" 
+                                    class="btn btn-danger btn-sm" 
+                                    onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">
+                                        Xóa
                                 </a>
-                            </div>
-                            <div class="product-info clearfix">
-                                <h4>{{ $product->name }}</h4>
-                                <span>{{ number_format(optional($product->mainVariant)->price, 0, ',', '.') . ' VNĐ' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <!-- Phân trang -->
+            <div class="shop-pagination text-center mt-4">
+                <div class="pagination-wrapper pagination">
+                    {{ $wishlists->links('pagination::bootstrap-4') }}
+                </div>
             </div>
-        </div>
+        @else
+            <p>Không có sản phẩm trong danh sách yêu thích.</p>
+        @endif
     </div>
-
+    
+      
 @endsection
 
 @push('script')

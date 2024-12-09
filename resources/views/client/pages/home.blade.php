@@ -125,7 +125,7 @@
         }
 
         #wishlist-notification a:hover {
-            background-color: #fd3939;
+            background-color: #d63384;
             color: #fff;
         }
 
@@ -136,6 +136,18 @@
         #wishlist-notification a:hover {
             transform: translateX(5px);
             /* Chuyển động nút khi hover */
+        }
+        form button i{
+            color: #666;
+        }
+        form button i:hover{
+            color: #d63384;
+        }
+        a button i{
+            color: #666;
+        }
+        a button i:hover{
+            color: #d63384;
         }
     </style>
 @endpush
@@ -164,25 +176,26 @@
                                 <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}">
                                     <div class="product-img">
                                         <span class="pro-label new-label">new</span>
+                                        <a class="pro-price-2">
+                                            <form action="{{ route('wishlist.store') }}" method="POST"
+                                                class="wishlist-form">
+                                                @csrf
+                                                <input type="hidden" name="product_id" value="{{ $pr->id }}">
+                                                <button type="submit" class=" wishlist-btn"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
+                                                    <i class="zmdi zmdi-favorite-outline"></i>
+                                                </button>
+                                            </form>
+                                        </a>
                                         <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}"><img
                                                 src="{{ $pr->image }}" alt="" /></a>
-                                        <div class="product-action clearfix">
-                                            <a>
-                                                <form action="{{ route('wishlist.store') }}" method="POST"
-                                                    class="wishlist-form">
-                                                    @csrf
-                                                    <input type="hidden" name="product_id" value="{{ $pr->id }}">
-                                                    <button type="submit" class="btn-link wishlist-btn"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
-                                                        <i class="zmdi zmdi-favorite-outline"></i>
-                                                    </button>
-                                                </form>
-                                            </a>
+                                        {{-- <div class="product-action clearfix">
+                                            
                                             <a href="#" data-bs-toggle="modal" data-bs-target="#productModal"
                                                 title="Quick View"><i class="zmdi zmdi-zoom-in"></i></a>
                                             <a href="#" data-bs-toggle="tooltip" data-bs-placement="top"
                                                 title="Compare"><i class="zmdi zmdi-refresh"></i></a>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                     <div class="product-info clearfix">
                                         <div class="fix">
@@ -309,58 +322,6 @@
             </div>
             <!-- Section-title end -->
             <div class="row">
-                <!-- Single-blog start -->
-                {{-- <div class="col-lg-4 col-md-6 col-12">
-                    <div class="single-blog mt-30">
-                        <div class="blog-photo">
-                            <a href="#"><img src="img/blog/1.webp" alt="" /></a>
-                        </div>
-                        <div class="blog-info">
-                            <div class="post-meta fix">
-                                <div class="post-year floatleft">
-                                    <h4 class="post-title"><a href="#" tabindex="0">Sweet Street Life 2022</a>
-                                    </h4>
-                                </div>
-                            </div>
-                            <div class="like-share fix">
-                                <a href="#"><i class="zmdi zmdi-favorite"></i><span>89 Like</span></a>
-                                <a href="#"><i class="zmdi zmdi-comments"></i><span>59 Comments</span></a>
-                                <a href="#"><i class="zmdi zmdi-share"></i><span>29 Share</span></a>
-                            </div>
-                            <p>There are many variations of passages of Lorem Ipsum alteratio available, but the majority
-                                have suffered If you are going to use a passage Lorem Ipsum, you alteration in some form.
-                            </p>
-                            <a href="#" class="button-2 text-dark-red">Read more...</a>
-                        </div>
-                    </div>
-                </div> --}}
-                <!-- Single-blog end -->
-                <!-- Single-blog start -->
-                {{-- <div class="col-lg-4 col-md-6 col-12">
-                    <div class="single-blog mt-30">
-                        <div class="blog-photo">
-                            <a href="#"><img src="img/blog/2.webp" alt="" /></a>
-                        </div>
-                        <div class="blog-info">
-                            <div class="post-meta fix">
-                                <div class="post-year floatleft">
-                                    <h4 class="post-title"><a href="#" tabindex="0">Designer`s look 2022</a>
-                                    </h4>
-                                </div>
-                            </div>
-                            <div class="like-share fix">
-                                <a href="#"><i class="zmdi zmdi-favorite"></i><span>45 Like</span></a>
-                                <a href="#"><i class="zmdi zmdi-comments"></i><span>56 Comments</span></a>
-                                <a href="#"><i class="zmdi zmdi-share"></i><span>27 Share</span></a>
-                            </div>
-                            <p>There are many variations of passages of Lorem Ipsum alteratio available, but the majority
-                                have suffered If you are going to use a passage Lorem Ipsum, you alteration in some form.
-                            </p>
-                            <a href="#" class="button-2 text-dark-red">Read more...</a>
-                        </div>
-                    </div>
-                </div> --}}
-                <!-- Single-blog end -->
                 @if($posts->isEmpty())
                 <p>Không có bài viết nào.</p>
             @else
@@ -436,20 +397,12 @@
                             <div class="single-product col-xl-3 col-md-4 col-12">
                                 <div class="product-img">
                                     <span class="pro-label new-label">new</span>
+                                    <a class="pro-price-2">
+                                               <button  onclick="add_wishlist(${product.id})" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist"><i class="zmdi zmdi-favorite-outline"></i></button>
+                                            </a>
                                     <a href="${productUrl}">
                                         <img src="${product.image}" alt="" />
                                     </a>
-                                    <div class="product-action clearfix">
-                                      <a>
-                                               <button  onclick="add_wishlist({{ $pr->id }})" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist"><i class="zmdi zmdi-favorite-outline"></i></button>
-                                            </a>
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#productModal" title="Quick View">
-                                            <i class="zmdi zmdi-zoom-in"></i>
-                                        </a>
-                                        <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Compare">
-                                            <i class="zmdi zmdi-refresh"></i>
-                                        </a>
-                                    </div>
                                 </div>
                                 <div class="product-info clearfix">
                                     <div class="fix">

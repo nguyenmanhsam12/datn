@@ -28,8 +28,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
-
-
+use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -109,6 +108,8 @@ Route::post('/update_profile', [MyAccountController::class, 'updateProfile'])->n
 Route::get('/shop', [ShopController::class, 'shop'])->name('shop');
 Route::get('/shop/category/{categoryId}', [ShopController::class, 'showProByCate'])->name('shop.byCategory');
 
+//Mã giảm giá
+Route::get('/voucher',[VoucherController::class,'voucher'])->name('voucher');
 
 // bài viết
 Route::get('/blog',[BlogController::class,'blog'])->name('blog');
@@ -178,6 +179,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
     Route::delete('/wishlist/remove/{id}', [WishlistController::class, 'destroy'])->name('wishlist.remove');
     Route::post('/wishlist/store', [WishlistController::class, 'addToWishlist'])->name('wishlist.store');
+    Route::get('/wishlist/{id}', [WishlistController::class, 'delWishlist'])->name('delWishlist');
+    
 });
 
 Route::prefix('admin')->middleware('checkadmin')->group(function(){

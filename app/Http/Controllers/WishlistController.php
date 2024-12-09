@@ -17,8 +17,8 @@ class WishlistController extends Controller
         $list_brand = Brand::all();
         $list_category = Category::all();
 
-        $wishlists = auth()->user()->wishlists()->with('product')->paginate(12);
-
+        $wishlists = auth()->user()->wishlists()->with('product.mainVariant')->paginate(12);
+        // dd($wishlists);
         DB::enableQueryLog();
 
         $topSellingProducts = \App\Models\Product::join('product_variants', 'products.id', '=', 'product_variants.product_id')
@@ -77,5 +77,12 @@ class WishlistController extends Controller
             'redirect_to_wishlist' => route('wishlist') // Trả về đường dẫn đến trang wishlist
         ]);
     }
+
+    public function delWishlist($id){
+        $wistlist = Wishlist::find($id);
+        $wistlist->delete();
+        return redirect()->route('wishlist')->with('success','Xóa thành công!');
+    }
     
 }
+
