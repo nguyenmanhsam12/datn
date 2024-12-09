@@ -60,33 +60,6 @@
             align-items: center;
         }
 
-        /* Đặt các style chung cho button */
-        .btn__addCart {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            height: 40px;
-            border: 1px solid #6c757d;
-            background-color: transparent;
-            color: #6c757d;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .icon-group__icon {
-            font-size: 20px;
-
-        }
-
-        .btn__addCart:hover {
-            color: ##fff;
-            border-color: ##fff;
-        }
-
-        .btn__addCart:hover .icon-group__icon {
-            color: ##fff;
-
-        }
 
         .cart__plus-minus {
             border: 1px solid #999;
@@ -117,6 +90,12 @@
         .flash-message.error {
             background-color: #dc3545;
             /* Màu đỏ cho lỗi */
+        }
+        form button i{
+            color: #666;
+        }
+        form button i:hover{
+            color: #d63384;
         }
     </style>
 @endpush
@@ -198,9 +177,8 @@
                                     <input type="text" value="1" min="1" name="qtybutton"
                                         class="cart-plus-minus-box">
                                 </div>
-                                <button class="btn btn-outline-secondary btn__addCart icon-group">
-                                    <i class="zmdi zmdi-shopping-cart-plus icon-group__icon"></i>
-                                    <span class="btn__title">Thêm giỏ hàng</span>
+                                <button class="submit-button button-one btn__addCart icon-group" data-text="Thêm giỏ hàng">
+                                    Thêm Giỏ Hàng
                                 </button>
                             </div>
                             <!-- Single-pro-slider Small-photo start -->
@@ -364,23 +342,17 @@
                                 <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}">
                                     <div class="product-img">
                                         <span class="pro-label new-label">new</span>
+                                        <a class="pro-price-2">
+                                            <form action="{{ route('wishlist.add') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="product_id" value="{{ $pr->id }}">
+                                                <button type="submit" class="btn btn-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
+                                                    <i class="zmdi zmdi-favorite-outline"></i>
+                                                </button>
+                                            </form>
+                                        </a>
                                         <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}"><img
                                                 src="{{ $pr->image }}" alt="" /></a>
-                                        <div class="product-action clearfix">
-                                            <a>
-                                                <form action="{{ route('wishlist.add') }}" method="POST">
-                                                    @csrf
-                                                    <input type="hidden" name="product_id" value="{{ $pr->id }}">
-                                                    <button type="submit" class="btn btn-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
-                                                        <i class="zmdi zmdi-favorite-outline"></i>
-                                                    </button>
-                                                </form>
-                                            </a>
-                                            <a href="#" data-bs-toggle="modal" data-bs-target="#productModal"
-                                                title="Quick View"><i class="zmdi zmdi-zoom-in"></i></a>
-                                            <a href="#" data-bs-toggle="tooltip" data-bs-placement="top"
-                                                title="Compare"><i class="zmdi zmdi-refresh"></i></a>
-                                        </div>
                                     </div>
                                     <div class="product-info clearfix">
                                         <div class="fix">
