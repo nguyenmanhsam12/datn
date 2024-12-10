@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class WishlistController extends Controller
@@ -13,7 +14,12 @@ class WishlistController extends Controller
 
     public function index()
     {
-       
+        $user = Auth::user();
+
+        if(!$user){
+            return redirect()->back()->with('error','Vui lòng đăng nhập trước');
+        }
+
         $list_brand = Brand::all();
         $list_category = Category::all();
 
@@ -33,35 +39,16 @@ class WishlistController extends Controller
     }
 
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-        ]);
-    
-        Wishlist::firstOrCreate(
-            ['user_id' => auth()->id(), 'product_id' => $request->product_id]
-        );
-    
-        $wishlists = auth()->user()->wishlists()->with('product')->paginate(12);
-        $html = view('client.pages.partial-wishlist', compact('wishlists'))->render();
-    
-        return response()->json(['html' => $html]);
-    }
-    
-    public function destroy($id)
-    {
-        $wishlist = Wishlist::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
-        $wishlist->delete();
-    
-        $wishlists = auth()->user()->wishlists()->with('product')->paginate(12);
-        $html = view('client.pages.partial-wishlist', compact('wishlists'))->render();
-    
-        return response()->json(['html' => $html]);
-    }
-    
     public function addToWishlist(Request $request)
     {
+        $user = Auth::user();
+
+        if(!$user){
+            return response()->json([
+                'error'=>'Vui lòng đăng nhập trước khi thêm yêu thích'
+            ]);
+        }
+
         $request->validate([
             'product_id' => 'required|exists:products,id',
         ]);
@@ -73,12 +60,19 @@ class WishlistController extends Controller
     
         // Trả về thông báo và link đến trang danh sách yêu thích
         return response()->json([
+            'success' => true,
             'message' => 'Sản phẩm đã được thêm vào yêu thích',
             'redirect_to_wishlist' => route('wishlist') // Trả về đường dẫn đến trang wishlist
         ]);
     }
 
     public function delWishlist($id){
+
+        $user = Auth::user();
+        if(!$user){
+            return redirect()->back()->with('error','Vui lòng đăng nhập trước');
+        }
+
         $wistlist = Wishlist::find($id);
         $wistlist->delete();
         return redirect()->route('wishlist')->with('success','Xóa thành công!');

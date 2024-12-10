@@ -184,15 +184,12 @@
                                     <div class="product-img">
                                         <span class="pro-label new-label">new</span>
                                         <a class="pro-price-2">
-                                            <form action="{{ route('wishlist.store') }}" method="POST"
-                                                class="wishlist-form">
-                                                @csrf
-                                                <input type="hidden" name="product_id" value="{{ $pr->id }}">
-                                                <button type="submit" class=" wishlist-btn" data-bs-toggle="tooltip"
-                                                    data-bs-placement="top" title="Wishlist">
+                                            
+                                                
+                                                <button type="submit" class="wishlist-btn" data-bs-toggle="tooltip"
+                                                    data-bs-placement="top" title="Wishlist" data-id="{{$pr->id}}">  
                                                     <i class="zmdi zmdi-favorite-outline"></i>
                                                 </button>
-                                            </form>
                                         </a>
                                         <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}"><img
                                                 src="{{ $pr->image }}" alt="" /></a>
@@ -354,10 +351,6 @@
         </div>
     </div>
     <!-- BLGO-AREA END -->
-    <div id="wishlist-notification" class="wishlist-notification" style="display: none;">
-        <p>Sản phẩm đã được thêm vào danh sách yêu thích.</p>
-        <a href="#" id="view-wishlist-btn" class="btn btn-primary">Xem</a>
-    </div>
 @endsection
 
 @push('script')
@@ -393,7 +386,9 @@
                                 <div class="product-img">
                                     <span class="pro-label new-label">new</span>
                                     <a class="pro-price-2">
-                                               <button  onclick="add_wishlist(${product.id})" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist"><i class="zmdi zmdi-favorite-outline"></i></button>
+                                               <button data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist"
+                                                data-id="${product.id}" class="wishlist-btn"
+                                               ><i class="zmdi zmdi-favorite-outline"></i></button>
                                             </a>
                                     <a href="${productUrl}">
                                         <img src="${product.image}" alt="" />
@@ -424,6 +419,9 @@
 
                     // Khởi tạo lại tooltips
                     $('[data-bs-toggle="tooltip"]').tooltip();
+
+                    // gọi hàm
+                    initializeWishlistButtons();
                 },
                 error: function(xhr, status, error) {
                     console.error(error);
@@ -444,7 +442,10 @@
             // Khởi tạo tooltips
             $('[data-bs-toggle="tooltip"]').tooltip();
         });
+
     </script>
+
+    {{-- video --}}
     <script>
         // Tắt video khi modal đóng
         var videoModal = document.getElementById('videoModal');
@@ -453,76 +454,122 @@
             iframe.src = iframe.src; // Reset src để dừng video
         });
     </script>
+
+    {{-- thêm yêu thích --}}
     <script>
-        $('.wishlist-form').on('submit', function(e) {
-            e.preventDefault(); // Ngừng hành động mặc định của form
+        document.addEventListener('DOMContentLoaded', () => {
+            const buttons = document.querySelectorAll('.wishlist-btn');
 
-            var form = $(this);
-            var button = form.find('button'); // Lấy nút yêu thích
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const productId = button.getAttribute('data-id');
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')
+                        .getAttribute('content');
 
-            // Gửi yêu cầu AJAX
-            $.ajax({
-                url: form.attr('action'),
-                method: 'POST',
-                data: form.serialize(),
-                success: function(response) {
-                    // Hiển thị thông báo
-                    $('#wishlist-notification').fadeIn();
-
-                    // Khi người dùng nhấn "Xem", điều hướng đến wishlist
-                    $('#view-wishlist-btn').on('click', function() {
-                        window.location.href = response
-                            .redirect_to_wishlist; // Điều hướng đến trang wishlist
+                    // Gửi request bằng fetch
+                    fetch('{{route('wishlist.store')}}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({ product_id: productId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        if (data.success) {
+                            // Hiển thị thông báo SweetAlert
+                            Swal.fire({
+                                title: 'Thành công!',
+                                text: `Sản phẩm đã được thêm vào yêu thích.`,
+                                icon: 'success',
+                                showCancelButton: true,
+                                confirmButtonText: 'Xem yêu thích',
+                                cancelButtonText: 'Ở lại đây'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Điều hướng đến trang yêu thích
+                                    window.location.href = '/wishlist';
+                                }
+                            });
+                        } else if(data.error){
+                            alert(data.error);
+                        } 
+                        else {
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: 'Không thể thêm sản phẩm vào danh sách yêu thích.',
+                                icon: 'error'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: 'Đã xảy ra lỗi, vui lòng thử lại.',
+                            icon: 'error'
+                        });
                     });
-
-                    // Thay đổi màu sắc của nút yêu thích
-                    button.addClass('active'); // Thêm lớp 'active' để thay đổi màu
-
-                    // Ẩn thông báo sau 5 giây
-                    setTimeout(function() {
-                        $('#wishlist-notification').fadeOut();
-                    }, 5000);
-                },
-                error: function(response) {
-                    // Hiển thị thông báo lỗi
-                    alert(response.responseJSON.message);
-                }
+                });
             });
         });
 
-        function add_wishlist(id) {
-            // var formdata = new FormData()
-            var data = {
-                "_token": "{{ csrf_token() }}",
-                "product_id": id
-            }
-            $.ajax({
-                url: '{{ route('wishlist.store') }}',
-                method: 'POST',
-                data: data,
-                success: function(response) {
-                    // Hiển thị thông báo
-                    $('#wishlist-notification').fadeIn();
+        // hàm để gắn vào sự kiện trong hàm loadproduct
+        function initializeWishlistButtons() {
+            const buttons = document.querySelectorAll('.wishlist-btn');
 
-                    // Khi người dùng nhấn "Xem", điều hướng đến wishlist
-                    $('#view-wishlist-btn').on('click', function() {
-                        window.location.href = response
-                            .redirect_to_wishlist; // Điều hướng đến trang wishlist
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const productId = button.getAttribute('data-id');
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                    fetch('{{ route('wishlist.store') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({ product_id: productId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Thành công!',
+                                text: `Sản phẩm đã được thêm vào yêu thích.`,
+                                icon: 'success',
+                                showCancelButton: true,
+                                confirmButtonText: 'Xem yêu thích',
+                                cancelButtonText: 'Ở lại đây'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = '/wishlist';
+                                }
+                            });
+                        } else if (data.error) {
+                            alert(data.error);
+                        } else {
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: 'Không thể thêm sản phẩm vào danh sách yêu thích.',
+                                icon: 'error'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: 'Đã xảy ra lỗi, vui lòng thử lại.',
+                            icon: 'error'
+                        });
                     });
-
-                    // Thay đổi màu sắc của nút yêu thích
-                    button.addClass('active'); // Thêm lớp 'active' để thay đổi màu
-
-                    // Ẩn thông báo sau 5 giây
-                    setTimeout(function() {
-                        $('#wishlist-notification').fadeOut();
-                    }, 5000);
-                },
-                error: function(response) {
-                    // Hiển thị thông báo lỗi
-                    alert(response.responseJSON.message);
-                }
+                });
             });
         }
+
+
     </script>
 @endpush
