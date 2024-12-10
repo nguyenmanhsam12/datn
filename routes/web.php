@@ -109,7 +109,12 @@ Route::post('/update_profile', [MyAccountController::class, 'updateProfile'])->n
 
 // cửa hàng
 Route::get('/shop', [ShopController::class, 'shop'])->name('shop');
-Route::get('/shop/category/{categoryId}', [ShopController::class, 'showProByCate'])->name('shop.byCategory');
+Route::get('products/category/{slug}', [ShopController::class, 'category'])->name('products.category');
+Route::get('products/brand/{slug}', [ShopController::class, 'brand'])->name('products.brand');
+Route::get('/products/filter', [ShopController::class, 'filterByPrice'])->name('products.filterByPrice');
+
+
+
 
 //Mã giảm giá
 Route::get('/voucher',[VoucherController::class,'voucher'])->name('voucher');
@@ -176,15 +181,10 @@ Route::post('/submit-review-kh', [MyAccountController::class, 'submitReview'])->
 // tìm kiếm sản phẩm
 Route::post('/serach-product', [HomeController::class, 'serachProduct'])->name('serachProduct');
 
-
-Route::middleware(['auth'])->group(function () {
-    Route::post('/wishlist/add', [WishlistController::class, 'store'])->name('wishlist.add');
-    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
-    Route::delete('/wishlist/remove/{id}', [WishlistController::class, 'destroy'])->name('wishlist.remove');
-    Route::post('/wishlist/store', [WishlistController::class, 'addToWishlist'])->name('wishlist.store');
-    Route::get('/wishlist/{id}', [WishlistController::class, 'delWishlist'])->name('delWishlist');
+Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
+Route::post('/wishlist/store', [WishlistController::class, 'addToWishlist'])->name('wishlist.store');
+Route::get('/wishlist/{id}', [WishlistController::class, 'delWishlist'])->name('delWishlist');
     
-});
 
 Route::prefix('admin')->middleware('checkadmin')->group(function(){
 

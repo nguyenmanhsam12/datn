@@ -30,6 +30,12 @@
             height: 150px;
             /* padding: 15px 20px 20px 10px; */
         }
+
+        .active-link {
+            color: red;              /* Màu chữ khi active */
+            
+        }
+
     </style>
 @endpush
 
@@ -69,8 +75,11 @@
                                 <li>
                                     <ul>
                                         @foreach ($list_category as $cate)
-                                            <li><a href="{{ route('products.category',['slug'=>$cate->slug]) }}"
-                                                >{{ $cate->name }}</a></li>
+                                            <li><a
+                
+                                            href="{{ route('products.category',['slug'=>$cate->slug])}}"
+                                                
+                                            >{{ $cate->name }}</a></li>
                                         @endforeach
                                     </ul>
                                 </li> 
@@ -80,7 +89,7 @@
                     </aside>
                     <!-- end -->
                     <!-- Thương Hiệu start -->
-                    <aside class="widget">
+                    <aside class="widget   ">
                         <div class="widget-title">
                             <h4>Thương Hiệu</h4>
                         </div>
@@ -89,8 +98,11 @@
                                 <li>
                                     <ul>
                                         @foreach ($list_brand as $brand)
-                                            
-                                            <li><a href="{{ route('products.brand',['slug'=>$brand->slug]) }}">{{$brand->name}}</a></li>
+                                            <li><a class="
+                                                    @if($brand->id == $branD->id)
+                                                        active-link
+                                                    @endif
+                                                " href="{{ route('products.brand',['slug'=>$brand->slug]) }}">{{$brand->name}}</a></li>
                                         @endforeach
                                         
                                     </ul>
@@ -102,20 +114,18 @@
                     <!-- lọc giá start -->
                     <aside class="widget shop-filter mb-30">
                         <div class="widget-title">
-                            <h4>Lọc theo giá</h4>
+                            <h4>Giá Tiền</h4>
                         </div>
                         <div class="widget-info">
                             <div class="price_filter">
                                 <div class="price_slider_amount">
                                     <input type="submit"  value="You range :"/> 
-                                    <input type="text" id="amount" name="price"  placeholder="Add Your Price" />
-                                    <input type="button" value="Lọc" />
+                                    <input type="text" id="amount" name="price"  placeholder="Add Your Price" /> 
                                 </div>
                                 <div id="slider-range"></div>
                             </div>
                         </div>
                     </aside>
-                    
                     <!-- end -->
                     <!-- Kích cỡ start -->
                     
@@ -138,7 +148,7 @@
                                 <li class="nav-item"><button class="nav-link" data-bs-target="#list-view"  data-bs-toggle="tab"><i class="zmdi zmdi-view-list"></i></button></li>
                             </ul>
                             <div class="showing text-end">
-                                <p class="mb-0">Hiển thị {{ $startItem }}-{{ $endItem }} trong số {{ $list_product->total() }} sản phẩm</p>
+                                <p class="mb-0">Hiển thị {{ $startItem }}-{{ $endItem }} trong số {{ $products->total() }} sản phẩm</p>
                             </div>
                         </div>
                         <!-- Tab panes -->
@@ -146,7 +156,7 @@
                             <div class="tab-pane active" id="grid-view">							
                                 <div class="row">
                                     <!-- Single-product start -->
-                                    @foreach($list_product as $key => $pr)
+                                    @foreach($products as $key => $pr)
                                         <div class="col-lg-4 col-md-6 col-12">
                                             <div class="single-product border">
                                                 <div class="product-img">
@@ -177,7 +187,7 @@
                             <div class="tab-pane" id="list-view">
                                 <div class="row shop-list">
                                     <!-- Single-product start -->
-                                    @foreach ($list_product as $pr)
+                                    @foreach ($products as $pr)
                                         <div class="col-12"> 
                                             <div class="single-product clearfix">
                                                 <div class="product-img">
@@ -214,7 +224,7 @@
                             <div class="pagination">
                                 <ul>
                                     <li>
-                                        {{ $list_product->links() }}
+                                        {{ $products->links() }}
                                     </li>
                                 </ul>
                             </div>
@@ -224,12 +234,8 @@
                     <!-- Shop-Content End -->
                 </div>
             </div>
-
-          
         </div>
     </div>
-
-   
 @endsection
 
 

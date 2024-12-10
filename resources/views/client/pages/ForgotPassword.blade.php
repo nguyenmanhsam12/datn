@@ -95,7 +95,7 @@
         @endif
     
     
-<form method="POST" action="{{ route('password.email') }}" class="form-register">
+<form method="POST" action="{{ route('password.email') }}" class="form-register mb-3">
     @csrf
     <div class="form-group">
         <label for="email">Địa chỉ email</label>

@@ -90,14 +90,14 @@
                                             <a class="mega-menu-title" href="">Thương hiệu</a>
                                             @foreach ($list_brand as $br)
                                                 <a
-                                                    href="{{ route('shop', ['brand_id' => $br->id]) }}">{{ $br->name }}</a>
+                                                    href="{{ route('products.brand', ['slug' => $br->slug]) }}">{{ $br->name }}</a>
                                             @endforeach
                                         </span>
                                         <span class="block-last">
                                             <a class="mega-menu-title" href="product-details.html">Danh mục</a>
                                             @foreach ($list_category as $cate)
                                                 <a
-                                                    href="{{ route('shop', ['category_id' => $cate->id]) }}">{{ $cate->name }}</a>
+                                                    href="{{ route('products.category', ['slug' => $cate->slug]) }}">{{ $cate->name }}</a>
                                             @endforeach
                                         </span>
 
