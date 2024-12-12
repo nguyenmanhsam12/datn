@@ -11,18 +11,18 @@
                 <input type="text" name="order_id" class="form-control" value="{{ $complaint->order_id }}" readonly>
             </div>
             <div class="form-group mb-3">
+                <label for="order-date">Ngày đặt hàng:</label>
+                <input type="date" name="order_date" value="{{ \Carbon\Carbon::parse($complaint->order_date)->format('Y-m-d') }}" class="form-control" readonly>
+            </div>
+            <div class="form-group mb-3">
                 <label for="complaint_type">Lý do khiếu nại:</label>
                 <input type="text" class="form-control" value="{{ $complaint->complaint_type }}" readonly>
-                @error('complaint_type')
-                <div class="text-danger mt-1">{{ $message }}</div>  
-                 @enderror
+                
             </div>
             <div class="form-group mb-3">
                 <label for="complaint_type">Trạng thái khiếu nại:</label>
                 <input type="text" class="form-control" value="{{ $complaint->status }}" readonly>
-                @error('complaint_type')
-                <div class="text-danger mt-1">{{ $message }}</div>
-                 @enderror
+                
             </div>
 
             <div class="form-group mb-3">

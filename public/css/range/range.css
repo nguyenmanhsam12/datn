@@ -1,0 +1,75 @@
+
+        .widget.shop-filter {
+            background: #ffffff;
+            padding: 20px;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .widget-title h4 {
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+            border-bottom: 2px solid #d63384;
+            display: inline-block;
+        }
+        .price_slider_amount {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .filter-price-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .filter-price-form label {
+            font-size: 14px;
+            color: #555;
+        }
+     .filter-price-form input#amount {
+                width: auto; /* Tự điều chỉnh theo nội dung */
+                min-width: 150px; /* Đặt độ rộng tối thiểu */
+                max-width: 100%; /* Giới hạn độ rộng tối đa */
+                padding: 5px 10px;
+                text-align: center;
+                font-size: 14px;
+                color: #333;
+                white-space: nowrap; /* Ngăn xuống dòng */
+                overflow: hidden; /* Ẩn phần thừa nếu quá dài */
+                text-overflow: ellipsis; /* Thêm dấu "..." nếu nội dung quá dài */
+        }
+        .filter-price-form .filter-button {
+            background-color: #d63384;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .filter-price-form .filter-button:hover {
+            background-color: #c12771;
+        }
+        #slider-range {
+            margin-top: 15px;
+            height: 8px;
+            background-color: #ddd;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        .ui-slider-range {
+            background-color: #d63384;
+        }
+        .ui-slider-handle {
+            background-color: #fff;
+            border: 2px solid #d63384;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            top: -6px;
+        }

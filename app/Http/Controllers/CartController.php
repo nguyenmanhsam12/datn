@@ -66,7 +66,14 @@ class CartController extends Controller
 
             if ($cartItem) {
                 // Nếu đã có, cập nhật số lượng
-                $cartItem->quantity += $request->quantity;
+                $newQuantity = $cartItem->quantity + $request->quantity;
+                if($newQuantity > $variant->stock){
+                    return response()->json([
+                        'error' => 'Số lượng sản phẩm không đủ hàng. Vui lòng giảm số lượng hoặc chọn sản phẩm khác.',
+                    ]);
+                }
+
+                $cartItem->quantity = $newQuantity;
                 $cartItem->save();
             } else {
                 // Nếu chưa có, thêm sản phẩm mới vào giỏ hàng

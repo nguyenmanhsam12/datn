@@ -202,9 +202,10 @@ class ComplanintsController extends Controller
                 return redirect()->back()->with('error', 'Vui lòng nhập phản hồi trước khi cập nhật trạng thái này.');
             }
 
+           
             $complaint->status = $newStatus;
             $complaint->response = $response;
-            $order->status_id = 5;
+            
             $order->save();
 
         } elseif ($currentStatus === $newStatus) {
