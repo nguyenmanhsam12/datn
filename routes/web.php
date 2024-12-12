@@ -111,7 +111,7 @@ Route::post('/update_profile', [MyAccountController::class, 'updateProfile'])->n
 Route::get('/shop', [ShopController::class, 'shop'])->name('shop');
 Route::get('products/category/{slug}', [ShopController::class, 'category'])->name('products.category');
 Route::get('products/brand/{slug}', [ShopController::class, 'brand'])->name('products.brand');
-Route::get('/products/filter', [ShopController::class, 'filterByPrice'])->name('products.filterByPrice');
+Route::get('/shop/filter', [ShopController::class, 'filter'])->name('shop.filter');
 
 
 

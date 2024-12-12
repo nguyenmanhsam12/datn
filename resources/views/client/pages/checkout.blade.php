@@ -566,7 +566,7 @@
                         }).then(() => {
                             setTimeout(() => {
                                 window.location.href = '{{ route('thankyou') }}';
-                            }, 3000);
+                            }, 1000);
                         });
                     }
 

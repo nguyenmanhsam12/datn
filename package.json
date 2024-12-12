@@ -12,6 +12,7 @@
     },
     "dependencies": {
         "laravel-echo": "^1.17.0",
+        "nouislider": "^15.8.1",
         "pusher-js": "^8.4.0-rc2"
     }
 }

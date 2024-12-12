@@ -36,6 +36,84 @@
         }
 
     </style>
+
+      {{-- bộ lọc giá tiền --}}
+      <style>
+        .widget.shop-filter {
+            background: #ffffff;
+            padding: 20px;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .widget-title h4 {
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+            border-bottom: 2px solid #d63384;
+            display: inline-block;
+        }
+        .price_slider_amount {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .filter-price-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .filter-price-form label {
+            font-size: 14px;
+            color: #555;
+        }
+     .filter-price-form input#amount {
+                width: auto; /* Tự điều chỉnh theo nội dung */
+                min-width: 150px; /* Đặt độ rộng tối thiểu */
+                max-width: 100%; /* Giới hạn độ rộng tối đa */
+                padding: 5px 10px;
+                text-align: center;
+                font-size: 14px;
+                color: #333;
+                white-space: nowrap; /* Ngăn xuống dòng */
+                overflow: hidden; /* Ẩn phần thừa nếu quá dài */
+                text-overflow: ellipsis; /* Thêm dấu "..." nếu nội dung quá dài */
+        }
+        .filter-price-form .filter-button {
+            background-color: #d63384;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .filter-price-form .filter-button:hover {
+            background-color: #c12771;
+        }
+        #slider-range {
+            margin-top: 15px;
+            height: 8px;
+            background-color: #ddd;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        .ui-slider-range {
+            background-color: #d63384;
+        }
+        .ui-slider-handle {
+            background-color: #fff;
+            border: 2px solid #d63384;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            top: -6px;
+        }
+    </style>
 @endpush
 
 
@@ -112,39 +190,36 @@
                     <!-- lọc giá start -->
                     <aside class="widget shop-filter mb-30">
                         <div class="widget-title">
-                            <h4>Giá Tiền</h4>
+                            <h4>Lọc theo giá</h4>
                         </div>
                         <div class="widget-info">
                             <div class="price_filter">
                                 <div class="price_slider_amount">
-                                    <input type="submit"  value="You range :"/> 
-                                    <input type="text" id="amount" name="price"  placeholder="Add Your Price" /> 
+                                    <form class="filter-price-form"method="GET">
+                                        
+                                        <label for="amount">Khoảng giá:</label>
+                                        <input type="text" id="amount" readonly style="border:0; background-color: #f0f0f0; font-weight: bold;"/>
+
+                                        <input type="hidden"name="min_price" id="min_price">                            
+                                        <input type="hidden"name="max_price" id="max_price">                            
+
+                                        <button type="submit" class="btn btn-primary filter-button">Lọc</button>
+                                    </form>
                                 </div>
-                                <div id="slider-range"></div>
+                                <div>
+                                    <div id="slider-range"></div>
+                                </div>
                             </div>
                         </div>
                     </aside>
                     <!-- end -->
                     <!-- Kích cỡ start -->
-                    <aside class="widget widget-size mb-30">
-                        <div class="widget-title">
-                            <h4>Kích cỡ</h4>
-                        </div>
-                        <div class="widget-info size-filter clearfix">
-                            <ul>
-                                <li><a href="#">M</a></li>
-                                <li class="active"><a href="#">S</a></li>
-                                <li><a href="#">L</a></li>
-                                <li><a href="#">SL</a></li>
-                                <li><a href="#">XL</a></li>
-                            </ul>
-                        </div>
-                    </aside>
+                    
                     <!-- end -->
                     <!-- banner start -->
                     <aside class="widget widget-banner mb-30">
                         <div class="widget-info widget-banner-img">
-                            <a href="#"><img src="img/banner/5.webp" alt="" /></a>
+                            <a href="#"><img src="{{ asset('img/banner/5.webp') }}" alt="" /></a>
                         </div>
                     </aside>
                     <!--  end -->
@@ -250,6 +325,8 @@
 
 
 @push('script')
+
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const buttons = document.querySelectorAll('.add-to-wishlist');
@@ -310,6 +387,47 @@
             });
         });
 
+    </script>
+
+
+    {{-- tạo bộ lọc --}}
+    <script>
+        $( function() {
+            var minPrice = {{ $minPrice }};
+            var maxPrice = {{ $maxPrice }};
+            
+        
+            $('#min_price').val(minPrice);
+            $('#max_price').val(maxPrice);
+
+            $( "#slider-range" ).slider({
+                range: true,
+                min: minPrice,
+                max: maxPrice,
+                values: [ minPrice, maxPrice ],
+                slide: function( event, ui ) {
+                $( "#amount" ).val( "đ" + addPlus(ui.values[ 0 ].toString()) + " - đ" + addPlus(ui.values[1].toString()) );
+                $('#min_price').val(ui.values[ 0 ]);
+                $('#max_price').val(ui.values[ 1 ]);
+                }
+            });
+
+        $( "#amount" ).val( "đ" + addPlus(minPrice.toString()) +
+            " - đ" + addPlus(maxPrice.toString()));
+        });
+
+        function addPlus(nStr)
+        {
+            nStr += '';
+            x = nStr.split('.');
+            x1 = x[0];
+            x2 = x.length > 1 ? '.' + x[1] : '';
+            var rgx = /(\d+)(\d{3})/;
+            while (rgx.test(x1)) {
+                x1 = x1.replace(rgx, '$1' + '.' + '$2');
+            }
+            return x1 + x2;
+        }
     </script>
 @endpush
 

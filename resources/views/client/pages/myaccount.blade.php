@@ -55,7 +55,7 @@
         }
 
         .order__left img {
-            max-width:150px;
+            max-width: 150px;
             /* height: 80px; */
             object-fit: cover;
         }
@@ -70,7 +70,7 @@
             color: #333;
             text-decoration: none;
             border-radius: 4px;
-            font-size:14px;
+            font-size: 14px;
         }
 
         .tab-links a.active {
@@ -85,7 +85,7 @@
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 10px;
-            max-width : 100%;
+            max-width: 100%;
         }
 
         .order__left {
@@ -142,8 +142,6 @@
             margin-right: 2px;
             /* Thay đổi giá trị theo ý muốn */
         }
-
-       
     </style>
 
     <style>
@@ -178,7 +176,6 @@
         .pagination li a:hover {
             background-color: #e9ecef;
         }
-
     </style>
 @endpush
 
@@ -233,7 +230,7 @@
                 </div>
 
                 <!-- Order List Section -->
-                <div class="order-list" id="orderList"style="display:none;">    
+                <div class="order-list" id="orderList"style="display:none;">
                     <h5>Danh Sách Đơn Mua</h5>
 
                     <!-- Tab Links for Order Status -->
@@ -253,220 +250,221 @@
                                     <div class="order-header">
                                         <h6 class="order-id">Đơn Hàng #{{ $or->id }}
                                         </h6>
-                    
+
                                         <div>
                                             <p class="order-status" data-status= "{{ $or->status_id }}">
                                                 {{ $or->orderStatus->name }}</p>
                                         </div>
-                    
-                    
+
+
                                     </div>
                                     <div>
-                                            @foreach ($or->cartItems as $item)
-                                                <div class="order-body">
-                                                    <div class="order__left">
-                                                        <div class="image">
-                                                            <img src="{{ $item->product_image }}" alt="product image"
-                                                                class="img-fluid">
-                                                        </div>
-                                                        <div class="order-details">
-                                                            <p><strong>Sản Phẩm:</strong>{{ $item->product_name }}</p>
-                                                            <p><strong>Kích Cỡ:</strong>{{ $item->size }}</p>
-                                                            <p><strong>Số Lượng:</strong>{{ $item->quantity }}</p>
-                                                        </div>
+                                        @foreach ($or->cartItems as $item)
+                                            <div class="order-body">
+                                                <div class="order__left">
+                                                    <div class="image">
+                                                        <img src="{{ $item->product_image }}" alt="product image"
+                                                            class="img-fluid">
                                                     </div>
-                                                    <div class="order__right">
-                                                        @php
-                                                            $newTotal = 0;
-                                                            $newTotal =
-                                                                $or->total_amount - $or->discount_amount + $or->shipping_fee;
-                                                        @endphp
-                                                    
-                                                        
+                                                    <div class="order-details">
+                                                        <p><strong>Sản Phẩm:</strong>{{ $item->product_name }}</p>
+                                                        <p><strong>Kích Cỡ:</strong>{{ $item->size }}</p>
+                                                        <p><strong>Số Lượng:</strong>{{ $item->quantity }}</p>
                                                     </div>
-                                                    <!-- Modal cho từng đơn hàng , chi tiết đơn hàng -->
-                                                    <div class="modal fade" id="orderModal{{ $or->id }}" tabindex="-1"
-                                                        role="dialog" aria-labelledby="orderModalLabel{{ $or->id }}"
-                                                        aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title"
-                                                                        id="orderModalLabel{{ $or->id }}">Chi
-                                                                        tiết đơn hàng #{{ $or->id }}</h5>
-                                                                    <button type="button" class="close" data-bs-dismiss="modal"
-                                                                        aria-label="Close">
-                                                                        <span aria-hidden="true">&times;</span>
-                                                                    </button>
-                                                                </div>
-                                                                <div class="modal-body d-flex justify-content-between">
-                                                                    <div>
-                                                                        <ul>
-                            
-                                                                            @foreach ($or->cartItems as $item)
-                                                                                <li>
-                                                                                    <strong>Sản phẩm:</strong>
-                                                                                    {{ $item->product_name }}<br>
-                                                                                    <strong>Kích cỡ:</strong>
-                                                                                    {{ $item->size }}<br>
-                                                                                    <strong>Số lượng:</strong>
-                                                                                    {{ $item->quantity }}<br>
-                                                                                    <strong>Giá tiền:</strong>
-                                                                                    {{ number_format($item->price, 0, ',', '.') . ' VNĐ' }}<br>
-                                                                                    <strong>Giá tiền giảm:</strong>
-                                                                                    {{ number_format($or->discount_amount, 0, ',', '.') . ' VNĐ' }}<br>
-                                                                                </li>
-                                                                            @endforeach
-                                                                        </ul>
-                                                                        <p><strong>Phí vận chuyển:</strong>
-                                                                            {{ number_format($or->shipping_fee, 0, ',', '.') }} VNĐ
-                                                                        </p>
-                                                                        
-                            
-                                                                        <div class="payment-status">
-                                                                            Trạng thái thanh toán
-                                                                            @switch($or->payment_status)
-                                                                                @case('pending')
-                                                                                    <span class="badge bg-warning">Đang chờ thanh
-                                                                                        toán</span>
-                                                                                @break
-                            
-                                                                                @case('paid')
-                                                                                    <span class="badge bg-success">Đã thanh toán</span>
-                                                                                @break
-                            
-                                                                                @case('canceled')
-                                                                                    <span class="badge bg-danger">Thanh toán thất
-                                                                                        bại</span>
-                                                                                @break
-                            
-                                                                                @default
-                                                                                    <span class="badge bg-secondary">Không rõ trạng
-                                                                                        thái</span>
-                                                                            @endswitch
-                                                                        </div>
-                            
-                            
-                                                                        <div class="payment-method">
-                                                                            Phương thức thanh toán:
-                                                                            <span
-                                                                                class="badge bg-secondary">{{ $or->payment->name }}</span>
-                                                                        </div>
-                            
-                            
-                                                                        <p><strong>Tổng tiền:</strong>
-                                                                            {{ number_format($newTotal, 0, ',', '.') }} VNĐ</p>
-                                                                    </div>
-                                                                    <div>
-                                                                        <ul>
+                                                </div>
+                                                <div class="order__right">
+                                                    @php
+                                                        $newTotal = 0;
+                                                        $newTotal =
+                                                            $or->total_amount -
+                                                            $or->discount_amount +
+                                                            $or->shipping_fee;
+                                                    @endphp
+
+
+                                                </div>
+                                                <!-- Modal cho từng đơn hàng , chi tiết đơn hàng -->
+                                                <div class="modal fade" id="orderModal{{ $or->id }}" tabindex="-1"
+                                                    role="dialog" aria-labelledby="orderModalLabel{{ $or->id }}"
+                                                    aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title"
+                                                                    id="orderModalLabel{{ $or->id }}">Chi
+                                                                    tiết đơn hàng #{{ $or->id }}</h5>
+                                                                <button type="button" class="close"
+                                                                    data-bs-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body d-flex justify-content-between">
+                                                                <div>
+                                                                    <ul>
+
+                                                                        @foreach ($or->cartItems as $item)
                                                                             <li>
-                                                                                <strong>Tên người nhận:</strong>
-                                                                                {{ $or->orderAddress->recipient_name }}<br>
-                                                                                <strong>Email người
-                                                                                    nhận:</strong>{{ $or->orderAddress->recipient_email }}<br>
-                                                                                <strong>Địa
-                                                                                    chỉ:</strong>{{ $or->orderAddress->address_order }},
-                                                                                {{ $or->orderAddress->ward }},
-                                                                                {{ $or->orderAddress->city }},
-                                                                                {{ $or->orderAddress->province }}<br>
-                                                                                <strong>Số điện thoại:</strong>
-                                                                                {{ $or->orderAddress->phone_number }}
+                                                                                <strong>Sản phẩm:</strong>
+                                                                                {{ $item->product_name }}<br>
+                                                                                <strong>Kích cỡ:</strong>
+                                                                                {{ $item->size }}<br>
+                                                                                <strong>Số lượng:</strong>
+                                                                                {{ $item->quantity }}<br>
+                                                                                <strong>Giá tiền:</strong>
+                                                                                {{ number_format($item->price, 0, ',', '.') . ' VNĐ' }}<br>
+                                                                                <strong>Giá tiền giảm:</strong>
+                                                                                {{ number_format($or->discount_amount, 0, ',', '.') . ' VNĐ' }}<br>
                                                                             </li>
-                                                                        </ul>
-                            
+                                                                        @endforeach
+                                                                    </ul>
+                                                                    <p><strong>Phí vận chuyển:</strong>
+                                                                        {{ number_format($or->shipping_fee, 0, ',', '.') }}
+                                                                        VNĐ
+                                                                    </p>
+
+
+                                                                    <div class="payment-status">
+                                                                        Trạng thái thanh toán
+                                                                        @switch($or->payment_status)
+                                                                            @case('pending')
+                                                                                <span class="badge bg-warning">Đang chờ thanh
+                                                                                    toán</span>
+                                                                            @break
+
+                                                                            @case('paid')
+                                                                                <span class="badge bg-success">Đã thanh toán</span>
+                                                                            @break
+
+                                                                            @case('canceled')
+                                                                                <span class="badge bg-danger">Thanh toán bị hủy bỏ</span>
+                                                                            @break
+
+                                                                            @default
+                                                                                <span class="badge bg-secondary">Không rõ trạng
+                                                                                    thái</span>
+                                                                        @endswitch
                                                                     </div>
+
+
+                                                                    <div class="payment-method">
+                                                                        Phương thức thanh toán:
+                                                                        <span
+                                                                            class="badge bg-secondary">{{ $or->payment->name }}</span>
+                                                                    </div>
+
+
+                                                                    <p><strong>Tổng tiền:</strong>
+                                                                        {{ number_format($newTotal, 0, ',', '.') }} VNĐ</p>
                                                                 </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary"
-                                                                        data-bs-dismiss="modal">Đóng</button>
+                                                                <div>
+                                                                    <ul>
+                                                                        <li>
+                                                                            <strong>Tên người nhận:</strong>
+                                                                            {{ $or->orderAddress->recipient_name }}<br>
+                                                                            <strong>Email người
+                                                                                nhận:</strong>{{ $or->orderAddress->recipient_email }}<br>
+                                                                            <strong>Địa
+                                                                                chỉ:</strong>{{ $or->orderAddress->address_order }},
+                                                                            {{ $or->orderAddress->ward }},
+                                                                            {{ $or->orderAddress->city }},
+                                                                            {{ $or->orderAddress->province }}<br>
+                                                                            <strong>Số điện thoại:</strong>
+                                                                            {{ $or->orderAddress->phone_number }}
+                                                                        </li>
+                                                                    </ul>
+
                                                                 </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-bs-dismiss="modal">Đóng</button>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            @endforeach
-                                            <p class="text-end"><strong>Tổng
-                                                Tiền:</strong>{{ number_format($newTotal, 0, ',', '.') . ' VNĐ' }}
-                                            </p>
-                                            <div class="button-group text-end">
-                            
-                                                <!-- Nút Hủy cho trạng thái "Chờ xử lý" -->
-                                                @if ($or->status_id == 1)
-                                                    <button
-                                                        class="btn btn-danger cancel-order"data-order-id="{{ $or->id }}"
-                                                        data-status={{ $or->status_id }}>Hủy</button>
-                                                    <button class="btn btn-success" data-bs-toggle="modal"
-                                                        data-bs-target="#orderModal{{ $or->id }}">Xem Chi
-                                                        Tiết</button>
-                                                    @if ($or->payment_status == 'pending' && $or->payment_method_id == 2)
-                                                        <button class="btn btn-secondary retry-payment-btn"
-                                                            data-order-id="{{ $or->id }}">Thanh toán lại</button>
-                                                    @endif
-                
-                                                    @if ($or->payment_status == 'pending' && $or->payment_method_id == 3)
-                                                        <button class="btn btn-secondary retry-payment-btn"
-                                                            data-order-id="{{ $or->id }}">Thanh toán lại</button>
-                                                    @endif
-                                                @endif
-                
-                                                @if ($or->status_id == 2)
-                                                    <button
-                                                        class="btn btn-danger cancel-order"data-order-id="{{ $or->id }}"
-                                                        data-status={{ $or->status_id }}>Hủy</button>
-                                                    <button class="btn btn-success" data-bs-toggle="modal"
-                                                        data-bs-target="#orderModal{{ $or->id }}">Xem Chi
-                                                        Tiết</button>
-                                                @endif
-                
-                                                @if ($or->status_id == 3)
-                                                    <button class="btn btn-success" data-bs-toggle="modal"
-                                                        data-bs-target="#orderModal{{ $or->id }}">Xem Chi
-                                                        Tiết</button>
-                                                @endif
-                
-                
-                                                <!-- Nút xác nhận đơn hàng cho trạng thái "Đã giao" -->
-                                                @if ($or->status_id == 4)
-                                                    <button class="btn btn-success" data-bs-toggle="modal"
-                                                        data-bs-target="#orderModal{{ $or->id }}">Xem Chi
-                                                        Tiết</button>
-                                                    @if ($or->complaint)
-                                                        <a class="btn btn-warning"
-                                                            href="{{ route('complaintsDetail', ['orderId' => $or->id]) }}">Xem
-                                                            khiếu nại</a>
-                                                    @else
-                                                        <a class="btn btn-warning"
-                                                            href="{{ route('complaints', ['orderId' => $or->id]) }}">Khiếu
-                                                            Nại</a>
-                                                    @endif
-                                                    <button class="btn btn-primary confirm-order"
-                                                        data-order-id="{{ $or->id }}"
-                                                        data-status={{ $or->status_id }}>Xác nhận đơn hàng</button>
-                                                @endif
-                
-                                                <!-- Nút Khiếu nại cho trạng thái "Hoàn tất" -->
-                                                @if ($or->status_id == 5)
-                                                    <button class="btn btn-success" data-bs-toggle="modal"
-                                                        data-bs-target="#orderModal{{ $or->id }}">Xem Chi
-                                                        Tiết</button>
-                                                @endif
-                
-                                                @if ($or->status_id == 6)
-                                                    <button class="btn btn-success" data-bs-toggle="modal"
-                                                        data-bs-target="#orderModal{{ $or->id }}">Xem Chi
-                                                        Tiết</button>
-                                                @endif
-                
-                
                                             </div>
+                                        @endforeach
+                                        <p class="text-end"><strong>Tổng
+                                                Tiền:</strong>{{ number_format($newTotal, 0, ',', '.') . ' VNĐ' }}
+                                        </p>
+                                        <div class="button-group text-end">
+
+                                            <!-- Nút Hủy cho trạng thái "Chờ xử lý" -->
+                                            @if ($or->status_id == 1)
+                                                <button
+                                                    class="btn btn-danger cancel-order"data-order-id="{{ $or->id }}"
+                                                    data-status={{ $or->status_id }}>Hủy</button>
+                                                <button class="btn btn-success" data-bs-toggle="modal"
+                                                    data-bs-target="#orderModal{{ $or->id }}">Xem Chi
+                                                    Tiết</button>
+                                                @if ($or->payment_status == 'pending' && $or->payment_method_id == 2)
+                                                    <button class="btn btn-secondary retry-payment-btn"
+                                                        data-order-id="{{ $or->id }}">Thanh toán lại</button>
+                                                @endif
+
+                                                @if ($or->payment_status == 'pending' && $or->payment_method_id == 3)
+                                                    <button class="btn btn-secondary retry-payment-btn"
+                                                        data-order-id="{{ $or->id }}">Thanh toán lại</button>
+                                                @endif
+                                            @endif
+
+                                            @if ($or->status_id == 2)
+                                                <button
+                                                    class="btn btn-danger cancel-order"data-order-id="{{ $or->id }}"
+                                                    data-status={{ $or->status_id }}>Hủy</button>
+                                                <button class="btn btn-success" data-bs-toggle="modal"
+                                                    data-bs-target="#orderModal{{ $or->id }}">Xem Chi
+                                                    Tiết</button>
+                                            @endif
+
+                                            @if ($or->status_id == 3)
+                                                <button class="btn btn-success" data-bs-toggle="modal"
+                                                    data-bs-target="#orderModal{{ $or->id }}">Xem Chi
+                                                    Tiết</button>
+                                            @endif
+
+
+                                            <!-- Nút xác nhận đơn hàng cho trạng thái "Đã giao" -->
+                                            @if ($or->status_id == 4)
+                                                <button class="btn btn-success" data-bs-toggle="modal"
+                                                    data-bs-target="#orderModal{{ $or->id }}">Xem Chi
+                                                    Tiết</button>
+                                                @if ($or->complaint)
+                                                    <a class="btn btn-warning"
+                                                        href="{{ route('complaintsDetail', ['orderId' => $or->id]) }}">Xem
+                                                        khiếu nại</a>
+                                                @else
+                                                    <a class="btn btn-warning"
+                                                        href="{{ route('complaints', ['orderId' => $or->id]) }}">Khiếu
+                                                        Nại</a>
+                                                @endif
+                                                <button class="btn btn-primary confirm-order"
+                                                    data-order-id="{{ $or->id }}"
+                                                    data-status={{ $or->status_id }}>Xác nhận đơn hàng</button>
+                                            @endif
+
+                                            <!-- Nút Khiếu nại cho trạng thái "Hoàn tất" -->
+                                            @if ($or->status_id == 5)
+                                                <button class="btn btn-success" data-bs-toggle="modal"
+                                                    data-bs-target="#orderModal{{ $or->id }}">Xem Chi
+                                                    Tiết</button>
+                                            @endif
+
+                                            @if ($or->status_id == 6)
+                                                <button class="btn btn-success" data-bs-toggle="modal"
+                                                    data-bs-target="#orderModal{{ $or->id }}">Xem Chi
+                                                    Tiết</button>
+                                            @endif
+
+
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach
-                        
                         @endif
-                        
+
                     </div>
-                
+
                 </div>
             </div>
         </div>
@@ -474,28 +472,6 @@
 @endsection
 
 @push('script')
-
-    {{-- ajax paginate --}}
-    <script>
-        $(document).on('click', '.pagination a', function(e) {
-            e.preventDefault(); // Ngăn tải lại trang
-            let url = $(this).attr('href'); // Lấy URL từ liên kết phân trang
-    
-            // Gửi Ajax request đến server
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(data) {
-                    console.log(data);
-                    $('#ordersContainer').html(data); // Thay thế nội dung danh sách đơn hàng
-                },
-                error: function(xhr) {
-                    console.error("Lỗi khi tải dữ liệu:", xhr);
-                }
-            });
-        });
-    </script>
-    
     <script type="module">
         // xử lí khi chọn quản lí tài khoản hoặc đơn mua
         document.getElementById('accountLink').addEventListener('click', function() {
@@ -533,237 +509,260 @@
             });
         });
 
-        // nút xác nhận đơn hàng
-        document.querySelectorAll('.confirm-order').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
+        // nút xác nhận đơn hàng  
+        function confirmOrder(){
+            document.querySelectorAll('.confirm-order').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
 
-                // Lấy ID đơn hàng và trạng thái hiện tại
-                const orderId = this.getAttribute('data-order-id');
-                const currentStatus = this.getAttribute('data-status'); 
+                    // Lấy ID đơn hàng và trạng thái hiện tại
+                    const orderId = this.getAttribute('data-order-id');
+                    const currentStatus = this.getAttribute('data-status');
 
-                // Sử dụng SweetAlert để hỏi người dùng xác nhận
-                Swal.fire({
-                    title: 'Xác nhận xác nhận đơn hàng',
-                    text: "Bạn có chắc chắn muốn xác nhận đơn hàng này?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Xác nhận',
-                    cancelButtonText: 'Hủy bỏ',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Nếu người dùng chọn xác nhận, tiến hành gửi yêu cầu
-                        const dataToSend = {
-                            orderId: orderId,
-                            currentStatus: currentStatus
-                        };
+                    // Sử dụng SweetAlert để hỏi người dùng xác nhận
+                    Swal.fire({
+                        title: 'Xác nhận xác nhận đơn hàng',
+                        text: "Bạn có chắc chắn muốn xác nhận đơn hàng này?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Xác nhận',
+                        cancelButtonText: 'Hủy bỏ',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Nếu người dùng chọn xác nhận, tiến hành gửi yêu cầu
+                            const dataToSend = {
+                                orderId: orderId,
+                                currentStatus: currentStatus
+                            };
 
-                        // Gửi yêu cầu POST
-                        fetch('{{ route('confirmOrder') }}', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                        .getAttribute('content'),
-                                },
-                                body: JSON.stringify(dataToSend) 
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.status === 'success') {
-                                    // Cập nhật giao diện khi xác nhận thành công
-                                    const orderCard = this.closest('.order-card');
-                                    orderCard.setAttribute('data-status', data.newStatus);
-                                    const orderStatus = orderCard.querySelector('.order-status');
-                                    orderStatus.textContent = data.statusName;
-                                    orderStatus.setAttribute('data-status', data.newStatus); 
-                                    const paymentStatus = orderCard.querySelector('.payment-status span');
-                                    if(data.newpaymentStatus == 'paid'){
-                                        paymentStatus.textContent = 'Đã thanh toán'
-                                    }
+                            // Gửi yêu cầu POST
+                            fetch('{{ route('confirmOrder') }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector(
+                                                'meta[name="csrf-token"]')
+                                            .getAttribute('content'),
+                                    },
+                                    body: JSON.stringify(dataToSend)
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status === 'success') {
+                                        // Cập nhật giao diện khi xác nhận thành công
+                                        const orderCard = this.closest('.order-card');
+                                        orderCard.setAttribute('data-status', data.newStatus);
 
-                                    // Ẩn hoặc thay đổi các nút sau khi đơn hàng đã hoàn tất
-                                    const confirmButton = orderCard.querySelector('.confirm-order');
-                                    if (confirmButton) {
-                                        confirmButton.style.display = 'none'; 
-                                    }
+                                        const orderStatus = orderCard.querySelector(
+                                        '.order-status');
 
-                                    const complaintButton = orderCard.querySelector('a.btn-warning');
-                                    if (complaintButton) {
-                                        complaintButton.style.display = 'none'; 
-                                    }
+                                        orderStatus.textContent = data.statusName;
+                                        orderStatus.setAttribute('data-status', data.newStatus);
 
-                                    // Chuyển đơn hàng sang tab "Hoàn tất" nếu trạng thái mới là hoàn tất
-                                    if (data.newStatus === 5) {
-                                        const completedTab = document.querySelector(`.tab-link[data-status="${data.newStatus}"]`);
-                                        if (completedTab) {
-                                            document.querySelectorAll('.tab-link').forEach(function(tab) {
-                                                tab.classList.remove('active');
-                                            });
-                                            completedTab.classList.add('active');
-                                            const orders = document.querySelectorAll('.order-card');
-                                            orders.forEach(function(order) {
-                                                if (order.getAttribute('data-status') === '5') {
-                                                    order.style.display = 'block';
-                                                } else {
-                                                    order.style.display = 'none';
-                                                }
-                                            });
+                                        const paymentStatus = orderCard.querySelector(
+                                            '.payment-status span');
+                                        if (data.newpaymentStatus == 'paid') {
+                                            paymentStatus.classList.remove('bg-warning')
+                                            paymentStatus.classList.add('bg-success')
+                                            paymentStatus.textContent = 'Đã thanh toán'
                                         }
-                                    }
 
-                                    // Hiển thị thông báo SweetAlert
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Thành công',
-                                        text: 'Đơn hàng đã được xác nhận và chuyển sang trạng thái hoàn tất!',
-                                        confirmButtonText: 'OK'
-                                    });
-                                } else {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Lỗi',
-                                        text: data.error,
-                                        confirmButtonText: 'OK'
-                                    });
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                alert('Có lỗi xảy ra trong quá trình xác nhận');
-                            });
-                    } else {
-                        // Người dùng hủy bỏ, có thể thêm một thông báo nếu muốn
-                        Swal.fire('Hành động đã bị hủy bỏ', '', 'info');
-                    }
+                                        // Ẩn hoặc thay đổi các nút sau khi đơn hàng đã hoàn tất
+                                        const confirmButton = orderCard.querySelector(
+                                            '.confirm-order');
+                                        if (confirmButton) {
+                                            confirmButton.style.display = 'none';
+                                        }
+
+                                        const complaintButton = orderCard.querySelector(
+                                            'a.btn-warning');
+                                        if (complaintButton) {
+                                            complaintButton.style.display = 'none';
+                                        }
+
+                                        // Chuyển đơn hàng sang tab "Hoàn tất" nếu trạng thái mới là hoàn tất
+                                        if (data.newStatus === 5) {
+                                            const completedTab = document.querySelector(
+                                                `.tab-link[data-status="${data.newStatus}"]`);
+                                            if (completedTab) {
+                                                document.querySelectorAll('.tab-link').forEach(
+                                                    function(tab) {
+                                                        tab.classList.remove('active');
+                                                    });
+                                                completedTab.classList.add('active');
+                                                const orders = document.querySelectorAll(
+                                                    '.order-card');
+                                                orders.forEach(function(order) {
+                                                    if (order.getAttribute(
+                                                        'data-status') === '5') {
+                                                        order.style.display = 'block';
+                                                    } else {
+                                                        order.style.display = 'none';
+                                                    }
+                                                });
+                                            }
+                                        }
+
+                                        // Hiển thị thông báo SweetAlert
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Thành công',
+                                            text: 'Đơn hàng đã được xác nhận và chuyển sang trạng thái hoàn tất!',
+                                            confirmButtonText: 'OK'
+                                        });
+                                        
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Lỗi',
+                                            text: data.error,
+                                            confirmButtonText: 'OK'
+                                        });
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    alert('Có lỗi xảy ra trong quá trình xác nhận');
+                                });
+                        } else {
+                            // Người dùng hủy bỏ, có thể thêm một thông báo nếu muốn
+                            Swal.fire('Hành động đã bị hủy bỏ', '', 'info');
+                        }
+                    });
                 });
             });
-        }); 
-
-
+        }
+        confirmOrder();
         // nút hủy bỏ đơn hàng
-        document.querySelectorAll('.cancel-order').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
+        function cancelOrder(){
+            document.querySelectorAll('.cancel-order').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
 
-                const orderId = this.getAttribute('data-order-id');
-                // trạng thái hiện tại
-                const currentStatus = this.getAttribute('data-status');
+                    const orderId = this.getAttribute('data-order-id');
+                    // trạng thái hiện tại
+                    const currentStatus = this.getAttribute('data-status');
 
-                Swal.fire({
-                    title: 'Bạn có chắc chắn muốn hủy đơn hàng?',
-                    text: "Hành động này không thể hoàn tác!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Hủy đơn hàng',
-                    cancelButtonText: 'Không'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Gửi yêu cầu hủy đơn hàng
-                        fetch('{{ route('cancelOrder') }}', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector(
-                                        'meta[name="csrf-token"]').getAttribute('content'),
-                                },
-                                body: JSON.stringify({
-                                    orderId: orderId,
-                                    currentStatus: currentStatus,
+                    Swal.fire({
+                        title: 'Bạn có chắc chắn muốn hủy đơn hàng?',
+                        text: "Hành động này không thể hoàn tác!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Hủy đơn hàng',
+                        cancelButtonText: 'Không'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Gửi yêu cầu hủy đơn hàng
+                            fetch('{{ route('cancelOrder') }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector(
+                                            'meta[name="csrf-token"]').getAttribute('content'),
+                                    },
+                                    body: JSON.stringify({
+                                        orderId: orderId,
+                                        currentStatus: currentStatus,
+                                    })
                                 })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.status === 'success') {
-                                    Swal.fire(
-                                        'Đã hủy!',
-                                        'Đơn hàng của bạn đã được hủy thành công.',
-                                        'success'
-                                    );
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status === 'success') {
 
-                                    // cập nhập trạng thái thanh toán trên nút modal
-                                    const paymentStatusElement = document.querySelector(`#orderModal${orderId} .payment-status span`);
-                                    if (paymentStatusElement) {
-                                        paymentStatusElement.className = 'badge bg-danger';
-                                        paymentStatusElement.textContent = 'Thanh toán thất bại';
-                                    }
+                                        Swal.fire(
+                                            'Đã hủy!',
+                                            'Đơn hàng của bạn đã được hủy thành công.',
+                                            'success'
+                                        );
 
-
-                                    // Cập nhật giao diện khi xác nhận thành công
-                                    const orderCard = this.closest('.order-card');
-                                    orderCard.setAttribute('data-status', data.newStatus);
-                                    // tên trạng thái
-                                    const orderStatus = orderCard.querySelector(
-                                        '.order-status');
-                                    // Cập nhật trạng thái hiển thị trong giao diện
-                                    orderStatus.textContent = data.statusName;
-                                    orderStatus.setAttribute('data-status', data
-                                        .newStatus); // Cập nhật mã trạng thái từ server
-
-                            
-
-                                    // Chuyển đơn hàng sang tab "Hoàn tất" nếu trạng thái mới là hoàn tất
-                                    if (data.newStatus === 6) {
-
-                                        const button = this; // Lấy chính nút đang được click
-                                        button.style.display = 'none';
-
-                                        // Tìm tab "Hoàn tất" và chuyển đến đó
-                                        const completedTab = document.querySelector(
-                                            `.tab-link[data-status="${data.newStatus}"]`);
-                                        if (completedTab) {
-                                            // Chuyển sang tab "Hoàn tất"
-                                            document.querySelectorAll('.tab-link').forEach(
-                                                function(tab) {
-                                                    tab.classList.remove('active');
-                                                });
-                                            completedTab.classList.add('active');
-
-                                            // Ẩn/hiện các đơn hàng theo trạng thái
-                                            const orders = document.querySelectorAll(
-                                                '.order-card');
-
-
-                                            orders.forEach(function(order) {
-                                                if (order.getAttribute(
-                                                        'data-status') === '6') {
-                                                    order.style.display = 'block';
-                                                    document.querySelectorAll(
-                                                            '.retry-payment-btn')
-                                                        .forEach(
-                                                            function(bt) {
-                                                                bt.style.display =
-                                                                    'none';
-                                                            }
-                                                        )
-                                                } else {
-                                                    order.style.display = 'none';
-                                                }
-                                            });
+                                        // cập nhập trạng thái thanh toán trên nút modal
+                                        const paymentStatusElement = document.querySelector(
+                                            `#orderModal${orderId} .payment-status span`);
+                                        if (paymentStatusElement) {
+                                            paymentStatusElement.className = 'badge bg-danger';
+                                            paymentStatusElement.textContent =
+                                            'Thanh toán bị hủy bỏ';
                                         }
+
+
+                                        // Cập nhật giao diện khi xác nhận thành công
+                                        const orderCard = this.closest('.order-card');
+                                        orderCard.setAttribute('data-status', data.newStatus);
+
+                                        // tên trạng thái
+                                        const orderStatus = orderCard.querySelector(
+                                            '.order-status');
+                                        // Cập nhật trạng thái hiển thị trong giao diện
+                                        orderStatus.textContent = data.statusName;
+                                        orderStatus.setAttribute('data-status', data
+                                            .newStatus); // Cập nhật mã trạng thái từ server
+
+
+
+                                        // Chuyển đơn hàng sang tab "Hoàn tất" nếu trạng thái mới là hoàn tất
+                                        if (data.newStatus === 6) {
+
+                                            const button = this; // Lấy chính nút đang được click
+                                            button.style.display = 'none';
+
+                                            // Tìm tab "Hoàn tất" và chuyển đến đó
+                                            const completedTab = document.querySelector(
+                                                `.tab-link[data-status="${data.newStatus}"]`);
+                                            if (completedTab) {
+                                                // Chuyển sang tab "Hoàn tất"
+                                                document.querySelectorAll('.tab-link').forEach(
+                                                    function(tab) {
+                                                        tab.classList.remove('active');
+                                                    });
+                                                completedTab.classList.add('active');
+
+                                                // Ẩn/hiện các đơn hàng theo trạng thái
+                                                const orders = document.querySelectorAll(
+                                                    '.order-card');
+
+
+                                                orders.forEach(function(order) {
+                                                    if (order.getAttribute(
+                                                            'data-status') === '6') {
+                                                        order.style.display = 'block';
+                                                        document.querySelectorAll(
+                                                                '.retry-payment-btn')
+                                                            .forEach(
+                                                                function(bt) {
+                                                                    bt.style.display =
+                                                                        'none';
+                                                                }
+                                                            )
+                                                    } else {
+                                                        order.style.display = 'none';
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    } else {
+                                        Swal.fire(
+                                            'Lỗi!',
+                                            'Có lỗi xảy ra khi hủy đơn hàng.',
+                                            'error'
+                                        );
                                     }
-                                } else {
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
                                     Swal.fire(
                                         'Lỗi!',
-                                        'Có lỗi xảy ra khi hủy đơn hàng.',
+                                        'Không thể kết nối đến máy chủ.',
                                         'error'
                                     );
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                Swal.fire(
-                                    'Lỗi!',
-                                    'Không thể kết nối đến máy chủ.',
-                                    'error'
-                                );
-                            });
-                    }
+                                });
+                        }
+                    });
                 });
             });
-        });
+        }
+        cancelOrder();
 
         // nút thanh toán lại
         document.addEventListener("DOMContentLoaded", () => {
@@ -805,14 +804,9 @@
             });
         });
 
-        // nút khiếu lại
-    </script>
 
-    <script type="module">
         // Lắng nghe sự kiện từ Laravel Echo
-
         const orderElement = document.querySelectorAll('.order-card')
-
         orderElement.forEach(order => {
             const orderId = order.getAttribute('data-order-id'); // lấy ra id của từng đơn hàng
             Echo.private(`order.${orderId}`)
@@ -823,9 +817,9 @@
                     const orderId = e.order.id;
                     const newStatus = e.order.order_status.name;
                     const newStatusId = e.order.status_id;
-                    const newPaymentStatus = e.order.payment_status;    //Trạng thái thanh toán
+                    const newPaymentStatus = e.order.payment_status; //Trạng thái thanh toán
 
-                    
+
 
                     const complaintsRoute = "{{ route('complaints', ['orderId' => ':orderId']) }}";
 
@@ -848,14 +842,18 @@
                         buttonGroup.innerHTML = ''; // Xóa các nút hiện có
 
                         const paymentStatusElement = orderElement.querySelector('.payment-status span');
-                        if(newPaymentStatus == 'pending'){
+                        if (newPaymentStatus == 'pending') {
                             paymentStatusElement.textContent = 'Đang chờ thanh toán';
                         }
 
-                        if(newPaymentStatus == 'paid'){
+                        if (newPaymentStatus == 'paid') {
                             paymentStatusElement.textContent = 'Đã thanh toán';
                         }
-                        
+
+                        if (newPaymentStatus == 'canceled') {
+                            paymentStatusElement.textContent = 'Thanh toán bị hủy bỏ';
+                        }
+
 
                         // thế router
                         const dynamicComplaintUrl = complaintsRoute.replace(':orderId', orderId);
@@ -898,267 +896,10 @@
                         }
 
                         // Gắn lại sự kiện click cho nút 'Xác nhận đơn hàng'
-                        document.querySelectorAll('.confirm-order').forEach(button => {
-                            button.addEventListener('click', function(e) {
-                                e.preventDefault();
+                        confirmOrder();
+                        cancelOrder();
 
-                                // Lấy ID đơn hàng và trạng thái hiện tại
-                                const orderId = this.getAttribute('data-order-id');
-                                const currentStatus = this.getAttribute('data-status'); 
-
-                                // Sử dụng SweetAlert để hỏi người dùng xác nhận
-                                Swal.fire({
-                                    title: 'Xác nhận xác nhận đơn hàng',
-                                    text: "Bạn có chắc chắn muốn xác nhận đơn hàng này?",
-                                    icon: 'warning',
-                                    showCancelButton: true,
-                                    confirmButtonText: 'Xác nhận',
-                                    cancelButtonText: 'Hủy bỏ',
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        // Nếu người dùng chọn xác nhận, tiến hành gửi yêu cầu
-                                        const dataToSend = {
-                                            orderId: orderId,
-                                            currentStatus: currentStatus
-                                        };
-
-                                        // Gửi yêu cầu POST
-                                        fetch('{{ route('confirmOrder') }}', {
-                                                method: 'POST',
-                                                headers: {
-                                                    'Content-Type': 'application/json',
-                                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                                        .getAttribute('content'),
-                                                },
-                                                body: JSON.stringify(dataToSend) 
-                                            })
-                                            .then(response => response.json())
-                                            .then(data => {
-                                                if (data.status === 'success') {
-                                                    // Cập nhật giao diện khi xác nhận thành công
-                                                    const orderCard = this.closest('.order-card');
-                                                    orderCard.setAttribute('data-status', data.newStatus);
-                                                    const orderStatus = orderCard.querySelector('.order-status');
-                                                    orderStatus.textContent = data.statusName;
-                                                    orderStatus.setAttribute('data-status', data.newStatus); 
-                                                    // trạng thái thanh toán
-                                                    const paymentStatus = orderCard.querySelector('.payment-status span');
-                                                    if(data.newpaymentStatus == 'paid'){
-                                                        paymentStatus.textContent = 'Đã thanh toán'
-                                                    }
-
-                                                    // Ẩn hoặc thay đổi các nút sau khi đơn hàng đã hoàn tất
-                                                    const confirmButton = orderCard.querySelector('.confirm-order');
-                                                    if (confirmButton) {
-                                                        confirmButton.style.display = 'none'; 
-                                                    }
-
-                                                    const complaintButton = orderCard.querySelector('a.btn-warning');
-                                                    if (complaintButton) {
-                                                        complaintButton.style.display = 'none'; 
-                                                    }
-
-                                                    // Chuyển đơn hàng sang tab "Hoàn tất" nếu trạng thái mới là hoàn tất
-                                                    if (data.newStatus === 5) {
-                                                        const completedTab = document.querySelector(`.tab-link[data-status="${data.newStatus}"]`);
-                                                        if (completedTab) {
-                                                            document.querySelectorAll('.tab-link').forEach(function(tab) {
-                                                                tab.classList.remove('active');
-                                                            });
-                                                            completedTab.classList.add('active');
-                                                            const orders = document.querySelectorAll('.order-card');
-                                                            orders.forEach(function(order) {
-                                                                if (order.getAttribute('data-status') === '5') {
-                                                                    order.style.display = 'block';
-                                                                } else {
-                                                                    order.style.display = 'none';
-                                                                }
-                                                            });
-                                                        }
-                                                    }
-
-                                                    // Hiển thị thông báo SweetAlert
-                                                    Swal.fire({
-                                                        icon: 'success',
-                                                        title: 'Thành công',
-                                                        text: 'Đơn hàng đã được xác nhận và chuyển sang trạng thái hoàn tất!',
-                                                        confirmButtonText: 'OK'
-                                                    });
-                                                } else {
-                                                    Swal.fire({
-                                                        icon: 'error',
-                                                        title: 'Lỗi',
-                                                        text: data.error,
-                                                        confirmButtonText: 'OK'
-                                                    });
-                                                }
-                                            })
-                                            .catch(error => {
-                                                console.error('Error:', error);
-                                                alert('Có lỗi xảy ra trong quá trình xác nhận');
-                                            });
-                                    } else {
-                                        // Người dùng hủy bỏ, có thể thêm một thông báo nếu muốn
-                                        Swal.fire('Hành động đã bị hủy bỏ', '', 'info');
-                                    }
-                                });
-                            });
-                        }); 
-
-                        // gắn lại sự kiến cho nút hủy khi cập nhập bằng laravel echo
-                        document.querySelectorAll('.cancel-order').forEach(button => {
-                            button.addEventListener('click', function(e) {
-                                e.preventDefault();
-
-                                const orderId = this.getAttribute('data-order-id');
-                                // trạng thái hiện tại
-                                const currentStatus = this.getAttribute('data-status');
-
-                                Swal.fire({
-                                    title: 'Bạn có chắc chắn muốn hủy đơn hàng?',
-                                    text: "Hành động này không thể hoàn tác!",
-                                    icon: 'warning',
-                                    showCancelButton: true,
-                                    confirmButtonColor: '#d33',
-                                    cancelButtonColor: '#3085d6',
-                                    confirmButtonText: 'Hủy đơn hàng',
-                                    cancelButtonText: 'Không'
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        // Gửi yêu cầu hủy đơn hàng
-                                        fetch('{{ route('cancelOrder') }}', {
-                                                method: 'POST',
-                                                headers: {
-                                                    'Content-Type': 'application/json',
-                                                    'X-CSRF-TOKEN': document
-                                                        .querySelector(
-                                                            'meta[name="csrf-token"]'
-                                                            ).getAttribute(
-                                                            'content'),
-                                                },
-                                                body: JSON.stringify({
-                                                    orderId: orderId,
-                                                    currentStatus: currentStatus,
-                                                })
-                                            })
-                                            .then(response => response.json())
-                                            .then(data => {
-                                                if (data.status === 'success') {
-                                                    Swal.fire(
-                                                        'Đã hủy!',
-                                                        'Đơn hàng của bạn đã được hủy thành công.',
-                                                        'success'
-                                                    );
-
-
-
-                                                    // Cập nhật giao diện khi xác nhận thành công
-                                                    const orderCard = this.closest(
-                                                        '.order-card');
-                                                    orderCard.setAttribute(
-                                                        'data-status', data
-                                                        .newStatus);
-                                                    // tên trạng thái
-                                                    const orderStatus = orderCard
-                                                        .querySelector(
-                                                            '.order-status');
-                                                    // Cập nhật trạng thái hiển thị trong giao diện
-                                                    orderStatus.textContent = data
-                                                        .statusName;
-                                                    orderStatus.setAttribute(
-                                                        'data-status', data
-                                                        .newStatus
-                                                        ); // Cập nhật mã trạng thái từ server
-
-                                                    // Chuyển đơn hàng sang tab "Hoàn tất" nếu trạng thái mới là hoàn tất
-                                                    if (data.newStatus === 6) {
-
-                                                        const button =
-                                                        this; // Lấy chính nút đang được click
-                                                        button.style.display =
-                                                            'none';
-
-                                                        // Tìm tab "Hoàn tất" và chuyển đến đó
-                                                        const completedTab =
-                                                            document.querySelector(
-                                                                `.tab-link[data-status="${data.newStatus}"]`
-                                                                );
-                                                        if (completedTab) {
-                                                            // Chuyển sang tab "Hoàn tất"
-                                                            document
-                                                                .querySelectorAll(
-                                                                    '.tab-link')
-                                                                .forEach(
-                                                                    function(tab) {
-                                                                        tab.classList
-                                                                            .remove(
-                                                                                'active'
-                                                                                );
-                                                                    });
-                                                            completedTab.classList
-                                                                .add('active');
-
-                                                            // Ẩn/hiện các đơn hàng theo trạng thái
-                                                            const orders = document
-                                                                .querySelectorAll(
-                                                                    '.order-card');
-
-
-                                                            orders.forEach(function(
-                                                                order) {
-                                                                if (order
-                                                                    .getAttribute(
-                                                                        'data-status'
-                                                                        ) ===
-                                                                    '6') {
-                                                                    order
-                                                                        .style
-                                                                        .display =
-                                                                        'block';
-                                                                    document
-                                                                        .querySelectorAll(
-                                                                            '.retry-payment-btn'
-                                                                            )
-                                                                        .forEach(
-                                                                            function(
-                                                                                bt
-                                                                                ) {
-                                                                                bt.style
-                                                                                    .display =
-                                                                                    'none';
-                                                                            }
-                                                                        )
-                                                                } else {
-                                                                    order
-                                                                        .style
-                                                                        .display =
-                                                                        'none';
-                                                                }
-                                                            });
-                                                        }
-                                                    }
-                                                } else {
-                                                    Swal.fire(
-                                                        'Lỗi!',
-                                                        'Có lỗi xảy ra khi hủy đơn hàng.',
-                                                        'error'
-                                                    );
-                                                }
-                                            })
-                                            .catch(error => {
-                                                console.error('Error:', error);
-                                                Swal.fire(
-                                                    'Lỗi!',
-                                                    'Không thể kết nối đến máy chủ.',
-                                                    'error'
-                                                );
-                                            });
-                                    }
-                                });
-                            });
-                        });
-
-
+                        
                         // Lọc và hiển thị đơn hàng theo tab trạng thái hiện tại
                         const activeStatus = document.querySelector('.tab-link.active').getAttribute(
                             'data-status');
@@ -1171,14 +912,17 @@
                 });
 
         })
+
     </script>
+
+   
 
     <script>
         // đoạn code xử lí thông tin người dùng
         document.getElementById('editButton').addEventListener('click', function() {
             const accountInfo = document.getElementById('accountInfo');
 
-        
+
             // Tạo HTML của form
             const formHTML = `
                 <h5>Chỉnh sửa Thông Tin Tài Khoản</h5>
@@ -1345,7 +1089,7 @@
             document.getElementById('saveButton').addEventListener('click', function() {
 
                 const errorMessages = document.querySelectorAll('.error-message');
-                errorMessages.forEach((message) => message.style.display = 'none' );
+                errorMessages.forEach((message) => message.style.display = 'none');
 
                 let newName = document.getElementById('name').value;
                 let newEmail = document.getElementById('email').value;
@@ -1376,7 +1120,7 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        
+
 
 
                         if (data.success) {
@@ -1387,16 +1131,17 @@
                                 confirmButtonText: 'OK'
                             });
                             // location.reload(); 
-                        } else if(data.errors){
+                        } else if (data.errors) {
                             Object.keys(data.errors).forEach(field => {
                                 console.log(field);
-                            const errorElement = document.getElementById(`recipient_${field}_error`);
-                            if (errorElement) {
-                                errorElement.innerText = data.errors[field][0];
-                                errorElement.style.display = 'block';
-                            }else{
-                                errorElement.style.display = 'none';
-                            }
+                                const errorElement = document.getElementById(
+                                    `recipient_${field}_error`);
+                                if (errorElement) {
+                                    errorElement.innerText = data.errors[field][0];
+                                    errorElement.style.display = 'block';
+                                } else {
+                                    errorElement.style.display = 'none';
+                                }
                             });
                             Swal.fire({
                                 title: 'Cập nhập thất bại',
@@ -1418,7 +1163,7 @@
 
             // đoạn code xử lí khi chọn thì tắt lỗi
             document.querySelectorAll('input, select, textarea').forEach((input) => {
-                input.addEventListener('input', function () {
+                input.addEventListener('input', function() {
                     const errorElement = document.getElementById(`recipient_${input.id}_error`);
                     if (errorElement) {
                         errorElement.style.display = 'none';
@@ -1426,6 +1171,5 @@
                 });
             });
         });
-
     </script>
 @endpush

@@ -46,6 +46,14 @@ class OrderAdminController extends Controller
 
             if($newStatus == $currentStatus + 1 ){
 
+                if($order->payment_status == 'pending' && $order->payment_method_id == 2){
+                    return response()->json(['error' => 'Bạn không thể cập nhập trạng thái này khi đơn hàng chưa thanh toán'],400);
+                }
+
+                if($newStatus == 6 && $currentStatus == 5){
+                    return response()->json(['error' => 'Đơn hàng đã được hoàn tất nên không thể hủy được'],400);
+                }
+
                 $order->status_id = $newStatus;
 
                 if($order->status_id == 5){

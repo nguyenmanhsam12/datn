@@ -64,14 +64,13 @@ class MyAccountController extends Controller
         // Kiểm tra nếu có khiếu nại cho đơn hàng
         $complaint = Complaints::where('order_id', $order->id)->first();
 
-        if ($complaint) {
+        // trạng thái khiếu nại là hủy bỏ vẫn có  thể xác nhận đơn hàng
+        if (in_array($complaint->status, ['Chờ xử lý', 'Đang xử lý'])) {
             // Kiểm tra trạng thái khiếu nại
-            if (in_array($complaint->status, ['Chờ xử lý', 'Đang xử lý'])) {
                 return response()->json([
                     'status' => 'error',
                     'error' => 'Không thể xác nhận đơn hàng khi có khiếu nại chưa được giải quyết.'
                 ], 400);
-            }
         }
 
         // Xử lý hành động xác nhận đơn hàng
@@ -146,6 +145,7 @@ class MyAccountController extends Controller
         }
 
         $order->status_id = 6;
+        $order->payment_status = 'canceled'; // Cập nhật trạng thái thanh toán trong đơn hàng
         $order->save();
 
         return response()->json([
