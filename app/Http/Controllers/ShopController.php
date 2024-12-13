@@ -47,10 +47,11 @@ class ShopController extends Controller
         ->orderBy('id', 'desc');
 
         if ($categoryId) {
-            $query->where('category_id', $categoryId);
+            $query->whereHas('category', function ($query) use ($categoryId) {
+                $query->where('category_id', $categoryId);
+            });
         }
-        
-        
+
         // Nếu có brandId, lọc theo brand
         if ($brandId) {
             $query->where('brand_id', $brandId);

@@ -63,4 +63,27 @@ class BrandController extends Controller
 
         return redirect()->route('admin.brand.index')->with('success','Xóa thành công');
     }
+
+    public function deleteAt(){
+        $softBrand = Brand::onlyTrashed()->get();
+        return view('admin.brand.delete',compact('softBrand'));
+    }
+
+    public function restore($id){
+        $brand = Brand::onlyTrashed()->find($id); // Lấy bản ghi bị xóa mềm
+        if ($brand) {
+            $brand->restore(); // Khôi phục bản ghi
+            return redirect()->back()->with('success', 'Thương hiệu đã được khôi phục!');
+        }
+        return redirect()->back()->with('error', 'Thương hiệu không tồn tại hoặc không bị xóa mềm.');
+    }
+
+    public function forceDeleteBrand($id){
+        $brand = Brand::onlyTrashed()->find($id); // Lấy bản ghi bị xóa mềm
+        if ($brand) {
+            $brand->forceDelete(); // Xóa vĩnh viễn
+            return redirect()->back()->with('success', 'Thương hiệu đã được xóa vĩnh viễn!');
+        }
+        return redirect()->back()->with('error', 'Thương hiệu không tồn tại hoặc không bị xóa mềm.');
+    }
 }

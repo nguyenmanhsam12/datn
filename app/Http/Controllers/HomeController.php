@@ -19,7 +19,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $list_product = Product::whereNotNull('category_id')
+        $list_product = Product::whereHas('category')
             ->whereHas('mainVariant')
             ->orderBy('id', 'desc')
             ->limit(8)
@@ -40,7 +40,9 @@ class HomeController extends Controller
     public function getProductsByCategory($category_id)
     {
         // Lấy 8 sản phẩm mới nhất theo danh mục
-        $list_product = Product::where('category_id', $category_id)
+        $list_product = Product::whereHas('category',function($query) use ($category_id){
+            $query->where('category.id', $category_id); // Lọc theo danh mục
+        })
         ->whereHas('mainVariant') // Chỉ lấy sản phẩm có biến thể
         ->orderBy('id', 'desc')
         ->limit(8)
@@ -67,11 +69,12 @@ class HomeController extends Controller
         $list_category = Category::orderBy('id', 'desc')->get();
 
         // sp liên quan
-        $relatedProduct = Product::whereHas('mainVariant')
-            ->where('category_id', $productDetail->category_id)
-            ->where('id', '!=', $productDetail->id)
-            ->take(4)   //lấy  4 sp
-            ->get();
+        $relatedProduct = Product::whereHas('category', function ($query) use ($productDetail) {
+            $query->whereIn('category.id', $productDetail->category->pluck('id')->toArray());
+        })
+        ->where('id', '!=', $productDetail->id)
+        ->take(4)  // Lấy 4 sản phẩm liên quan
+        ->get();
 
         // danh gia
         $product = Product::with('reviews.user')->where('slug', $slug)->firstOrFail();
@@ -115,6 +118,7 @@ class HomeController extends Controller
             'list_category'
         ));
     }
+    
     public function submitReview(Request $request)
     {
         $product = Product::findOrFail($request->product_id);

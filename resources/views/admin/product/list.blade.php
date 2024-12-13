@@ -90,13 +90,15 @@
                                     @else
                                         Không có thương hiệu
                                     @endif
-                                    @if($pr->category_id)
-                                        <td>{{ $pr->category->name }}</td>
-                                    @else
-                                        <td>
+                                    <td>
+                                        @if($pr->category->isEmpty())
                                             Không có danh mục
-                                        </td>
-                                    @endif
+                                        @else
+                                            @foreach ($pr->category as $cate)
+                                                <span>{{ $cate->name }}</span><br>
+                                            @endforeach
+                                        @endif
+                                    </td>
                                     <td>
                                         @can('view', [App\Models\Product::class, $pr->id])
                                             <a href="{{ route('admin.product.edit', ['id' => $pr->id]) }}"

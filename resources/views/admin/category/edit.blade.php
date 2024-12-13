@@ -42,12 +42,6 @@
                                         @error('name')
                                             <div class="text-danger mt-3">{{ $message }}</div>
                                         @enderror
-                                    <select name="parent_id" class="form-control mt-3">
-                                        <option value="0">---Chọn danh mục---</option>
-                                        @foreach ($categories as $item)
-                                            <option value="{{$item['id']}}" {{ $item['id'] == $category->id ? 'selected' : '' }}>{{$item['name']}}</option>
-                                        @endforeach
-                                    </select>
                                 </div>
 
                             </div>
