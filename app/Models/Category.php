@@ -24,7 +24,7 @@ class Category extends Model
             ->saveSlugsTo('slug'); // Lưu vào trường 'slug'
     }
 
-    public function product(){
-        return $this->hasMany(Product::class);
+    public function products(){
+        return $this->belongsToMany(Product::class,'product_category','category_id','product_id');
     }
 }

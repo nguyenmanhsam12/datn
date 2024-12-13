@@ -9,7 +9,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Thương hiệu</h1>
+                        <h1>Thương hiệu đã xóa</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -23,11 +23,6 @@
 
         <!-- Main content -->
         <section class="content">
-
-            <!-- Default box -->
-            <a href="{{route('admin.brand.create')}}" class="btn btn-success mb-3">Thêm mới</a>
-
-            <a href="{{route('admin.brand.deleteAt')}}" class="btn btn-secondary mb-3">Thương hiệu đã xóa</a>
 
             <div class="card">
                 <div class="card-header">
@@ -54,13 +49,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($list_brand as $key => $item)
+                            @foreach ($softBrand as $key => $item)
                                 <tr>
                                     <td>{{$key + 1}}</td>
                                     <td>{{$item->name}}</td>
                                     <td>
-                                        <a href="{{route('admin.brand.edit',['id'=>$item->id])}}"class="btn btn-warning">Sửa</a>
-                                        <a href="{{route('admin.brand.deleteBrand',['id'=>$item->id])}}"class="btn btn-danger"onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa</a>
+                                        <a href="{{route('admin.brand.restore',['id'=>$item->id])}}"class="btn btn-warning">Khôi phục</a>
+                                        <a href="{{route('admin.brand.forceDeleteBrand',['id'=>$item->id])}}"class="btn btn-danger"onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa vĩnh viễn</a>
                                     </td>
                                 </tr>
                             @endforeach

@@ -30,7 +30,8 @@ class StoreProductRequest extends FormRequest
             'sku' => 'required|string|max:255',
             'description' => 'required|string',
             'description_text' => 'required|string',
-            'category_id' => 'required|integer',
+            'category_id' => 'required|array',
+            'category_id.*' => 'integer|exists:category,id', // Từng ID danh mục phải tồn tại
             'brand_id' => 'required|integer',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif',
             'gallary.*' => 'nullable|image|mimes:jpeg,png,jpg,gif',
@@ -52,6 +53,8 @@ class StoreProductRequest extends FormRequest
             'name.required' => 'Tên sản phẩm là bắt buộc.',
             'sku.required' => 'Mã sản phẩm là bắt buộc.',
             'category_id.required' => 'Danh mục là bắt buộc.',
+            'category_id.array' => 'Danh mục phải là một mảng.',
+            'category_id.*.exists' => 'Danh mục không hợp lệ.',
             'brand_id.required' => 'Thương hiệu là bắt buộc.',
             'image.required' => 'Hình ảnh chính là bắt buộc.',
             'description.required' => 'Mô tả ngắn là bắt buộc.',

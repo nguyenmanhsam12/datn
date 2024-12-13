@@ -26,6 +26,8 @@
             @can('create',App\Models\Category::class)
                 <a href="{{route('admin.category.create')}}" class="btn btn-success mb-3">Thêm mới</a>
             @endcan
+                <a href="{{route('admin.category.deleteAt')}}" class="btn btn-secondary mb-3">Danh mục đã xóa</a>
+
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Danh mục</h3>

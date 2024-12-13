@@ -76,20 +76,19 @@
                                     @enderror
                                 </div>
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Danh mục</label>
-                                    <select name="category_id" class="form-control">
-                                        <option value="">--Chọn danh mục--</option>
-                                        @foreach ($allCategory as $cate)
-                                            <option value="{{ $cate->id }}" {{$cate->id == $product->category_id ? 'selected' : ''}}>{{ $cate->name }}</option>
-                                        @endforeach
-                                    </select>
-
+                                    @foreach ($allCategory as $cate)
+                                        <input type="checkbox" name="category_id[]" value="{{ $cate->id }}"
+                                        @if($product->category->contains('id', $cate->id)) checked @endif
+                                        >
+                                        <label class="form-label">{{ $cate->name }}</label>
+                                    @endforeach
+                                
                                     @error('category_id')
                                         <div class="text-danger mt-3">{{ $message }}</div>
                                     @enderror
                                 </div>
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Tên danh mục</label>
+                                    <label for="exampleInputEmail1">Tên thương hiệu</label>
                                     <select name="brand_id" class="form-control">
                                         <option value="">--Chọn thương hiệu--</option>
                                         @foreach ($allBrand as $brand)

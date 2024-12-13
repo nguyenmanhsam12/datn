@@ -37,8 +37,6 @@ class ProductController extends Controller
 
             Log::info('list product',$validatedData);
 
-            
-
             // Lưu hình ảnh chính
             $imagePath = '';
             if (isset($validatedData['image'])) {
@@ -87,6 +85,10 @@ class ProductController extends Controller
                 'user_id' => 1,
                 
             ]);
+
+            
+            $product->category()->attach($validatedData['category_id']);
+            
     
             if (!empty($validatedData['variants'])) {
                 // Lưu các biến thể của sản phẩm
@@ -200,12 +202,14 @@ class ProductController extends Controller
                 'description' => $validatedData['description'],
                 'description_text' => $validatedData['description_text'],
                 'brand_id' => $validatedData['brand_id'],
-                'category_id' => $validatedData['category_id'],
+                
                 'sku' => $validatedData['sku'],
                 'image' => $imagePath,
                 'gallary' => json_encode($gallaryPaths),
                 'user_id' => 1,
             ]);
+
+            $product->category()->sync($validatedData['category_id']);
 
         return redirect()->route('admin.product.index')->with('success','Cập nhập sản phẩm thành công');
 

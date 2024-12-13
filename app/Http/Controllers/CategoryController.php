@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Components\Recursive;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -15,15 +14,13 @@ class CategoryController extends Controller
         return view('admin.category.list',compact('list_cate'));
     }
 
-    public function create(Recursive $recursive){
-        $categories=$recursive->getCategoryTree();
-        return view('admin.category.add',compact('categories'));
+    public function create(){
+        return view('admin.category.add');
     }
 
     public function store(Request $request){
         $request->validate([
             'name'=>'required|string|min:2|max:255|unique:brands,name',
-            'parent_id'=>'required|integer',
         ],[
             'name.required'=>'Tên danh mục buộc phải nhập',
         ]);
@@ -36,10 +33,9 @@ class CategoryController extends Controller
 
     }
 
-    public function edit(Recursive $recursive , $id){
+    public function edit($id){
         $category = Category::find($id);
-        $categories = $recursive->getCategoryTree();
-        return view('admin.category.edit',compact('category','categories'));
+        return view('admin.category.edit',compact('category'));
     }
 
     public function update(Request $request , $id){
@@ -48,7 +44,6 @@ class CategoryController extends Controller
 
         $data = $request->validate([
             'name'=>['required','string','min:2','max:255',Rule::unique('brands')->ignore($category)],
-            'parent_id'=>'required|integer',
         ],[
             'name.required'=>'Tên thương hiệu buộc phải nhập',
         ]);
@@ -62,9 +57,32 @@ class CategoryController extends Controller
     public function delete($id){
         $category = Category::find($id);
 
-        Product::where('category_id',$category->id)->update(['category_id'=>null]);
+        $category->products()->detach();
         
         $category->delete();
         return redirect()->route('admin.category.index')->with('success','Xóa thành công');
+    }
+
+    public function deleteAt(){
+        $softCategory = Category::onlyTrashed()->get();
+        return view('admin.category.delete',compact('softCategory'));
+    }
+
+    public function restore($id){
+        $category = Category::onlyTrashed()->find($id); // Lấy bản ghi bị xóa mềm
+        if ($category) {
+            $category->restore(); // Khôi phục bản ghi
+            return redirect()->back()->with('success', 'Danh mục đã được khôi phục!');
+        }
+        return redirect()->back()->with('error', 'Danh mục không tồn tại hoặc không bị xóa mềm.');
+    }
+
+    public function forceDeleteCategory($id){
+        $category = Category::onlyTrashed()->find($id); // Lấy bản ghi bị xóa mềm
+        if ($category) {
+            $category->forceDelete(); // Xóa vĩnh viễn
+            return redirect()->back()->with('success', 'Danh mục đã được xóa vĩnh viễn!');
+        }
+        return redirect()->back()->with('error', 'Danh mục không tồn tại hoặc không bị xóa mềm.');
     }
 }

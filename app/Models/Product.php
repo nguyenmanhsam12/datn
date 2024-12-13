@@ -18,7 +18,7 @@ class Product extends Model
 
     protected $table = 'products';
 
-    protected $fillable = ['name','slug','description','sku','image','gallary','brand_id','category_id','user_id',
+    protected $fillable = ['name','slug','description','sku','image','gallary','brand_id','user_id',
         'deleted_at','description_text'
     ];
 
@@ -46,7 +46,7 @@ class Product extends Model
 
     public function category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsToMany(Category::class,'product_category','product_id','category_id');
     }
 
     public function user()

@@ -226,6 +226,9 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::get('/edit/{id}',[BrandController::class,'edit'])->name('admin.brand.edit')->middleware('can:brand_edit,id');
         Route::put('/update/{id}',[BrandController::class,'updateBrand'])->name('admin.brand.updateBrand');
         Route::get('/delete/{id}',[BrandController::class,'deleteBrand'])->name('admin.brand.deleteBrand');
+        Route::get('/deleteAt',[BrandController::class,'deleteAt'])->name('admin.brand.deleteAt');
+        Route::get('/restore/{id}',[BrandController::class,'restore'])->name('admin.brand.restore');
+        Route::get('/forceDeleteProduct/{id}',[BrandController::class,'forceDeleteBrand'])->name('admin.brand.forceDeleteBrand');
     });
 
     Route::prefix('sizes')->group(function(){
@@ -247,6 +250,9 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::get('/edit/{id}',[CategoryController::class,'edit'])->name('admin.category.edit')->middleware('can:view,App\Models\Category');
         Route::put('/update/{id}',[CategoryController::class,'update'])->name('admin.category.update');
         Route::get('/delete/{id}',[CategoryController::class,'delete'])->name('admin.category.delete')->middleware('can:delete,App\Models\Category');
+        Route::get('/deleteAt',[CategoryController::class,'deleteAt'])->name('admin.category.deleteAt');
+        Route::get('/restore/{id}',[CategoryController::class,'restore'])->name('admin.category.restore');
+        Route::get('/forceDeleteProduct/{id}',[CategoryController::class,'forceDeleteCategory'])->name('admin.category.forceDeleteCategory');
     });
 
     Route::prefix('product')->group(function(){
