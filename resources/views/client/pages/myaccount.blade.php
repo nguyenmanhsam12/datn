@@ -176,6 +176,10 @@
         .pagination li a:hover {
             background-color: #e9ecef;
         }
+        /* modal */
+        .modal-body {
+            font-size: 1rem; 
+        }
     </style>
 @endpush
 
@@ -298,81 +302,77 @@
                                                                     <span aria-hidden="true">&times;</span>
                                                                 </button>
                                                             </div>
-                                                            <div class="modal-body d-flex justify-content-between">
-                                                                <div>
-                                                                    <ul>
-
-                                                                        @foreach ($or->cartItems as $item)
-                                                                            <li>
-                                                                                <strong>Sản phẩm:</strong>
-                                                                                {{ $item->product_name }}<br>
-                                                                                <strong>Kích cỡ:</strong>
-                                                                                {{ $item->size }}<br>
-                                                                                <strong>Số lượng:</strong>
-                                                                                {{ $item->quantity }}<br>
-                                                                                <strong>Giá tiền:</strong>
-                                                                                {{ number_format($item->price, 0, ',', '.') . ' VNĐ' }}<br>
-                                                                                <strong>Giá tiền giảm:</strong>
-                                                                                {{ number_format($or->discount_amount, 0, ',', '.') . ' VNĐ' }}<br>
-                                                                            </li>
-                                                                        @endforeach
-                                                                    </ul>
-                                                                    <p><strong>Phí vận chuyển:</strong>
-                                                                        {{ number_format($or->shipping_fee, 0, ',', '.') }}
-                                                                        VNĐ
-                                                                    </p>
-
-
-                                                                    <div class="payment-status">
-                                                                        Trạng thái thanh toán
+                                                            <div class="modal-body">
+                                                                <div class="table-responsive">
+                                                                    <table class="table table-bordered">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Sản phẩm</th>
+                                                                                <th>Kích cỡ</th>
+                                                                                <th>Số lượng</th>
+                                                                                <th>Giá tiền</th>
+                                                                                <th>Giá tiền giảm</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @foreach ($or->cartItems as $item)
+                                                                                <tr>
+                                                                                    <td>{{ $item->product_name }}</td>
+                                                                                    <td>{{ $item->size }}</td>
+                                                                                    <td>{{ $item->quantity }}</td>
+                                                                                    <td>{{ number_format($item->price, 0, ',', '.') . ' VNĐ' }}</td>
+                                                                                    <td>{{ number_format($or->discount_amount, 0, ',', '.') . ' VNĐ' }}</td>
+                                                                                </tr>
+                                                                            @endforeach
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            
+                                                                <p><strong>Phí vận chuyển:</strong> {{ number_format($or->shipping_fee, 0, ',', '.') }} VNĐ</p>
+                                                            
+                                                                <div class="payment-status">
+                                                                    <p>Trạng thái thanh toán: 
                                                                         @switch($or->payment_status)
                                                                             @case('pending')
-                                                                                <span class="badge bg-warning">Đang chờ thanh
-                                                                                    toán</span>
-                                                                            @break
-
+                                                                                <span class="badge bg-warning">Đang chờ thanh toán</span>
+                                                                                @break
                                                                             @case('paid')
                                                                                 <span class="badge bg-success">Đã thanh toán</span>
-                                                                            @break
-
+                                                                                @break
                                                                             @case('canceled')
                                                                                 <span class="badge bg-danger">Thanh toán bị hủy bỏ</span>
-                                                                            @break
-
+                                                                                @break
                                                                             @default
-                                                                                <span class="badge bg-secondary">Không rõ trạng
-                                                                                    thái</span>
+                                                                                <span class="badge bg-secondary">Không rõ trạng thái</span>
                                                                         @endswitch
-                                                                    </div>
-
-
-                                                                    <div class="payment-method">
-                                                                        Phương thức thanh toán:
-                                                                        <span
-                                                                            class="badge bg-secondary">{{ $or->payment->name }}</span>
-                                                                    </div>
-
-
-                                                                    <p><strong>Tổng tiền:</strong>
-                                                                        {{ number_format($newTotal, 0, ',', '.') }} VNĐ</p>
+                                                                    </p>
                                                                 </div>
-                                                                <div>
-                                                                    <ul>
-                                                                        <li>
-                                                                            <strong>Tên người nhận:</strong>
-                                                                            {{ $or->orderAddress->recipient_name }}<br>
-                                                                            <strong>Email người
-                                                                                nhận:</strong>{{ $or->orderAddress->recipient_email }}<br>
-                                                                            <strong>Địa
-                                                                                chỉ:</strong>{{ $or->orderAddress->address_order }},
-                                                                            {{ $or->orderAddress->ward }},
-                                                                            {{ $or->orderAddress->city }},
-                                                                            {{ $or->orderAddress->province }}<br>
-                                                                            <strong>Số điện thoại:</strong>
-                                                                            {{ $or->orderAddress->phone_number }}
-                                                                        </li>
-                                                                    </ul>
-
+                                                            
+                                                                <div class="payment-method">
+                                                                    <p>Phương thức thanh toán: <span class="badge bg-secondary">{{ $or->payment->name }}</span></p>
+                                                                </div>
+                                                            
+                                                                <p><strong>Tổng tiền:</strong> {{ number_format($newTotal, 0, ',', '.') }} VNĐ</p>
+                                                            
+                                                                <div class="table-responsive">
+                                                                    <table class="table table-bordered">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Tên người nhận</th>
+                                                                                <th>Email</th>
+                                                                                <th>Địa chỉ</th>
+                                                                                <th>Số điện thoại</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td>{{ $or->orderAddress->recipient_name }}</td>
+                                                                                <td>{{ $or->orderAddress->recipient_email }}</td>
+                                                                                <td>{{ $or->orderAddress->address_order }}, {{ $or->orderAddress->ward }}, {{ $or->orderAddress->city }}, {{ $or->orderAddress->province }}</td>
+                                                                                <td>{{ $or->orderAddress->phone_number }}</td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
                                                                 </div>
                                                             </div>
                                                             <div class="modal-footer">
