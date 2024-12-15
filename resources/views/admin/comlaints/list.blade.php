@@ -59,8 +59,10 @@
                                     <td>{{ $complain->user->name }}</td>
                                     <td>{{ $complain->created_at }}</td>
                                     <td>
+                                        @can('view',App\Models\Complaints::class)
                                         <a href="{{ route('admin.comlaints.detailComplaints', ['id' => $complain->id]) }}"
                                             class="btn btn-info"> Xem chi tiết
+                                        @endcan
                                             <a href="" class="btn btn-danger ml-1"> Xóa
                                     </td>
                                 </tr>

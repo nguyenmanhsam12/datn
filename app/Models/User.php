@@ -78,6 +78,7 @@ class User extends Authenticatable
         return $this->belongsTo(Ward::class,'ward_id');
     }
 
+    // hàm để check quyền
     public function checkPermissionAccess($permissionCheck){
         $roles = Auth::user()->roles;
         foreach($roles as $role){

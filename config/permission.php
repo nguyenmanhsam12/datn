@@ -44,6 +44,27 @@ return [
         'add-role'=>'role_role_add',
         'edit-role'=>'role_role_edit',
         'delete-role'=>'role_role_delete',
+        // 
+        'list-order'=>'order_order_list',
+        'edit-order'=>'order_order_edit',
+        'delete-order'=>'order_order_delete',
+        // coupon
+        'list-coupon'=>'coupon_coupon_list',
+        'add-coupon'=>'coupon_coupon_add',
+        'edit-coupon'=>'coupon_coupon_edit',
+        'delete-coupon'=>'coupon_coupon_delete',
+        // complaint
+        'list-complaint'=>'complaint_complaint_list',
+        'edit-complaint'=>'complaint_complaint_edit',
+        'delete-complaint'=>'complaint_complaint_delete',
+        // đánh giá
+        'list-review'=>'review_review_list',
+        'delete-review'=>'review_review_delete',
+        // bài viết
+        'list-post'=>'post_post_list',
+        'add-post'=>'post_post_add',
+        'edit-post'=>'post_post_edit',
+        'delete-post'=>'post_post_delete',
     ],  
 ];
 

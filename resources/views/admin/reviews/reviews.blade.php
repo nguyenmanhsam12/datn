@@ -51,11 +51,13 @@
                             </td>
                             <td>{{ $review->created_at->format('d/m/Y H:i') }}</td>
                             <td>
-                                <form action="{{ route('admin.reviews.destroy', $review->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa đánh giá này?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
-                                </form>
+                                @can('delete',App\Models\Review::class)
+                                    <form action="{{ route('admin.reviews.destroy', $review->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa đánh giá này?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                                    </form>
+                                @endcan
                             </td>
                         </tr>
                     @empty

@@ -223,7 +223,7 @@ class CheckoutController extends Controller
                 }
 
                 $productVariant->decrement('stock', $item->quantity);
-                $productVariant->selled = $item->quantity;
+                $productVariant->selled += $item->quantity;
                 $productVariant->save();
 
                 // Phát sự kiện cập nhật tồn kho

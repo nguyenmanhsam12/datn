@@ -71,11 +71,15 @@
                                 </select>
                             </td>
                             <td>
-                                <a href="{{ route('admin.order.detail', ['id' => $order->id]) }}"
-                                    class="btn btn-success btn-sm">Xem Chi Tiết</a>
-                                <a href="{{ route('admin.order.deleteOrder',['id'=>$order->id]) }}" class="btn btn-danger btn-sm"
-                                onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))"
-                                >Xóa</a>
+                                @can('view',App\Models\Order::class)
+                                    <a href="{{ route('admin.order.detail', ['id' => $order->id]) }}"
+                                        class="btn btn-success btn-sm">Xem Chi Tiết</a>
+                                @endcan
+                                @can('delete',App\Models\Order::class)
+                                    <a href="{{ route('admin.order.deleteOrder',['id'=>$order->id]) }}" class="btn btn-danger btn-sm"
+                                    onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))"
+                                    >Xóa</a>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach
@@ -124,9 +128,13 @@
 
                             if(data.message){
                                 alert(data.message); // Hiển thị thông báo thành công
+
+                                previousSelectedStatus = newStatus;
+
                                 dropdown.querySelectorAll('option').forEach(option => {
                                     option.disabled = parseInt(option.value) < newStatus;
                                 });
+
                             }
                             if(data.error){
                                 alert(data.error);
