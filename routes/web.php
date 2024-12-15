@@ -189,8 +189,10 @@ Route::get('/wishlist/{id}', [WishlistController::class, 'delWishlist'])->name('
 Route::prefix('admin')->middleware('checkadmin')->group(function(){
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('reviews', [ReviewController::class, 'index'])->name('admin.reviews.index');
-    Route::delete('reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
+    Route::get('reviews', [ReviewController::class, 'index'])->name('admin.reviews.index')
+            ->middleware('can:viewAny,App\Models\Review');
+    Route::delete('reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy')
+            ->middleware('can:delete,App\Models\Review');
    
 
     Route::prefix('user')->group(function(){
@@ -280,11 +282,13 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
     });
 
     Route::prefix('order')->group(function(){
-        Route::get('/',[OrderAdminController::class,'index'])->name('admin.order.index');
-        Route::get('/detail/{id}',[OrderAdminController::class,'detail'])->name('admin.order.detail');
+        Route::get('/',[OrderAdminController::class,'index'])->name('admin.order.index')
+                ->middleware('can:viewAny,App\Models\Order');
+        Route::get('/detail/{id}',[OrderAdminController::class,'detail'])->name('admin.order.detail')
+            ->middleware('can:view,App\Models\Order');
         Route::put('/admin/orders/update-status', [OrderAdminController::class, 'updateStatus'])->name('admin.order.updateStatus');
-        Route::put('/admin/orders/update-order', [OrderAdminController::class, 'updateOrder'])->name('admin.order.updateOrder');
-        Route::get('/admin/orders/delete-order/{id}', [OrderAdminController::class, 'deleteOrder'])->name('admin.order.deleteOrder');
+        Route::get('/admin/orders/delete-order/{id}', [OrderAdminController::class, 'deleteOrder'])->name('admin.order.deleteOrder')
+            ->middleware('can:delete,App\Models\Order');
     });
 
     Route::prefix('coupons')->group(function(){
@@ -298,36 +302,30 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
     });
 
     Route::prefix('comlaints')->group(function(){
-        Route::get('/',[ComplanintsController::class,'index'])->name('admin.comlaints.index');
-        Route::get('/detailComplaints/{id}',[ComplanintsController::class,'detailComplaints'])->name('admin.comlaints.detailComplaints');
+        Route::get('/',[ComplanintsController::class,'index'])->name('admin.comlaints.index')
+            ->middleware('can:viewAny,App\Models\Complaints');
+        Route::get('/detailComplaints/{id}',[ComplanintsController::class,'detailComplaints'])->name('admin.comlaints.detailComplaints')
+            ->middleware('can:view,App\Models\Complaints');
         Route::put('/updateComplaints/{id}',[ComplanintsController::class,'updateComplaints'])->name('admin.comlaints.updateComplaints');
 
-        Route::put('/admin/comlaints/update-status', [ComplanintsController::class, 'updateStatus'])->name('admin.comlaints.updateStatus');
+        // thiếu xóa
 
     });
 
-
-
-
-         // Quản lý bài viết
-         Route::get('posts', [PostController::class, 'index'])->name('admin.posts.index'); // Danh sách bài viết
-         Route::get('posts/create', [PostController::class, 'create'])->name('admin.posts.create'); // Form thêm bài viết
-         Route::post('posts', [PostController::class, 'store'])->name('admin.posts.store'); // Lưu bài viết mới
-         Route::get('posts/{id}/edit', [PostController::class, 'edit'])->name('admin.posts.edit'); // Form sửa bài viết
-         Route::put('admin/posts/{id}', [PostController::class, 'update'])->name('admin.posts.update');
+    // Quản lý bài viết
+    Route::get('posts', [PostController::class, 'index'])->name('admin.posts.index')
+        ->middleware('can:viewAny,App\Models\Post');
+    Route::get('posts/create', [PostController::class, 'create'])->name('admin.posts.create')
+        ->middleware('can:create,App\Models\Post');
+    Route::post('posts', [PostController::class, 'store'])->name('admin.posts.store'); // Lưu bài viết mới
+    Route::get('posts/{id}/edit', [PostController::class, 'edit'])->name('admin.posts.edit')
+        ->middleware('can:view,App\Models\Post');
+    Route::put('admin/posts/{id}', [PostController::class, 'update'])->name('admin.posts.update');
                 
-        Route::delete('admin/posts/{id}', [PostController::class, 'destroy'])->name('admin.posts.destroy');
-        Route::put('admin/posts/{id}/restore', [PostController::class, 'restore'])->name('admin.posts.restore');
-        Route::delete('admin/posts/{id}/forceDelete', [PostController::class, 'forceDelete'])->name('admin.posts.forceDelete');
-        Route::get('admin/posts/deleted', [PostController::class, 'deletedPosts'])->name('admin.posts.listDelete');
+    Route::delete('admin/posts/{id}', [PostController::class, 'destroy'])->name('admin.posts.destroy')
+        ->middleware('can:delete,App\Models\Post');
 
-
-
-    // Route::prefix('statistical')->group(function(){
-    //     Route::get('/',[StatisticsController::class,'index'])->name('admin.statistical.index');
-    //     Route::get('/bieudo',[StatisticsController::class,'bieudo'])->name('admin.statistical.bieudo');
-
-
-    // });
-
+    Route::put('admin/posts/{id}/restore', [PostController::class, 'restore'])->name('admin.posts.restore');
+    Route::delete('admin/posts/{id}/forceDelete', [PostController::class, 'forceDelete'])->name('admin.posts.forceDelete');
+    Route::get('admin/posts/deleted', [PostController::class, 'deletedPosts'])->name('admin.posts.listDelete');
 });

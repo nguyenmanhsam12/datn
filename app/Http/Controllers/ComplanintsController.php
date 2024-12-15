@@ -139,36 +139,6 @@ class ComplanintsController extends Controller
         return view('admin.comlaints.detail',compact('complain'));
     }
 
-    // cập nhật bằng js
-    public function updateStatus(Request $request)
-    {
-        $data = $request->all();
-
-        $complaintId = $data['complantId'];
-        $newStatus = $data['status'];
-
-        $complaint = Complaints::find($complaintId);
-
-        if ($complaint) {
-            // Kiểm tra trạng thái hợp lệ
-            if ($newStatus == 'Giải quyết thành công') {
-                $complaint->status = $newStatus;
-                $complaint->save();
-
-                return response()->json([
-                    'message' => 'Cập nhật trạng thái khiếu nại thành công!',
-                ], 200);
-            }
-
-            return response()->json([
-                'error' => 'Trạng thái không hợp lệ hoặc đã được chọn!',
-            ], 400);
-        }
-
-        return response()->json([
-            'error' => 'Không tìm thấy khiếu nại!',
-        ], 404);
-    }
 
     // cập nhâp form thường
     public function updateComplaints(Request $request, $id)

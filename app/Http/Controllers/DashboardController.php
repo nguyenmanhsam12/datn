@@ -76,7 +76,9 @@ $totalReviewsCount = Review::count();
         ->get();
 
 
-        $sanPham = ProductVariants::with('product') // Quan hệ với bảng products để lấy tên sản phẩm
+        $sanPham = ProductVariants::whereHas('product',function($query){
+            $query->where('deleted_at','=',null);
+        }) // Quan hệ với bảng products để lấy tên sản phẩm
         ->select('product_id', DB::raw('SUM(stock) as total_stock')) // Tính tổng số lượng tồn kho cho mỗi sản phẩm
         ->groupBy('product_id') // Nhóm theo product_id để tính tổng tồn kho cho mỗi sản phẩm
         ->get();
@@ -127,9 +129,11 @@ $totalReviewsCount = Review::count();
         $revenueByCoupon = Coupon::withSum('orders', 'total_amount')->get();
 
         // Tồn kho
-        $inventoryStats = ProductVariants::with('product', 'size')  // Eager load thông tin sản phẩm và kích cỡ
-            ->whereNull('deleted_at')  // Lọc các sản phẩm chưa bị xóa (nếu có soft delete)
-            ->get();
+        $inventoryStats = ProductVariants::with('size')  
+        ->whereHas('product',function($query){
+            $query->where('deleted_at','=',NULL);
+        })
+        ->get();
 
         // Chuyển đổi dữ liệu tồn kho
         $inventoryData = $inventoryStats->map(function ($inventory) {
@@ -142,6 +146,8 @@ $totalReviewsCount = Review::count();
                 'weight' => number_format($inventory->weight, 2),
             ];
         });
+
+        
 
         // Trạng thái đơn hàng
         $orderStatusCounts = Order::select('status_id', DB::raw('count(*) as count'))

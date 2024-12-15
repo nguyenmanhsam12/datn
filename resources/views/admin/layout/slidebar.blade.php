@@ -40,7 +40,7 @@
                 with font-awesome or any other icon font library -->
 
                 <li class="nav-item ">
-                    <a href="{{route('dashboard')}}" class="nav-link ">
+                    <a href="{{ route('dashboard') }}" class="nav-link ">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>
                             Dashboard
@@ -61,14 +61,14 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{route('admin.user.index')}}" class="nav-link">
+                            <a href="{{ route('admin.user.index') }}" class="nav-link">
 
                                 <p>Danh sách Tài Khoản</p>
                             </a>
                         </li>
-                        @can('create',App\Models\User::class)
+                        @can('create', App\Models\User::class)
                             <li class="nav-item">
-                                <a href="{{route('admin.user.create')}}" class="nav-link">
+                                <a href="{{ route('admin.user.create') }}" class="nav-link">
                                     <p>Thêm Tài Khoản</p>
                                 </a>
                             </li>
@@ -86,23 +86,23 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        @can('viewAny',App\Models\Role::class)
+                        @can('viewAny', App\Models\Role::class)
                             <li class="nav-item">
-                                <a href="{{route('admin.role.index')}}" class="nav-link">
+                                <a href="{{ route('admin.role.index') }}" class="nav-link">
                                     <p>Danh sách vai trò</p>
                                 </a>
                             </li>
                         @endcan
-                        @can('create',App\Models\Permission::class)
+                        @can('create', App\Models\Permission::class)
                             <li class="nav-item">
-                                <a href="{{route('admin.permission.createPermission')}}" class="nav-link">
+                                <a href="{{ route('admin.permission.createPermission') }}" class="nav-link">
                                     <p>Thêm quyền</p>
                                 </a>
                             </li>
                         @endcan
                     </ul>
                 </li>
-                
+
                 {{--  brand --}}
                 <li class="nav-item ">
                     <a href="#" class="nav-link ">
@@ -115,7 +115,7 @@
                     <ul class="nav nav-treeview">
                         @can('brand_list')
                             <li class="nav-item">
-                                <a href="{{route('admin.brand.index')}}" class="nav-link">
+                                <a href="{{ route('admin.brand.index') }}" class="nav-link">
 
                                     <p>Danh sách thương hiệu</p>
                                 </a>
@@ -123,7 +123,7 @@
                         @endcan
                         @can('brand_add')
                             <li class="nav-item">
-                                <a href="{{route('admin.brand.create')}}" class="nav-link">
+                                <a href="{{ route('admin.brand.create') }}" class="nav-link">
                                     <p>Thêm thương hiệu</p>
                                 </a>
                             </li>
@@ -141,17 +141,17 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        @can('viewAny',App\Models\Size::class)
+                        @can('viewAny', App\Models\Size::class)
                             <li class="nav-item">
-                                <a href="{{route('admin.size.index')}}" class="nav-link">
-                                    
+                                <a href="{{ route('admin.size.index') }}" class="nav-link">
+
                                     <p>Danh sách kích cỡ</p>
                                 </a>
                             </li>
                         @endcan
-                        @can('create',App\Models\Size::class)
+                        @can('create', App\Models\Size::class)
                             <li class="nav-item">
-                                <a href="{{route('admin.size.create')}}" class="nav-link">
+                                <a href="{{ route('admin.size.create') }}" class="nav-link">
                                     <p>Thêm kích cỡ</p>
                                 </a>
                             </li>
@@ -169,19 +169,19 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        @can('viewAny',App\Models\Category::class)
-                        <li class="nav-item">
-                            <a href="{{route('admin.category.index')}}" class="nav-link">
-                                <p>Danh sách danh mục</p>
-                            </a>
-                        </li>
+                        @can('viewAny', App\Models\Category::class)
+                            <li class="nav-item">
+                                <a href="{{ route('admin.category.index') }}" class="nav-link">
+                                    <p>Danh sách danh mục</p>
+                                </a>
+                            </li>
                         @endcan
-                        @can('create',App\Models\Category::class)
-                        <li class="nav-item">
-                            <a href="{{route('admin.category.create')}}" class="nav-link">
-                                <p>Thêm danh mục</p>
-                            </a>
-                        </li>
+                        @can('create', App\Models\Category::class)
+                            <li class="nav-item">
+                                <a href="{{ route('admin.category.create') }}" class="nav-link">
+                                    <p>Thêm danh mục</p>
+                                </a>
+                            </li>
                         @endcan
                     </ul>
                 </li>
@@ -196,20 +196,20 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        @can('viewAny',App\Models\Product::class)
-                        <li class="nav-item">
-                            <a href="{{route('admin.product.index')}}" class="nav-link">
+                        @can('viewAny', App\Models\Product::class)
+                            <li class="nav-item">
+                                <a href="{{ route('admin.product.index') }}" class="nav-link">
 
-                                <p>Danh sách sản phẩm</p>
-                            </a>
-                        </li>
+                                    <p>Danh sách sản phẩm</p>
+                                </a>
+                            </li>
                         @endcan
-                        @can('create',App\Models\Product::class)
-                        <li class="nav-item">
-                            <a href="{{route('admin.product.create')}}" class="nav-link">
-                                <p>Thêm sản phẩm</p>
-                            </a>
-                        </li>
+                        @can('create', App\Models\Product::class)
+                            <li class="nav-item">
+                                <a href="{{ route('admin.product.create') }}" class="nav-link">
+                                    <p>Thêm sản phẩm</p>
+                                </a>
+                            </li>
                         @endcan
                     </ul>
                 </li>
@@ -224,9 +224,9 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        @can('viewAny',App\Models\ProductVariants::class)
+                        @can('viewAny', App\Models\ProductVariants::class)
                             <li class="nav-item">
-                                <a href="{{route('admin.variant.index')}}" class="nav-link">
+                                <a href="{{ route('admin.variant.index') }}" class="nav-link">
                                     <p>Danh sách thuộc tính</p>
                                 </a>
                             </li>
@@ -244,11 +244,13 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{route('admin.order.index')}}" class="nav-link">
-                                <p>Danh Sách Đơn Hàng</p>
-                            </a>
-                        </li>
+                        @can('viewAny', App\Models\Order::class)
+                            <li class="nav-item">
+                                <a href="{{ route('admin.order.index') }}" class="nav-link">
+                                    <p>Danh Sách Đơn Hàng</p>
+                                </a>
+                            </li>
+                        @endcan
                     </ul>
                 </li>
 
@@ -263,13 +265,13 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            @can('viewAny',App\Models\Coupon::class)
-                                <a href="{{route('admin.coupons.index')}}" class="nav-link">
+                            @can('viewAny', App\Models\Coupon::class)
+                                <a href="{{ route('admin.coupons.index') }}" class="nav-link">
                                     <p>Danh Sách Mã</p>
                                 </a>
                             @endcan
-                            @can('create',App\Models\Coupon::class)
-                                <a href="{{route('admin.coupons.create')}}" class="nav-link">
+                            @can('create', App\Models\Coupon::class)
+                                <a href="{{ route('admin.coupons.create') }}" class="nav-link">
                                     <p>Thêm mã giảm giá</p>
                                 </a>
                             @endcan
@@ -287,52 +289,58 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{route('admin.comlaints.index')}}" class="nav-link">
-                                <p>Danh Sách Khiếu nại</p>
-                            </a>
-                        </li>
+                        @can('viewAny', App\Models\Complaints::class)
+                            <li class="nav-item">
+                                <a href="{{ route('admin.comlaints.index') }}" class="nav-link">
+                                    <p>Danh Sách Khiếu nại</p>
+                                </a>
+                            </li>
+                        @endcan
                     </ul>
                 </li>
 
 
-                       {{-- Đánh giá --}}
-                       <li class="nav-item ">
-                        <a href="#" class="nav-link ">
-                            <i class="nav-icon fas fa-star"></i>
-                            <p>
-                                Đánh giá
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
+                {{-- Đánh giá --}}
+                <li class="nav-item ">
+                    <a href="#" class="nav-link ">
+                        <i class="nav-icon fas fa-star"></i>
+                        <p>
+                            Đánh giá
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        @can('viewAny', App\Models\Review::class)
                             <li class="nav-item">
-                                <a href="{{route('admin.reviews.index')}}" class="nav-link">
+                                <a href="{{ route('admin.reviews.index') }}" class="nav-link">
                                     <p>Danh Sách Đánh Giá</p>
                                 </a>
-                                
+
                             </li>
-                        </ul>
-                    </li>
-                                                               {{--  Bài viết --}}
-                                                               <li class="nav-item ">
-                                                                <a href="#" class="nav-link ">
-                                                                    <i class="nav-icon fas fa-pen-nib"></i>
-                                                                    <p>
-                                                                       Bài viết
-                                                                        <i class="right fas fa-angle-left"></i>
-                                                                    </p>
-                                                                </a>
-                                                                <ul class="nav nav-treeview">
-                                                                    <li class="nav-item">
-                                                                        <a href="{{route('admin.posts.index')}}" class="nav-link">
-                                                                            <p>Danh Sách Bài viết</p>
-                                                                        </a>
-                                                                        
-                                                                    </li>
-                                                                </ul>
-                                                            </li>
-    
+                        @endcan
+                    </ul>
+                </li>
+                {{--  Bài viết --}}
+                <li class="nav-item ">
+                    <a href="#" class="nav-link ">
+                        <i class="nav-icon fas fa-pen-nib"></i>
+                        <p>
+                            Bài viết
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        @can('viewAny',App\Models\Post::class)
+                            <li class="nav-item">
+                                <a href="{{ route('admin.posts.index') }}" class="nav-link">
+                                    <p>Danh Sách Bài viết</p>
+                                </a>
+
+                            </li>
+                        @endcan
+                    </ul>
+                </li>
+
 
 
             </ul>
