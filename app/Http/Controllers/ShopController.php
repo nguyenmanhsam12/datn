@@ -33,7 +33,7 @@ class ShopController extends Controller
         $endItem = min($startItem + $list_product->count() - 1, $list_product->total());
         
         return view('client.pages.shop', compact('list_brand','list_category','list_product',
-            'minPrice','maxPrice','startItem','endItem'
+            'newMinPrice','newMaxPrice','startItem','endItem','minPrice','maxPrice',
         ));
     }
 
@@ -58,7 +58,7 @@ class ShopController extends Controller
         }
 
     
-        return $query->paginate(6);
+        return $query->paginate(9);
     }
 
   
@@ -81,7 +81,7 @@ class ShopController extends Controller
         $endItem = min($startItem + $products->count() - 1, $products->total());
         
         return view('client.pages.shop_category', compact('products','category','list_brand','list_category'
-            ,'startItem','endItem','minPrice','maxPrice'
+            ,'startItem','endItem','minPrice','maxPrice','newMinPrice','newMaxPrice'
         ));
     }
 
@@ -107,7 +107,7 @@ class ShopController extends Controller
         $endItem = min($startItem + $products->count() - 1, $products->total());
         
         return view('client.pages.shop_brand', compact('products', 'branD','list_brand','list_category'
-            ,'startItem','endItem','minPrice','maxPrice'
+            ,'startItem','endItem','minPrice','maxPrice','newMinPrice','newMaxPrice'
         ));
     }
 

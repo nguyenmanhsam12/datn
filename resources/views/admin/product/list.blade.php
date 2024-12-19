@@ -47,7 +47,9 @@
             @can('create', App\Models\Product::class)
                 <a href="{{ route('admin.product.create') }}" class="btn btn-success mb-3">Thêm mới</a>
             @endcan
+            @can('viewTrashed', App\Models\Product::class)
                 <a href="{{ route('admin.product.deleteAt') }}" class="btn btn-secondary mb-3">Sản phẩm đã xóa</a>
+            @endcan
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Sản phẩm</h3>
@@ -85,11 +87,13 @@
                                         <img src="{{ $pr->image }}" alt="" width="100" height="100">
                                     </td>
                                     <td>{{ $pr->sku }}</td>
-                                    @if($pr->brand_id)
-                                        <td>{{ $pr->brand->name }}</td>
-                                    @else
-                                        Không có thương hiệu
-                                    @endif
+                                    <td>
+                                        @if(!$pr->brand)
+                                            Không có thương hiệu
+                                        @else
+                                            <span>{{ $pr->brand->name }}</span><br>
+                                        @endif
+                                    </td>
                                     <td>
                                         @if($pr->category->isEmpty())
                                             Không có danh mục

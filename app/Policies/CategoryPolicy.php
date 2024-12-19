@@ -51,16 +51,22 @@ class CategoryPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Category $category)
+    public function restore(User $user)
     {
-        //
+        return $user->checkPermissionAccess(config('permission.access.restore-category'));
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Category $category)
+    public function forceDelete(User $user)
     {
-        //
+        return $user->checkPermissionAccess(config('permission.access.fordelete-category'));
     }
+
+    public function viewTrashed(User $user)
+    {
+        return $user->checkPermissionAccess(config('permission.access.listdeleted-category'));
+    }
+
 }

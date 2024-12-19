@@ -311,7 +311,6 @@
                                                                                 <th>Kích cỡ</th>
                                                                                 <th>Số lượng</th>
                                                                                 <th>Giá tiền</th>
-                                                                                <th>Giá tiền giảm</th>
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
@@ -321,13 +320,14 @@
                                                                                     <td>{{ $item->size }}</td>
                                                                                     <td>{{ $item->quantity }}</td>
                                                                                     <td>{{ number_format($item->price, 0, ',', '.') . ' VNĐ' }}</td>
-                                                                                    <td>{{ number_format($or->discount_amount, 0, ',', '.') . ' VNĐ' }}</td>
                                                                                 </tr>
                                                                             @endforeach
                                                                         </tbody>
                                                                     </table>
                                                                 </div>
-                                                            
+                                                                
+                                                                <p><strong>Giá tiền giảm:</strong> {{ number_format($or->discount_amount, 0, ',', '.') }} VNĐ</p>
+
                                                                 <p><strong>Phí vận chuyển:</strong> {{ number_format($or->shipping_fee, 0, ',', '.') }} VNĐ</p>
                                                             
                                                                 <div class="payment-status">
@@ -510,7 +510,7 @@
         });
 
         // nút xác nhận đơn hàng  
-        function confirmOrder(){
+        window.confirmOrder = function(){
             document.querySelectorAll('.confirm-order').forEach(button => {
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -634,7 +634,7 @@
         }
         confirmOrder();
         // nút hủy bỏ đơn hàng
-        function cancelOrder(){
+        window.cancelOrder = function(){
             document.querySelectorAll('.cancel-order').forEach(button => {
                 button.addEventListener('click', function(e) {
                     e.preventDefault();

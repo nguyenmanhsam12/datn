@@ -9,12 +9,12 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Thương hiệu</h1>
+                        <h1>Danh sách tài khoản đã xóa</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
-                            <li class="breadcrumb-item active">Thương hiệu</li>
+                            <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Tài Khoản</li>
                         </ol>
                     </div>
                 </div>
@@ -23,19 +23,9 @@
 
         <!-- Main content -->
         <section class="content">
-
-            <!-- Default box -->
-            @can('brand_add', App\Models\Brand::class)
-                <a href="{{route('admin.brand.create')}}" class="btn btn-success mb-3">Thêm mới</a>
-            @endcan
-
-            @can('brand_listdeleted', App\Models\Brand::class)
-                <a href="{{route('admin.brand.deleteAt')}}" class="btn btn-secondary mb-3">Thương hiệu đã xóa</a>
-            @endcan
-
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Thương hiệu</h3>
+                    <h3 class="card-title">User</h3>
 
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -47,27 +37,31 @@
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped projects" id="list_brand">
+                    <table class="table table-striped projects" id="list_user" class="display">
                         <thead>
                             <tr>
                                 <th>
                                     #
                                 </th>
-                                <th>Tên thương hiệu</th>
+                                <th>Tên người dùng</th>
+                                <th>Email</th>
+                                <th>Số điện thoại</th>
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($list_brand as $key => $item)
+                            @foreach ($softUser as $key => $item)
                                 <tr>
                                     <td>{{$key + 1}}</td>
                                     <td>{{$item->name}}</td>
+                                    <td>{{ $item->email }}</td>
+                                    <td>{{ $item->phone_number }}</td>
                                     <td>
-                                        @can('brand_edit',App\Models\Brand::class)
-                                            <a href="{{route('admin.brand.edit',['id'=>$item->id])}}"class="btn btn-warning">Sửa</a>
+                                        @can('restore', [App\Models\User::class, $item->id])
+                                                <a href="{{route('admin.user.restore',['id'=>$item->id])}}"class="btn btn-warning">Khôi phục</a>
                                         @endcan
-                                        @can('brand_delete',App\Models\Brand::class)
-                                            <a href="{{route('admin.brand.deleteBrand',['id'=>$item->id])}}"class="btn btn-danger"onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa</a>
+                                        @can('forceDelete', [App\Models\User::class, $item->id])
+                                                <a href="{{route('admin.user.forceDeleteUser',['id'=>$item->id])}}"class="btn btn-danger"onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa vĩnh viễn</a>
                                         @endcan
                                     </td>
                                 </tr>
@@ -86,7 +80,7 @@
 
 @push('script')
     <script>
-        let table = new DataTable('#list_brand');
+        let table = new DataTable('#list_user');
 
     </script>
 @endpush

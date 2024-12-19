@@ -25,7 +25,7 @@ class DashboardController extends Controller
 $totalReviewsCount = Review::count();
         // Đếm số lượng tổng quanssldh
         $sldh = Order::count();
-        $khieuNai=Complaints::count();
+        $khieuNai=Complaints::where('status','Chờ xử lý')->count();
         $totalProducts = Product::count();
         $totalAdmins = User::count();
         $doanhThu = Order::whereHas('orderStatus', function ($query) {

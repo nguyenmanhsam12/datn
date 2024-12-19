@@ -7,12 +7,12 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Sản phẩm</h1>
+                        <h1>Đánh giá</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
-                            <li class="breadcrumb-item active">Sản phẩm</li>
+                            <li class="breadcrumb-item active">Đánh giá</li>
                         </ol>
                     </div>
                 </div>
@@ -22,13 +22,12 @@
         <!-- Main content -->
         <section class="content">
 
-            <h1 class="mb-4">Quản lý đánh giá</h1>
 
             @if(session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
+                <div class="alert alert-success ">{{ session('success') }}</div>
             @endif
         
-            <table class="table table-bordered">
+            <table class="table table-bordered mt-4" id="list-review">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -74,7 +73,6 @@
 
 @push('script')
     <script>
-        let table = new DataTable('#list_product');
-
+        let table = new DataTable('#list-review');
     </script>
 @endpush

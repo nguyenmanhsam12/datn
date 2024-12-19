@@ -93,13 +93,13 @@
                                 </a>
                             </li>
                         @endcan
-                        @can('create', App\Models\Permission::class)
-                            <li class="nav-item">
+                      
+                            {{-- <li class="nav-item">
                                 <a href="{{ route('admin.permission.createPermission') }}" class="nav-link">
                                     <p>Thêm quyền</p>
                                 </a>
-                            </li>
-                        @endcan
+                            </li> --}}
+                        
                     </ul>
                 </li>
 

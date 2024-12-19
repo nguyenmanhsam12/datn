@@ -90,11 +90,15 @@
                                             Không có danh mục
                                         </td>
                                     @endif
-                                    <td>
+                                    <td>    
+                                        @can('restore', [App\Models\Product::class, $pr->id])
                                             <a href="{{ route('admin.product.restore', ['id' => $pr->id]) }}"
                                                 class="btn btn-warning">Khôi phục</a>
+                                        @endcan
+                                        @can('forceDelete', [App\Models\Product::class, $pr->id])
                                             <a href="{{ route('admin.product.forceDeleteProduct', ['id' => $pr->id]) }}" class="btn btn-danger"
                                                 onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa vĩnh viễn</a>
+                                        @endcan
                                     </td>
                                 </tr>
 

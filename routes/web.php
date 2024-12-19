@@ -19,6 +19,7 @@ use App\Http\Controllers\SizeController;
 use App\Http\Controllers\VariantController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MyAccountController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderAdminController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ShopController;
@@ -189,6 +190,11 @@ Route::get('/wishlist/{id}', [WishlistController::class, 'delWishlist'])->name('
 Route::prefix('admin')->middleware('checkadmin')->group(function(){
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/api/notifications', [NotificationController::class, 'fetchNotifications'])->name('fetchNotifications');
+    // dánh dấu đọc thông báo
+    Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
+
+
     Route::get('reviews', [ReviewController::class, 'index'])->name('admin.reviews.index')
             ->middleware('can:viewAny,App\Models\Review');
     Route::delete('reviews/{id}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy')
@@ -201,7 +207,13 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::post('/store',[UserController::class,'store'])->name('admin.user.store');
         Route::get('/edit/{id}',[UserController::class,'edit'])->name('admin.user.edit')->middleware('can:view,App\Models\User,id');
         Route::put('/update/{id}',[UserController::class,'update'])->name('admin.user.update');
-        Route::get('/delete/{id}',[UserController::class,'delete'])->name('admin.user.delete')->middleware('can:delete,App\Models\User');
+        Route::get('/delete/{id}',[UserController::class,'delete'])->name('admin.user.delete')->middleware('can:delete,App\Models\User,id');
+        Route::get('/deleteAt',[UserController::class,'deleteAt'])->name('admin.user.deleteAt')
+                    ->middleware('can:viewTrashed,App\Models\User');
+        Route::get('/restore/{id}',[UserController::class,'restore'])->name('admin.user.restore')
+                    ->middleware('can:restore,App\Models\User,id');
+        Route::get('/forceDeleteUser/{id}',[UserController::class,'forceDeleteUser'])->name('admin.user.forceDeleteUser')
+                    ->middleware('can:forceDelete,App\Models\User,id');
     });
 
     Route::prefix('role')->group(function(){
@@ -216,8 +228,7 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
 
     Route::prefix('permission')->group(function(){
         Route::get('/create',[PermissionController::class,'createPermission'])
-            ->name('admin.permission.createPermission')
-            ->middleware('can:create,App\Models\Permission');
+            ->name('admin.permission.createPermission');
         Route::post('/store',[PermissionController::class,'store'])->name('admin.permission.store');
     });
 
@@ -227,10 +238,14 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::post('/storeBrand',[BrandController::class,'storeBrand'])->name('admin.brand.storeBrand');
         Route::get('/edit/{id}',[BrandController::class,'edit'])->name('admin.brand.edit')->middleware('can:brand_edit,id');
         Route::put('/update/{id}',[BrandController::class,'updateBrand'])->name('admin.brand.updateBrand');
-        Route::get('/delete/{id}',[BrandController::class,'deleteBrand'])->name('admin.brand.deleteBrand');
-        Route::get('/deleteAt',[BrandController::class,'deleteAt'])->name('admin.brand.deleteAt');
-        Route::get('/restore/{id}',[BrandController::class,'restore'])->name('admin.brand.restore');
-        Route::get('/forceDeleteProduct/{id}',[BrandController::class,'forceDeleteBrand'])->name('admin.brand.forceDeleteBrand');
+        Route::get('/delete/{id}',[BrandController::class,'deleteBrand'])->name('admin.brand.deleteBrand')
+            ->middleware('can:brand_delete');
+        Route::get('/deleteAt',[BrandController::class,'deleteAt'])->name('admin.brand.deleteAt')
+            ->middleware('can:brand_listdeleted');
+        Route::get('/restore/{id}',[BrandController::class,'restore'])->name('admin.brand.restore')
+            ->middleware('can:brand_restore');
+        Route::get('/forceDeleteBrand/{id}',[BrandController::class,'forceDeleteBrand'])->name('admin.brand.forceDeleteBrand')
+            ->middleware('can:brand_fordelete');
     });
 
     Route::prefix('sizes')->group(function(){
@@ -252,9 +267,12 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::get('/edit/{id}',[CategoryController::class,'edit'])->name('admin.category.edit')->middleware('can:view,App\Models\Category');
         Route::put('/update/{id}',[CategoryController::class,'update'])->name('admin.category.update');
         Route::get('/delete/{id}',[CategoryController::class,'delete'])->name('admin.category.delete')->middleware('can:delete,App\Models\Category');
-        Route::get('/deleteAt',[CategoryController::class,'deleteAt'])->name('admin.category.deleteAt');
-        Route::get('/restore/{id}',[CategoryController::class,'restore'])->name('admin.category.restore');
-        Route::get('/forceDeleteProduct/{id}',[CategoryController::class,'forceDeleteCategory'])->name('admin.category.forceDeleteCategory');
+        Route::get('/deleteAt',[CategoryController::class,'deleteAt'])->name('admin.category.deleteAt')
+                ->middleware('can:viewTrashed,App\Models\Category');
+        Route::get('/restore/{id}',[CategoryController::class,'restore'])->name('admin.category.restore')
+                ->middleware('can:restore,App\Models\Category');
+        Route::get('/forceDeleteCategory/{id}',[CategoryController::class,'forceDeleteCategory'])->name('admin.category.forceDeleteCategory')
+                ->middleware('can:forceDelete,App\Models\Category');
     });
 
     Route::prefix('product')->group(function(){
@@ -265,11 +283,12 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::get('/edit/{id}',[ProductController::class,'edit'])->name('admin.product.edit')->middleware('can:view,App\Models\Product,id');
         Route::put('/update/{id}',[ProductController::class,'update'])->name('admin.product.update');
         Route::get('/delete/{id}',[ProductController::class,'delete'])->name('admin.product.delete')->middleware('can:delete,App\Models\Product,id');
-        Route::get('/deleteAt',[ProductController::class,'deleteAt'])->name('admin.product.deleteAt');
-        Route::get('/restore/{id}',[ProductController::class,'restore'])->name('admin.product.restore');
-        Route::get('/forceDeleteProduct/{id}',[ProductController::class,'forceDeleteProduct'])->name('admin.product.forceDeleteProduct');
-
-
+        Route::get('/deleteAt',[ProductController::class,'deleteAt'])->name('admin.product.deleteAt')
+                ->middleware('can:viewTrashed,App\Models\Product');
+        Route::get('/restore/{id}',[ProductController::class,'restore'])->name('admin.product.restore')
+                ->middleware('can:restore,App\Models\Product,id');
+        Route::get('/forceDeleteProduct/{id}',[ProductController::class,'forceDeleteProduct'])->name('admin.product.forceDeleteProduct')
+                ->middleware('can:forceDelete,App\Models\Product,id');
     });
 
     Route::prefix('variant')->group(function(){
@@ -318,14 +337,19 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
     Route::get('posts/create', [PostController::class, 'create'])->name('admin.posts.create')
         ->middleware('can:create,App\Models\Post');
     Route::post('posts', [PostController::class, 'store'])->name('admin.posts.store'); // Lưu bài viết mới
-    Route::get('posts/{id}/edit', [PostController::class, 'edit'])->name('admin.posts.edit')
-        ->middleware('can:view,App\Models\Post');
+
+    Route::get('posts/edit/{id}', [PostController::class, 'edit'])->name('admin.posts.edit')
+        ->middleware('can:view,App\Models\Post,id');
+        
     Route::put('admin/posts/{id}', [PostController::class, 'update'])->name('admin.posts.update');
                 
     Route::delete('admin/posts/{id}', [PostController::class, 'destroy'])->name('admin.posts.destroy')
-        ->middleware('can:delete,App\Models\Post');
+        ->middleware('can:delete,App\Models\Post,id');
 
-    Route::put('admin/posts/{id}/restore', [PostController::class, 'restore'])->name('admin.posts.restore');
-    Route::delete('admin/posts/{id}/forceDelete', [PostController::class, 'forceDelete'])->name('admin.posts.forceDelete');
-    Route::get('admin/posts/deleted', [PostController::class, 'deletedPosts'])->name('admin.posts.listDelete');
+    Route::put('admin/posts/{id}/restore', [PostController::class, 'restore'])->name('admin.posts.restore')
+        ->middleware('can:restore,App\Models\Post,id');
+    Route::delete('admin/posts/{id}/forceDelete', [PostController::class, 'forceDelete'])->name('admin.posts.forceDelete')
+        ->middleware('can:forceDelete,App\Models\Post,id');
+    Route::get('admin/posts/deleted', [PostController::class, 'deletedPosts'])->name('admin.posts.listDelete')
+        ->middleware('can:viewTrashed,App\Models\Post');
 });
