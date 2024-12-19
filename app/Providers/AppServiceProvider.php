@@ -37,6 +37,16 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('brand_delete',function($user){  
             return $user->checkPermissionAccess(config('permission.access.delete-brand'));
         });
+        Gate::define('brand_listdeleted',function($user){  
+            return $user->checkPermissionAccess(config('permission.access.listdeleted-brand'));
+        });
+        Gate::define('brand_restore',function($user){  
+            return $user->checkPermissionAccess(config('permission.access.restore-brand'));
+        });
+        Gate::define('brand_fordelete',function($user){  
+            return $user->checkPermissionAccess(config('permission.access.fordelete-brand'));
+        });
+
         Paginator::useBootstrap();
 
     }

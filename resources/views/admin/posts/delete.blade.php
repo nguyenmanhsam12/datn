@@ -26,7 +26,7 @@
             @if($deletedPosts->isEmpty())
                 <p>Không có bài viết đã xóa.</p>
             @else
-                <table class="table">
+                <table class="table" id="deleted-post">
                     <thead>
                         <tr>
                             <th>Tiêu đề</th>
@@ -43,16 +43,20 @@
 
                                 <td>{{ $post->deleted_at->format('d-m-Y H:i') }}</td>
                                 <td>
-                                    <form action="{{ route('admin.posts.restore', $post->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('PUT')
-                                        <button type="submit" class="btn btn-primary">Phục hồi</button>
-                                    </form>
-                                    <form action="{{ route('admin.posts.forceDelete', $post->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn bài viết này?')">Xóa vĩnh viễn</button>
-                                    </form>
+                                    @can('restore', [App\Models\Post::class, $post->id])
+                                        <form action="{{ route('admin.posts.restore', $post->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit" class="btn btn-primary">Khôi phục</button>
+                                        </form>
+                                    @endcan
+                                    @can('forceDelete', [App\Models\Post::class, $post->id])
+                                        <form action="{{ route('admin.posts.forceDelete', $post->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn bài viết này?')">Xóa vĩnh viễn</button>
+                                        </form>
+                                    @endcan
                                 </td>
                             </tr>
                         @endforeach
@@ -63,4 +67,10 @@
             @endif
         </div>
 @endsection
+
+@push('script')
+    <script>
+        let table = new DataTable('#deleted-post');
+    </script>
+@endpush
 

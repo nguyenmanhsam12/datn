@@ -81,4 +81,27 @@ class UserController extends Controller
         return redirect()->route('admin.user.index')->with('success','Xóa thành công');
     }
 
+    public function deleteAt(){
+        $softUser = User::onlyTrashed()->get();
+        return view('admin.user.delete',compact('softUser'));
+    }
+
+    public function restore($id){
+        $user = User::onlyTrashed()->find($id); // Lấy bản ghi bị xóa mềm
+        if ($user) {
+            $user->restore(); // Khôi phục bản ghi
+            return redirect()->back()->with('success', 'Tài khoản đã được khôi phục!');
+        }
+        return redirect()->back()->with('error', 'Tài khoản không tồn tại hoặc không bị xóa mềm.');
+    }
+
+    public function forceDeleteUser($id){
+        $user = User::onlyTrashed()->find($id); // Lấy bản ghi bị xóa mềm
+        if ($user) {
+            $user->forceDelete(); // Xóa vĩnh viễn
+            return redirect()->back()->with('success', 'Tài khoản đã được xóa vĩnh viễn!');
+        }
+        return redirect()->back()->with('error', 'Tài khoản không tồn tại hoặc không bị xóa mềm.');
+    }
+
 }

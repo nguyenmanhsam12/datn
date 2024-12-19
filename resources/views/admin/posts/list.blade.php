@@ -110,10 +110,10 @@
         <section class="content">
 
             @can('create', App\Models\Post::class)
-                <a href="{{ route('admin.posts.create') }}" class="btn btn-primary">Thêm bài viết</a>
+                <a href="{{ route('admin.posts.create') }}" class="btn btn-primary mb-3">Thêm bài viết</a>
             @endcan
-            <a href="{{ route('admin.posts.listDelete') }}" class="btn btn-danger">Bài viết đã xóa</a>
-            <table class="table mt-3">
+            <a href="{{ route('admin.posts.listDelete') }}" class="btn btn-danger mb-3">Bài viết đã xóa</a>
+            <table class="table table-bordered mt-4" id="list-post">
                 <thead>
                     <tr>
                         <td></td>
@@ -133,7 +133,7 @@
                     @foreach ($posts as $post)
                         <tr>
                             <td>
-                                @can('view', App\Models\Post::class)
+                                @can('view', [App\Models\Post::class,$post->id])
                                     <button type="button" class="btn custom-btn" data-toggle="modal"
                                         data-target="#productModal{{ $post->id }}">
                                         <i class="fas fa-exclamation-circle"></i>
@@ -219,10 +219,10 @@
                             {{-- <!-- Trạng thái -->
                     <td>{{ $post->is_published ? 'Đã xuất bản' : 'Nháp' }}</td> --}}<td>{{ $post->author->name }}</td>
                             <td>
-                                @can('view', App\Models\Post::class)
+                                @can('view', [App\Models\Post::class, $post->id])
                                     <a href="{{ route('admin.posts.edit', $post->id) }}" class="btn btn-sm btn-warning">Sửa</a>
                                 @endcan
-                                @can('delete', App\Models\Post::class)
+                                @can('delete', [App\Models\Post::class, $post->id])
                                     <form action="{{ route('admin.posts.destroy', $post->id) }}" method="POST"
                                         style="display: inline;">
                                         @csrf
@@ -239,3 +239,9 @@
 
     </div>
 @endsection
+
+@push('script')
+    <script>
+        let table = new DataTable('#list-post');
+    </script>
+@endpush

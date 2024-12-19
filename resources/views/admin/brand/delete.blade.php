@@ -54,8 +54,12 @@
                                     <td>{{$key + 1}}</td>
                                     <td>{{$item->name}}</td>
                                     <td>
-                                        <a href="{{route('admin.brand.restore',['id'=>$item->id])}}"class="btn btn-warning">Khôi phục</a>
-                                        <a href="{{route('admin.brand.forceDeleteBrand',['id'=>$item->id])}}"class="btn btn-danger"onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa vĩnh viễn</a>
+                                        @can('brand_restore', App\Models\Brand::class)
+                                            <a href="{{route('admin.brand.restore',['id'=>$item->id])}}"class="btn btn-warning">Khôi phục</a>
+                                        @endcan
+                                        @can('brand_fordelete', App\Models\Brand::class)
+                                            <a href="{{route('admin.brand.forceDeleteBrand',['id'=>$item->id])}}"class="btn btn-danger"onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa vĩnh viễn</a>
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach

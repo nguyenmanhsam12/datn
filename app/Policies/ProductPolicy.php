@@ -73,16 +73,39 @@ class ProductPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Product $product)
+    public function restore(User $user,$id)
     {
-        //
+        $product = Product::onlyTrashed()->find($id);
+        if($user->checkPermissionAccess(config('permission.access.restore-product'))){
+            if($user->id === $product->user_id){
+                return true;
+            }
+        }
+        
+        if($user->hasRole('admin')){
+            return true;
+        }
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Product $product)
+    public function forceDelete(User $user,$id)
     {
-        //
+        $product = Product::onlyTrashed()->find($id);
+        if($user->checkPermissionAccess(config('permission.access.fordelete-product'))){
+            if($user->id === $product->user_id){
+                return true;
+            }
+        }
+        
+        if($user->hasRole('admin')){
+            return true;
+        }
+    }
+
+    public function viewTrashed(User $user)
+    {
+        return $user->checkPermissionAccess(config('permission.access.listdeleted-product'));
     }
 }

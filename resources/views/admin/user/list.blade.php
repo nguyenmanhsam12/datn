@@ -29,6 +29,10 @@
                 <a href="{{route('admin.user.create')}}" class="btn btn-success mb-3">Thêm mới</a>
             @endcan
 
+            @can('viewTrashed',App\Models\User::class)
+                <a href="{{route('admin.user.deleteAt')}}" class="btn btn-secondary mb-3">Danh sách tài khoản đã xóa</a>
+            @endcan
+
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">User</h3>
@@ -63,11 +67,11 @@
                                     <td>{{ $item->email }}</td>
                                     <td>{{ $item->phone_number }}</td>
                                     <td>
-                                            @can('view', [App\Models\User::class, $item->id])
+                                        @can('view', [App\Models\User::class, $item->id])
                                                 <a href="{{route('admin.user.edit',['id'=>$item->id])}}"class="btn btn-warning">Sửa</a>
-                                            @endcan
+                                        @endcan
 
-                                        @can('delete',App\Models\User::class)
+                                        @can('delete',[App\Models\User::class, $item->id])
                                             <a href="{{route('admin.user.delete',['id'=>$item->id])}}"class="btn btn-danger"onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa</a>
                                         @endcan
                                     </td>

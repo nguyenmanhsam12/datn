@@ -392,32 +392,40 @@
 
     {{-- tạo bộ lọc --}}
     <script>
-        $( function() {
-            var minPrice = {{ $minPrice }};
-            var maxPrice = {{ $maxPrice }};
-            
-        
-            $('#min_price').val(minPrice);
-            $('#max_price').val(maxPrice);
-
-            $( "#slider-range" ).slider({
+        $(function () {
+            // Giá trị gốc từ database (luôn giữ nguyên)
+            var minPriceOriginal = {{ $minPrice }};
+            var maxPriceOriginal = {{ $maxPrice }};
+    
+            // Giá trị đã lọc từ request
+            var currentMinPrice = {{ $newMinPrice }};
+            var currentMaxPrice = {{ $newMaxPrice }};
+    
+            // Khởi tạo slider
+            $("#slider-range").slider({
                 range: true,
-                min: minPrice,
-                max: maxPrice,
-                values: [ minPrice, maxPrice ],
-                slide: function( event, ui ) {
-                $( "#amount" ).val( "đ" + addPlus(ui.values[ 0 ].toString()) + " - đ" + addPlus(ui.values[1].toString()) );
-                $('#min_price').val(ui.values[ 0 ]);
-                $('#max_price').val(ui.values[ 1 ]);
+                min: minPriceOriginal, // Giới hạn tối thiểu
+                max: maxPriceOriginal, // Giới hạn tối đa
+                values: [currentMinPrice, currentMaxPrice], // Hiển thị khoảng lọc hiện tại
+    
+                slide: function (event, ui) {
+                    // Cập nhật giá trị input và thanh range khi kéo
+                    $("#amount").val("đ" + addPlus(ui.values[0].toString()) + " - đ" + addPlus(ui.values[1].toString()));
+                    $('#min_price').val(ui.values[0]);
+                    $('#max_price').val(ui.values[1]);
                 }
             });
-
-        $( "#amount" ).val( "đ" + addPlus(minPrice.toString()) +
-            " - đ" + addPlus(maxPrice.toString()));
+    
+            // Hiển thị khoảng giá hiện tại đã lọc
+            $("#amount").val("đ" + addPlus(currentMinPrice.toString()) + " - đ" + addPlus(currentMaxPrice.toString()));
+    
+            // Cập nhật input hidden ban đầu
+            $('#min_price').val(currentMinPrice);
+            $('#max_price').val(currentMaxPrice);
         });
-
-        function addPlus(nStr)
-        {
+    
+        // Hàm format số tiền
+        function addPlus(nStr) {
             nStr += '';
             x = nStr.split('.');
             x1 = x[0];

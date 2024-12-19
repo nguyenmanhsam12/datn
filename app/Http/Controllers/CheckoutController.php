@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewOrderEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cart;
@@ -10,7 +11,6 @@ use App\Models\City;
 use App\Models\Ward;
 use App\Models\Category;
 use App\Models\Brand;
-
 use App\Models\Payment_Methods;
 use App\Http\Requests\PlaceOrderRequest;
 use App\Mail\OrderShipped;
@@ -22,10 +22,13 @@ use App\Models\ProductVariants;
 use Illuminate\Support\Facades\Mail;
 use App\Events\ProductStockUpdated;
 use App\Models\Coupon;
+use App\Models\Notification;
 use App\Models\Transactions;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
+use App\Notifications\NewOrderNotification;
 
 class CheckoutController extends Controller
 {
@@ -101,7 +104,9 @@ class CheckoutController extends Controller
 
         
         $totalAmount = session('totalAmount',0);
+
         $shipping = $this->calculateShippingFee($total_weight,$totalAmount);
+
         // lưu phí ship vào trong session
         session(['shipping' => $shipping]);
 
@@ -111,6 +116,10 @@ class CheckoutController extends Controller
         if ($finalTotal === null) {
             // Nếu không có newTotalCheckout, lấy tổng tiền từ giỏ hàng và cộng phí vận chuyển
             $totalAmount = session('newTotal', 0);
+            if(!$totalAmount){
+                $totalAmount = $cartItems->sum('total_price');
+                session(['totalAmount'=>$totalAmount]);
+            }
             $finalTotal = $totalAmount + $shipping; // Tổng tiền giỏ hàng + phí ship
         }
 
@@ -171,10 +180,7 @@ class CheckoutController extends Controller
     public function placeOrder(PlaceOrderRequest $request)
     {
         try {
-            Log::info('test đặt hàng',$request->all());
             $data = $request->validated();
-
-            Log::info('Dữ liệu yêu cầu đặt hàng:', $data);
 
             // Tạo đơn hàng
             // Lấy thông tin giỏ hàng của người dùng
@@ -257,6 +263,26 @@ class CheckoutController extends Controller
 
             session()->forget(['coupon_id', 'discount', 'newTotal', 'totalAmount']);
 
+            // Lấy danh sách user có vai trò admin hoặc manager
+            $adminsAndManagers = User::whereHas('roles', function($query) {
+                $query->whereIn('name', ['admin', 'manager']);
+            })->get();
+
+            // Mảng chứa ID thông báo để phát sóng
+
+            // Tạo thông báo cho mỗi admin hoặc manager
+            $message = 'Có một đơn hàng mới với mã đơn hàng: ' . $order->id;
+            foreach ($adminsAndManagers as $user) {
+                $notification = Notification::create([
+                    'user_id' => $user->id,  // Gửi thông báo cho user có vai trò admin hoặc manager
+                    'title' => 'Đơn hàng mới',
+                    'message' => $message,
+                    'status' => 'unread',
+                ]);
+
+                broadcast(new NewOrderEvent($user, $notification)); // Gửi id thông báo cho từng user
+            }
+            
             if ($data['payment_method'] == 2) { // Giả sử 2 là ID của VNPAY
                 $newTotal = $order->total_amount + $order->shipping_fee - $order->discount_amount;
                 

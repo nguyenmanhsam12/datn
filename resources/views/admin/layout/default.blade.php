@@ -37,6 +37,21 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     
+    @vite(['resources/js/bootstrap.js'])    
+
+    {{-- css thông báo --}}
+    <style>
+        .notification-unread {
+            background-color: #f8f9fa; /* Màu nền sáng hơn */
+            font-weight: bold;
+            border-left: 4px solid #dc3545; /* Viền đỏ để làm nổi bật */
+        }
+        .notification-unread:hover {
+            background-color: #e9ecef; /* Thay đổi màu nền khi hover */
+        }
+
+
+    </style>
 
     @stack('styles')
 </head>
@@ -109,7 +124,201 @@
     {{-- <script src="{{asset('backend/dist/js/demo.js')}}"></script> --}}
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="{{asset('backend/dist/js/pages/dashboard.js')}}"></script>
+
+    <script type="module">
+
+            const userId = {{ Auth()->user()->id }};
+            
+
+            Echo.private('new-orders.'+userId)  // Lắng nghe kênh Private
+                .listen('NewOrderEvent', (event) => {
+                    console.log('Thông báo đơn hàng mới:', event);
+
+                    // Cập nhật thông báo mới trong giao diện
+                    displayNewNotification(event);                       
+            });
+
+            function displayNewNotification(event) {
+                const dropdown = document.getElementById('notifications-dropdown');
+                const notificationCount = document.getElementById('notification-count');
+                const notificationHeader = document.getElementById('notification-header');
+
+                // Kiểm tra nếu phần tử notificationCount không tồn tại
+                if (!notificationCount) {
+                    console.error('Không tìm thấy phần tử notification-count!');
+                    return;
+                }
+
+                // Cập nhật số lượng thông báo chưa đọc
+                let unreadCount = 0;
+
+                // lấy ra giá trị số lượng của thông báo
+                if (notificationCount.textContent) {
+                    console.log(notificationCount.textContent);
+                    unreadCount = parseInt(notificationCount.textContent) || 0; // Nếu không phải là số, gán 0
+                }
+
+                // Cập nhật số lượng thông báo chưa đọc
+                unreadCount += 1;
+                notificationCount.textContent = unreadCount;
+
+                // Chỉ hiển thị notificationCount nếu có thông báo chưa đọc
+                if (unreadCount > 0) {
+                    notificationCount.style.display = 'inline';  // Hiển thị số lượng thông báo chưa đọc
+                } else {
+                    notificationCount.style.display = 'none';  // Ẩn nếu không có thông báo
+                }
+
+                // Cập nhật tiêu đề của danh sách thông báo
+                let totalNotification = parseInt(notificationHeader.textContent) + 1;
+                notificationHeader.textContent = `${totalNotification} Thông báo`;
+
+                const notificationHeaderContainer = document.querySelector('.notification-header-container');
+
+                // Thêm thông báo mới vào dropdown
+                const notificationItem = `
+                    <a href="#" class="dropdown-item notification-unread" data-id="${event.notificationId}" onclick="handleNotificationClick(${event.notificationId})">
+                        <div>
+                            <i class="fas fa-bell mr-2"></i> ${event.title}
+                            <span class="badge badge-danger ml-2">Mới</span>
+                        </div>
+                        <span class="float-right text-muted text-sm">
+                            ${new Date().toLocaleString()}
+                        </span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                `;
+
+                
+
+                
+
+                // Chèn thông báo mới sau notificationHeader trong dropdown
+                notificationHeaderContainer.insertAdjacentHTML('afterend', notificationItem);
+
+            }
+
+            
+    </script>
+
+    {{-- lấy thông báo khi lần đầu vào trang quản trị --}}
+    <script type="module">
+        document.addEventListener("DOMContentLoaded", function () {
+            // Lấy token từ thẻ meta
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                // Hàm lấy thông báo từ API
+                function fetchNotifications() {
+                    fetch('{{route('fetchNotifications')}}', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}` // Thêm token vào header
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch notifications');
+                        }
+                        return response.json();
+                    })
+                    .then(notifications => {
+                        updateNotificationUI(notifications);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching notifications:', error);
+                    });
+                }
+
+                // Hàm cập nhật giao diện thông báo
+                function updateNotificationUI(notifications) {
+                    const dropdown = document.getElementById('notifications-dropdown');
+                    const notificationCount = document.getElementById('notification-count');
+                    const notificationHeader = document.getElementById('notification-header');
+
+                    
+
+                    // Lọc thông báo chưa đọc
+                    const unreadCount = notifications.filter(n => n.status === 'unread').length;
+
+                    // Cập nhật số lượng thông báo
+                    if (unreadCount > 0) {
+                        notificationCount.textContent = unreadCount;
+                        notificationCount.style.display = 'inline'; // Hiển thị số lượng
+                    } else {
+                        notificationCount.style.display = 'none'; // Ẩn số lượng nếu không có thông báo chưa đọc
+                    }
+
+                    
+                    
+                    // Tạo danh sách thông báo
+                    const notificationItems = notifications.map(notification => `
+                        <a href="#" class="dropdown-item ${notification.status === 'unread' ? 'notification-unread' : ''}" 
+                        data-id="${notification.id}" onclick="handleNotificationClick(${notification.id})">
+                            <div>
+                                <i class="fas fa-bell mr-2"></i> ${notification.title}
+                                ${notification.status === 'unread' ? '<span class="badge badge-danger ml-2">Mới</span>' : ''}
+                            </div>
+                            <span class="float-right text-muted text-sm">
+                                ${new Date(notification.created_at).toLocaleString()}
+                            </span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                    `).join('');
+
+                    // Cập nhật nội dung dropdown
+                    dropdown.innerHTML = `
+                        <div class="notification-header-container">
+                            <span class="dropdown-item dropdown-header" id="notification-header">${notifications.length} Thông báo</span>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        ${notificationItems}
+                        <a href="#" class="dropdown-item dropdown-footer">Xem tất cả thông báo</a>
+                    `;
+                }
+
+
+
+            // Gọi hàm khi trang được load
+            fetchNotifications();
+        });
+
+        // hàm xử lí khi nhấn đọc thông báo
+        window.handleNotificationClick = function (notificationId) {
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            
+
+            // Gửi yêu cầu đánh dấu thông báo là đã đọc
+            fetch('{{ route('markAsRead') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token, // Gửi token CSRF ở đây
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ id: notificationId }) // Gửi ID thông báo qua body
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to mark notification as read');
+                }
+                return response.json();
+            })
+            .then(() => {
+                // Chuyển hướng tới trang quản lý đơn hàng
+                window.location.href = '{{route('admin.order.index')}}';
+            })
+            .catch(error => {
+                console.error('Error marking notification as read:', error);
+            });
+        }
+
+
+    </script>
     
+    
+
     @stack('script')
 </body>
 

@@ -152,12 +152,58 @@
             });
         });
     </script>
-@endpush
 
-@push('script')
+    {{-- dataabel --}}
     <script>
         let table = new DataTable('#list_order',{
             order: [[0, 'desc']] // Sắp xếp theo cột đầu tiên (Mã đơn hàng) theo thứ tự giảm dần
         });
     </script>
+
+    {{-- laravel echo --}}
+    {{-- <script type="module">
+        Echo.private('new-orders')
+            .listen('NewOrderEvent', (e) => {
+                console.log('New order event received:', e);
+
+                // Cập nhật giao diện
+                addNewOrderToTable(e.order_id, e.order_amount, e.message);
+            });
+
+        // Hàm thêm đơn hàng mới vào bảng
+        function addNewOrderToTable(orderId, orderAmount, message) {
+            const tableBody = document.querySelector('#list_order tbody');
+
+            // Tạo hàng mới
+            const newRow = `
+                <tr>
+                    <td>${orderId}</td>
+                    <td>Khách Hàng Mới</td>
+                    <td>Chưa thanh toán</td>
+                    <td>${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(orderAmount)}</td>
+                    <td>Chưa cập nhật</td>
+                    <td>
+                        <select class="form-control update-status" data-order-id="${orderId}">
+                            <option value="1" selected>Chờ xác nhận</option>
+                            <option value="2">Đang xử lý</option>
+                            <option value="3">Đã giao hàng</option>
+                        </select>
+                    </td>
+                    <td>
+                        <a href="#" class="btn btn-success btn-sm">Xem Chi Tiết</a>
+                        <a href="#" class="btn btn-danger btn-sm">Xóa</a>
+                    </td>
+                </tr>
+            `;
+
+            // Thêm hàng vào đầu bảng
+            tableBody.insertAdjacentHTML('afterbegin', newRow);
+
+            alert(message); // Hiển thị thông báo khi có đơn hàng mới
+        }
+    </script> --}}
+
+
 @endpush
+
+   

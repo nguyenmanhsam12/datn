@@ -55,10 +55,12 @@
                                     <td>{{$key + 1}}</td>
                                     <td>{{$item->name}}</td>
                                     <td>
-                                        
+                                        @can('restore',App\Models\Category::class)
                                             <a href="{{route('admin.category.restore',['id'=>$item->id])}}"class="btn btn-warning">Khôi phục</a>
-                                        
+                                        @endcan
+                                        @can('forceDelete',App\Models\Category::class)
                                             <a href="{{route('admin.category.forceDeleteCategory',['id'=>$item->id])}}"class="btn btn-danger"onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa vĩnh viễn</a>
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach

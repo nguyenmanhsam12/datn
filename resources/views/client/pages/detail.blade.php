@@ -538,7 +538,8 @@
                                         "{{ route('cart') }}"; // Đường dẫn đến giỏ hàng
                                 } else {
                                     // Người dùng chọn xem tiếp sản phẩm
-                                    console.log('Người dùng chọn xem tiếp sản phẩm');
+                                    window.location.href =
+                                        "{{ route('shop') }}"; 
                                 }
                             });
                             // Cập nhật số lượng sản phẩm trên thanh header bằng dữ liệu từ server
