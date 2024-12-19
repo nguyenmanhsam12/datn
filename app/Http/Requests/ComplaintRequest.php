@@ -26,7 +26,6 @@ class ComplaintRequest extends FormRequest
             'complaint_details' => 'required|string|min:2|max:500', // Chi tiết khiếu nại (10-500 ký tự)
             'complaint_type' => 'required|in:Hàng bị lỗi,Giao hàng muộn,Sản phẩm không đúng mô tả', // Lý do phải nằm trong danh sách được định nghĩa
             'attachments.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf|max:2048', // Tệp đính kèm (nếu có), hỗ trợ hình ảnh và PDF, mỗi tệp tối đa 2MB
-            'order_date' => 'required|date|before_or_equal:today', // Ngày đặt hàng phải là ngày hợp lệ và không vượt quá hôm nay
         ];
         
     }
@@ -44,9 +43,6 @@ class ComplaintRequest extends FormRequest
             'attachments.*.file' => 'Tệp tải lên phải là một tệp hợp lệ.',
             'attachments.*.mimes' => 'Chỉ chấp nhận các định dạng: jpeg, png, jpg, gif, pdf.',
             'attachments.*.max' => 'Mỗi tệp không được vượt quá 2MB.',
-            'order_date.required' => 'Ngày đặt hàng là bắt buộc.',
-            'order_date.date' => 'Ngày đặt hàng phải là một ngày hợp lệ.',
-            'order_date.before_or_equal' => 'Ngày đặt hàng không được vượt quá ngày hôm nay.',
         ];
     }
 }

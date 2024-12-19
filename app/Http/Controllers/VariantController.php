@@ -107,4 +107,27 @@ class VariantController extends Controller
         ProductVariants::create($data);
         return redirect()->back()->with('success','Thêm thuộc tính thành công');
     }
+
+    public function deleteAt(){
+        $softVariant = ProductVariants::withTrashed()->where('deleted_at', '!=', null)->get();
+        return view('admin.variant.delete',compact('softVariant'));
+    }
+
+    public function restore($id){
+        $variant = ProductVariants::onlyTrashed()->find($id); // Lấy bản ghi bị xóa mềm
+        if ($variant) {
+            $variant->restore(); // Khôi phục bản ghi
+            return redirect()->back()->with('success', 'Thuộc tính đã được khôi phục!');
+        }
+        return redirect()->back()->with('error', 'Thuộc tính không tồn tại hoặc không bị xóa mềm.');
+    }
+
+    public function forceDeleteVariant($id){
+        $variant = ProductVariants::onlyTrashed()->find($id); // Lấy bản ghi bị xóa mềm
+        if ($variant) {
+            $variant->forceDelete(); // Xóa vĩnh viễn
+            return redirect()->back()->with('success', 'Thuộc tính đã được xóa vĩnh viễn!');
+        }
+        return redirect()->back()->with('error', 'Thuộc tính không tồn tại hoặc không bị xóa mềm.');
+    }
 }

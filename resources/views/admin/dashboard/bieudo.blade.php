@@ -85,7 +85,7 @@
             <div class="card text-center" style="background-color: #64b5f6; color: white;">
                 <div class="card-body">
                     <h5 class="card-title">
-                        <i class="fas fa-user-shield"></i> Đơn hàng khiếu nại
+                        <i class="fas fa-user-shield"></i> Đơn hàng đang khiếu nại
                     </h5>
                     <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $khieuNai }}</p>
                 </div>

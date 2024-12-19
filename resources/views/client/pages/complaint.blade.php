@@ -13,10 +13,7 @@
             </div>
             <div class="form-group mb-3">
                 <label for="order-date">Ngày đặt hàng:</label>
-                <input type="date" name="order_date" class="form-control" required>
-                @error('order')
-                <div class="text-danger mt-1">{{ $message }}</div>
-                 @enderror
+                <input type="date" class="form-control" value="{{ \Carbon\Carbon::parse($order->created_at)->format('Y-m-d') }}" readonly>
             </div>
             <div class="form-group mb-3">
                 <label for="complaint_type">Lý do khiếu nại:</label>

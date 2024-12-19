@@ -94,13 +94,12 @@ h6:hover{
             <div class="col-md-12">
                 <div class="heading-banner">
                     <div class="heading-banner-title">
-                        <h2>{{ $post->title }}</h2>
+                        <h2>Tin tức</h2>
                     </div>
                     <div class="breadcumbs pb-15">
                         <ul>
                             <li><a href="{{ route('home') }}">Trang Chủ</a></li>
-                            <li><a href="">Bài viết</a></li>
-                            <li>{{ $post->title }}</li>
+                            <li><a href="">Tin tức</a></li>
                         </ul>
                     </div>
                 </div>
@@ -119,7 +118,7 @@ h6:hover{
                 <div class="single-blog-post">
                     <!-- Title, Author & Date -->
                     <div class="blog-header mb-4">
-                        <h4>{{ $post->title }}</h4>
+                        <h1>{{ $post->title }}</h1>
                         <p class="author-date">
                             <strong>Tác giả:</strong> {{ $post->author->name ?? 'N/A' }} | 
                             <strong>Ngày đăng:</strong> {{ $post->created_at->format('d-m-Y') }}

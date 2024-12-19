@@ -12,7 +12,7 @@ class Complaints extends Model
     protected $table = 'complainst';
 
     protected $fillable = ['order_id','user_id','complaint_details','complaint_type','status',
-    'attachments','order_date'];
+    'attachments'];
 
     public function user(){
         return $this->belongsTo(User::class);

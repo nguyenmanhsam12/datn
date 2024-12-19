@@ -18,9 +18,13 @@ class ComplanintsController extends Controller
 
         // Tìm khiếu nại theo mã đơn hàng
         $complaint = Complaints::where('order_id', $orderId)->first();
+        $order = Order::find($orderId);
         
         if ($complaint) {
             $complaint->delete(); // Xóa khiếu nại
+            $order->status_id = 5;
+            $order->payment_status = 'paid';
+            $order->save();
             return response()->json(['success' => true, 'message' => 'Khiếu nại đã được hủy']);
         }
 
@@ -63,8 +67,7 @@ class ComplanintsController extends Controller
             'complaint_details' => $validatedData['complaint_details'],
             'complaint_type' => $validatedData['complaint_type'],
             'status' => 'Chờ xử lý', // Mặc định trạng thái ban đầu
-            'attachments' => json_encode($attachments), // Lưu danh sách file dưới dạng JSON
-            'order_date' => $validatedData['order_date'],
+            'attachments' => json_encode($attachments), // Lưu danh sách file dưới dạng JSON            
         ]);
 
         return redirect()->route('myAccount')->with('success','Đã gửi khiếu nại');
@@ -163,8 +166,13 @@ class ComplanintsController extends Controller
         // Kiểm tra điều kiện chuyển đổi trạng thái
         if ($currentStatus === 'Chờ xử lý' && $newStatus === 'Đang xử lý') {
             // Cho phép cập nhật trạng thái, phản hồi không bắt buộc
+
+            if(empty($data['response'])){
+                return redirect()->back()->with('error', 'Vui lòng nhập phản hồi trước khi cập nhật trạng thái này.');
+            }
+
             $complaint->status = $newStatus;
-            $complaint->response = $response; // Lưu phản hồi nếu có
+            $complaint->response = $response; 
 
         } elseif ($currentStatus === 'Đang xử lý' && in_array($newStatus,$statusesRequireResponse)) {
             // Yêu cầu phản hồi khi chuyển sang trạng thái hoàn tất hoặc hủy
@@ -172,10 +180,20 @@ class ComplanintsController extends Controller
                 return redirect()->back()->with('error', 'Vui lòng nhập phản hồi trước khi cập nhật trạng thái này.');
             }
 
-           
-            $complaint->status = $newStatus;
-            $complaint->response = $response;
-            
+            if($newStatus == 'Giải quyết thành công'){
+                $complaint->status = $newStatus;
+                $complaint->response = $response;
+                $order->status_id = 5;
+                $order->payment_status = 'paid';
+            }
+
+            if($newStatus == 'Đã hủy'){
+                $complaint->status = $newStatus;
+                $complaint->response = $response;
+                $order->status_id = 5;
+                $order->payment_status = 'paid';
+            }
+             
             $order->save();
 
         } elseif ($currentStatus === $newStatus) {
@@ -192,10 +210,5 @@ class ComplanintsController extends Controller
         // Chuyển hướng lại với thông báo thành công
         return redirect()->back()->with('success', 'Cập nhật thành công!');
     }
-
-    
-
-
-
     
 }

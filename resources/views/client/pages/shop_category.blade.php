@@ -188,7 +188,7 @@
                     </aside>
                     <!-- end -->
                     <!-- lọc giá start -->
-                    <aside class="widget shop-filter mb-30">
+                    <aside class="widget shop-filter mb-30" style="margin-top: 50px">
                         <div class="widget-title">
                             <h4>Lọc theo giá</h4>
                         </div>
@@ -251,8 +251,8 @@
                                                         <button data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist"
                                                         class="add-to-wishlist" data-id="{{ $pr->id }}"><i class="zmdi zmdi-favorite-outline"></i></button>
                                                     </div>
-                                                    <a href="single-product.html"><img src="{{ asset($pr->image) }}" alt="" /></a>
-                                                </div>
+                                                    <a href="{{ route('getDetailProduct',['slug'=>$pr->slug]) }}"><img src="{{ asset($pr->image) }}" alt="" /></a>
+                                                </div>  
                                                 <div class="product-info clearfix ">
                                                     <div class="fix">
                                                         <h4 class="post-title"><a href="#">{{ $pr->name }}</a></h4>

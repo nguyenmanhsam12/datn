@@ -53,7 +53,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($list_variant as $key => $item)
+                            @foreach ($softVariant as $key => $item)
                                 <tr>
                                     <td>{{$key + 1}}</td>
                                     <td>{{$item->product->name}}</td>
@@ -61,12 +61,12 @@
                                     <td>{{$item->stock}}</td>
                                     <td>{{$item->price}}</td>
                                     <td>
-                                        @can('view',App\Models\ProductVariants::class)
-                                            <a href="{{route('admin.variant.edit',['id'=>$item->id])}}"class="btn btn-warning">Sửa</a>
-                                        @endcan
-                                        @can('delete',App\Models\ProductVariants::class)
-                                            <a href="{{route('admin.variant.delete',['id'=>$item->id])}}"class="btn btn-danger"onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa</a>
-                                        @endcan
+                                        
+                                            <a href="{{route('admin.variant.restore',['id'=>$item->id])}}"class="btn btn-warning">Khôi phục</a>
+                                        
+                                       
+                                            <a href="{{route('admin.variant.forceDeleteVariant',['id'=>$item->id])}}"class="btn btn-danger"onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa vĩnh viễn</a>
+                                        
                                     </td>
                                 </tr>
                             @endforeach

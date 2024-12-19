@@ -35,11 +35,6 @@ class MyAccountController extends Controller
             ->get();
         $list_provice = Province::all();
 
-        // Nếu là request Ajax, chỉ trả về view nhỏ của danh sách đơn hàng
-        if ($request->ajax()) {
-            return view('client.pages.partials-order_list', compact('order'))->render();
-        }
-        
         return view('client.pages.myaccount', compact('status','user','list_brand','list_category'
             ,'list_provice','order'
         ));

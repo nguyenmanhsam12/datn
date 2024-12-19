@@ -553,10 +553,7 @@
                     } else if (data.vnpay) {
                         // Nếu có đường dẫn vnpay, chuyển hướng đến đó
                         window.location.href = data.vnpay;
-                    } else if (data.momo) {
-                        // Nếu có đường dẫn momo, chuyển hướng đến đó
-                        window.location.href = data.momo;
-                    } else {
+                    }  else {
                         // Nếu không có lỗi, đặt hàng thành công
                         Swal.fire({
                             title: 'Đặt hàng thành công!',

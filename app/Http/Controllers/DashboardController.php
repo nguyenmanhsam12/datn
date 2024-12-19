@@ -45,12 +45,12 @@ $totalReviewsCount = Review::count();
            $productSalesData = OrderItem::select('product_variant_id', 
                         DB::raw('SUM(order_items.quantity) as total_sold'), 
                         DB::raw('SUM(order_items.quantity * order_items.price) as total_revenue'))
-    ->join('orders', 'order_items.order_id', '=', 'orders.id')  // Kết nối với bảng orders
-    ->join('order_status', 'orders.status_id', '=', 'order_status.id')  // Kết nối với bảng order_status
-    ->where('order_status.name', 'Hoàn tất')  // Chỉ tính các đơn hàng có trạng thái "Hoàn tất"
-    ->groupBy('product_variant_id')
-    ->orderByDesc('total_revenue')  // Sắp xếp theo doanh thu giảm dần
-    ->get();
+                ->join('orders', 'order_items.order_id', '=', 'orders.id')  // Kết nối với bảng orders
+                ->join('order_status', 'orders.status_id', '=', 'order_status.id')  // Kết nối với bảng order_status
+                ->where('order_status.name', 'Hoàn tất')  // Chỉ tính các đơn hàng có trạng thái "Hoàn tất"
+                ->groupBy('product_variant_id')
+                ->orderByDesc('total_revenue')  // Sắp xếp theo doanh thu giảm dần
+                ->get();
     
         // Lấy tên sản phẩm từ bảng `products` (hoặc bảng tương ứng)
         $products = Product::whereIn('id', $productSalesData->pluck('product_variant_id'))->get()->keyBy('id');
@@ -167,6 +167,7 @@ $totalReviewsCount = Review::count();
             ->groupBy('product_variant_id')
             ->orderByDesc('total_sold')
             ->limit(5)
+            ->whereHas('productVariant') // Chỉ lấy các bản ghi có biến thể tồn tại
             ->with('productVariant.product')
             ->get();
 
