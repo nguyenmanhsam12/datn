@@ -32,7 +32,16 @@ class AutoConfirmOrder implements ShouldQueue
 
         $orders = Order::where('status_id',4)
             ->where('created_at', '<', $timeLimit) // Sử dụng updated_at
+            // giúp trả về các bản ghi không có quản hệ
+            ->where(function ($query) {
+                $query->whereDoesntHave('complaint') // Không có khiếu nại
+                      ->orWhereHas('complaint', function ($subQuery) {
+                          $subQuery->whereIn('status', ['Giải quyết thành công', 'Đã hủy']); // Có khiếu nại nhưng đã giải quyết hoặc hủy
+                      });
+            })
             ->get();
+
+        
 
         foreach ($orders as $order) {
             // Cập nhật trạng thái đơn hàng

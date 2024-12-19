@@ -269,7 +269,56 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row ">
+                <div class="col-12">
+                    <div class="product-slider arrow-left-right">
+                        <!-- Single-product start -->
+
+                        @foreach ($top_selling_products as $pr)
+                            <div class="single-product">
+                                <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}">
+                                    <div class="product-img">
+                                        <span class="pro-label new-label">new</span>
+                                        <a class="pro-price-2">
+                                            
+                                                
+                                                <button type="submit" class="wishlist-btn" data-bs-toggle="tooltip"
+                                                    data-bs-placement="top" title="Wishlist" data-id="{{$pr->id}}">  
+                                                    <i class="zmdi zmdi-favorite-outline"></i>
+                                                </button>
+                                        </a>
+                                        <a href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}"><img
+                                                src="{{ $pr->image }}" alt="" /></a>
+                                    </div>
+                                    <div class="product-info clearfix">
+                                        <div class="fix">
+                                            <h4 class="post-title floatleft"><a
+                                                    href="{{ route('getDetailProduct', ['slug' => $pr->slug]) }}">{{ $pr->name }}</a>
+                                            </h4>
+                                        </div>
+                                        <div class="fix">
+                                            <span
+                                                class="pro-price floatleft">{{ number_format($pr->mainVariant->price, 0, ',', '.') . ' ' . 'VNĐ' }}</span>
+                                            <span class="pro-rating floatright">
+                                                <a href="#"><i class="zmdi zmdi-star"></i></a>
+                                                <a href="#"><i class="zmdi zmdi-star"></i></a>
+                                                <a href="#"><i class="zmdi zmdi-star"></i></a>
+                                                <a href="#"><i class="zmdi zmdi-star-half"></i></a>
+                                                <a href="#"><i class="zmdi zmdi-star-half"></i></a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            {{-- modal --}}
+                        @endforeach
+                       <!-- Single-product end -->
+                    </div>
+                </div>
+            </div>
+            {{-- ------------------------ --}}
+            {{-- hiển thị sản phẩm phổ biến ban đầu --}}
+            {{-- <div class="row">
                 <div class="col-lg-12 text-center">
                     <!-- Nav tabs -->
                     <ul class="tab-menu nav">
@@ -292,7 +341,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
     <!-- PURCHASE-ONLINE-AREA END -->
@@ -303,7 +352,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="section-title text-center">
-                        <h2 class="title-border">From The Blog</h2>
+                        <h2 class="title-border">Bài viết mới nhất</h2>
                     </div>
                 </div>
             </div>
@@ -321,7 +370,7 @@
                                     <a href="{{ route('blog.show', $post->id) }}" class="blog-photo">
                                         <img src="{{ asset($post->thumbnail) }}" alt="Hình ảnh bài viết"
                                             style="max-width: 350px; "></a>
-                                    <div class="like-share text-center fix">
+                                    {{-- <div class="like-share text-center fix">
                                         <a href="javascript:void(0);" class="like-button"
                                             data-post-id="{{ $post->id }}">
                                             <i class="zmdi zmdi-favorite"></i>
@@ -329,7 +378,7 @@
                                         </a>
                                         <a href="#"><i class="zmdi zmdi-comments"></i><span> Comments</span></a>
                                         <a href="#"><i class="zmdi zmdi-share"></i><span>Share</span></a>
-                                    </div>
+                                    </div> --}}
                                 </div>
                                 <div class="blog-info">
                                     <div class="post-meta fix">
@@ -339,8 +388,7 @@
                                         </div>
                                     </div>
                                     <p>{{ \Illuminate\Support\Str::limit($post->content, 200) }}</p>
-                                    <a href="{{ route('blog.show', $post->id) }}" class="button-2 text-dark-red">Read
-                                        more...</a>
+                                    <a href="{{ route('blog.show', $post->id) }}" class="button-2 text-dark-red">Xem thêm...</a>
                                 </div>
                             </div>
                         </div>
@@ -356,92 +404,92 @@
 @push('script')
     <script>
         // Hàm để định dạng giá tiền
-        function formatPrice(price) {
-            return new Intl.NumberFormat('vi-VN').format(price) + ' VNĐ';
-        }
+        // function formatPrice(price) {
+        //     return new Intl.NumberFormat('vi-VN').format(price) + ' VNĐ';
+        // }
 
         // Hàm load sản phẩm
-        function loadProducts(categoryId) {
-            // Active tab tương ứng
-            $('.tab-menu .nav-link').removeClass('active');
-            $(`.tab-menu .nav-link[data-category-id="${categoryId}"]`).addClass('active');
+        // function loadProducts(categoryId) {
+        //     // Active tab tương ứng
+        //     $('.tab-menu .nav-link').removeClass('active');
+        //     $(`.tab-menu .nav-link[data-category-id="${categoryId}"]`).addClass('active');
 
-            $.ajax({
-                url: '/getProductsByCategory/' + categoryId,
-                type: 'GET',
-                beforeSend: function() {
-                    $('#product-list').html('<div class="text-center">Loading...</div>');
-                },
-                success: function(response) {
-                    let html = '';
+        //     $.ajax({
+        //         url: '/getProductsByCategory/' + categoryId,
+        //         type: 'GET',
+        //         beforeSend: function() {
+        //             $('#product-list').html('<div class="text-center">Loading...</div>');
+        //         },
+        //         success: function(response) {
+        //             let html = '';
 
-                    // Khai báo biến đường dẫn trong Blade
-                    const getDetailProductUrl = '{{ route('getDetailProduct', ['slug' => '__slug__']) }}';
+        //             // Khai báo biến đường dẫn trong Blade
+        //             const getDetailProductUrl = '{{ route('getDetailProduct', ['slug' => '__slug__']) }}';
 
-                    response.forEach(function(product) {
-                        // Thay thế __slug__ bằng slug của sản phẩm hiện tại
-                        const productUrl = getDetailProductUrl.replace('__slug__', product.slug);
-                        html += `
-                            <div class="single-product col-xl-3 col-md-4 col-12">
-                                <div class="product-img">
-                                    <span class="pro-label new-label">new</span>
-                                    <a class="pro-price-2">
-                                               <button data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist"
-                                                data-id="${product.id}" class="wishlist-btn"
-                                               ><i class="zmdi zmdi-favorite-outline"></i></button>
-                                            </a>
-                                    <a href="${productUrl}">
-                                        <img src="${product.image}" alt="" />
-                                    </a>
-                                </div>
-                                <div class="product-info clearfix">
-                                    <div class="fix">
-                                        <h4 class="post-title floatleft">
-                                            <a href="${productUrl}">${product.name}</a>
-                                        </h4>
-                                    </div>
-                                    <div class="fix">
-                                        <span class="pro-price floatleft">${formatPrice(product?.main_variant.price)}</span>
-                                        <span class="pro-rating floatright">
-                                            <a href="#"><i class="zmdi zmdi-star"></i></a>
-                                            <a href="#"><i class="zmdi zmdi-star"></i></a>
-                                            <a href="#"><i class="zmdi zmdi-star"></i></a>
-                                            <a href="#"><i class="zmdi zmdi-star-half"></i></a>
-                                            <a href="#"><i class="zmdi zmdi-star-half"></i></a>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
+        //             response.forEach(function(product) {
+        //                 // Thay thế __slug__ bằng slug của sản phẩm hiện tại
+        //                 const productUrl = getDetailProductUrl.replace('__slug__', product.slug);
+        //                 html += `
+        //                     <div class="single-product col-xl-3 col-md-4 col-12">
+        //                         <div class="product-img">
+        //                             <span class="pro-label new-label">new</span>
+        //                             <a class="pro-price-2">
+        //                                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist"
+        //                                         data-id="${product.id}" class="wishlist-btn"
+        //                                        ><i class="zmdi zmdi-favorite-outline"></i></button>
+        //                                     </a>
+        //                             <a href="${productUrl}">
+        //                                 <img src="${product.image}" alt="" />
+        //                             </a>
+        //                         </div>
+        //                         <div class="product-info clearfix">
+        //                             <div class="fix">
+        //                                 <h4 class="post-title floatleft">
+        //                                     <a href="${productUrl}">${product.name}</a>
+        //                                 </h4>
+        //                             </div>
+        //                             <div class="fix">
+        //                                 <span class="pro-price floatleft">${formatPrice(product?.main_variant.price)}</span>
+        //                                 <span class="pro-rating floatright">
+        //                                     <a href="#"><i class="zmdi zmdi-star"></i></a>
+        //                                     <a href="#"><i class="zmdi zmdi-star"></i></a>
+        //                                     <a href="#"><i class="zmdi zmdi-star"></i></a>
+        //                                     <a href="#"><i class="zmdi zmdi-star-half"></i></a>
+        //                                     <a href="#"><i class="zmdi zmdi-star-half"></i></a>
+        //                                 </span>
+        //                             </div>
+        //                         </div>
+        //                     </div>
+        //                 `;
+        //             });
 
-                    $('#product-list').html(html);
+        //             $('#product-list').html(html);
 
-                    // Khởi tạo lại tooltips
-                    $('[data-bs-toggle="tooltip"]').tooltip();
+        //             // Khởi tạo lại tooltips
+        //             $('[data-bs-toggle="tooltip"]').tooltip();
 
-                    // gọi hàm
-                    initializeWishlistButtons();
-                },
-                error: function(xhr, status, error) {
-                    console.error(error);
-                    $('#product-list').html(
-                        '<div class="alert alert-danger">Có lỗi xảy ra khi tải sản phẩm</div>');
-                }
-            });
-        }
+        //             // gọi hàm
+        //             initializeWishlistButtons();
+        //         },
+        //         error: function(xhr, status, error) {
+        //             console.error(error);
+        //             $('#product-list').html(
+        //                 '<div class="alert alert-danger">Có lỗi xảy ra khi tải sản phẩm</div>');
+        //         }
+        //     });
+        // }
 
         // Khi document ready
-        $(document).ready(function() {
-            // Lấy category_id của tab đầu tiên
-            const firstCategoryId = $('.tab-menu .nav-link.active').data('category-id');
+        // $(document).ready(function() {
+        //     // Lấy category_id của tab đầu tiên
+        //     const firstCategoryId = $('.tab-menu .nav-link.active').data('category-id');
 
-            // Load sản phẩm của category đầu tiên
-            loadProducts(firstCategoryId);
+        //     // Load sản phẩm của category đầu tiên
+        //     loadProducts(firstCategoryId);
 
-            // Khởi tạo tooltips
-            $('[data-bs-toggle="tooltip"]').tooltip();
-        });
+        //     // Khởi tạo tooltips
+        //     $('[data-bs-toggle="tooltip"]').tooltip();
+        // });
 
     </script>
 

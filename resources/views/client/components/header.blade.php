@@ -5,13 +5,13 @@
             <div class="row">
                 <div class="col-12 col-md-6">
                     <div class="welcome-mes">
-                        <p>Welcome Greentech store!</p>
+                        <p>Chào mừng đến với DWOG!</p>
                     </div>
                 </div>
                 <div class="col-12 col-md-6">
                     <div class="header-right-menu text-center text-md-end">
                         <ul>
-                            <li><a href="#">usd</a><i class="zmdi zmdi-chevron-down"></i>
+                            {{-- <li><a href="#">usd</a><i class="zmdi zmdi-chevron-down"></i>
                                 <ul>
                                     <li><a href="#">eur</a></li>
                                     <li><a href="#">usd</a></li>
@@ -22,7 +22,7 @@
                                     <li><a href="#">English</a></li>
                                     <li><a href="#">France</a></li>
                                 </ul>
-                            </li>
+                            </li> --}}
 
                             @if (Auth::user())
                                 <li><a href="#">Xin chào {{ Auth::user()->name }}</a><i

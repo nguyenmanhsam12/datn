@@ -285,6 +285,8 @@
                                                             $or->shipping_fee;
                                                     @endphp
 
+                                                    
+
 
                                                 </div>
                                                 <!-- Modal cho từng đơn hàng , chi tiết đơn hàng -->

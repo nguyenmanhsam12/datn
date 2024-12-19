@@ -19,11 +19,23 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $list_product = Product::whereHas('category')
-            ->whereHas('mainVariant')
+        $list_product = Product::whereHas('variants')
+            ->whereHas('category')
             ->orderBy('id', 'desc')
             ->limit(8)
             ->get();
+
+        // dùng hàm withSum sẽ sinh ra 1 trường là variants_sum_selled
+        $top_selling_products = Product::whereHas('variants', function ($query) {
+                $query->where('selled', '>', 0); // Chỉ lấy các sản phẩm có biến thể đã bán
+            })
+            ->withSum('variants', 'selled') // Tính tổng số lượng selled từ biến thể
+            ->orderByDesc('variants_sum_selled') // Sắp xếp theo tổng số lượng bán
+            ->limit(8) // Lấy 8 sản phẩm bán chạy nhất
+            ->get();
+        
+       
+
         $list_cate = Category::orderBy('id', 'asc')->limit(4)->get();
         $list_brand = Brand::orderBy('id', 'desc')->get();
         $list_category = Category::orderBy('id', 'desc')->get();
@@ -32,28 +44,28 @@ class HomeController extends Controller
                        ->get();
        
         return view('client.pages.home', compact('list_product', 'list_cate', 'list_brand', 'list_category'
-            ,'posts'
+            ,'posts','top_selling_products'
         ));
 
     }
 
-    public function getProductsByCategory($category_id)
-    {
-        // Lấy 8 sản phẩm mới nhất theo danh mục
-        $list_product = Product::whereHas('category',function($query) use ($category_id){
-            $query->where('category.id', $category_id); // Lọc theo danh mục
-        })
-        ->whereHas('mainVariant') // Chỉ lấy sản phẩm có biến thể
-        ->orderBy('id', 'desc')
-        ->limit(8)
-        ->get();
+    // public function getProductsByCategory($category_id)
+    // {
+    //     // Lấy 8 sản phẩm mới nhất theo danh mục
+    //     $list_product = Product::whereHas('category',function($query) use ($category_id){
+    //         $query->where('category.id', $category_id); // Lọc theo danh mục
+    //     })
+    //     ->whereHas('mainVariant') // Chỉ lấy sản phẩm có biến thể
+    //     ->orderBy('id', 'desc')
+    //     ->limit(8)
+    //     ->get();
 
-        foreach ($list_product as $product) {
-            Log::info('Biến thể:', ['variant' => $product->mainVariant->toArray()]);
-        }
+    //     foreach ($list_product as $product) {
+    //         Log::info('Biến thể:', ['variant' => $product->mainVariant->toArray()]);
+    //     }
 
-        return response()->json($list_product);
-    }
+    //     return response()->json($list_product);
+    // }
 
     public function getDetailProduct($slug)
     {
@@ -72,6 +84,7 @@ class HomeController extends Controller
         $relatedProduct = Product::whereHas('category', function ($query) use ($productDetail) {
             $query->whereIn('category.id', $productDetail->category->pluck('id')->toArray());
         })
+        ->whereHas('variants')
         ->where('id', '!=', $productDetail->id)
         ->take(4)  // Lấy 4 sản phẩm liên quan
         ->get();

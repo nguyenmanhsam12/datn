@@ -28,7 +28,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <p><strong>Mã Đơn hàng:</strong> #{{ $complain->order_id }}</p>
-                            <p><strong>Ngày Đặt hàng:</strong> {{ $complain->order->created_at }}</p>
+                            <p><strong>Ngày Đặt hàng:</strong> {{ \Carbon\Carbon::parse($complain->order->created_at)->format('Y-m-d') }}</p>
                             @php
                                 $finalTotal =
                                     $complain->order->total_amount - 

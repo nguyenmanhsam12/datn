@@ -12,7 +12,7 @@
             </div>
             <div class="form-group mb-3">
                 <label for="order-date">Ngày đặt hàng:</label>
-                <input type="date" name="order_date" value="{{ \Carbon\Carbon::parse($complaint->order_date)->format('Y-m-d') }}" class="form-control" readonly>
+                <input type="date" name="order_date" value="{{ \Carbon\Carbon::parse($complaint->order->created_at)->format('Y-m-d') }}" class="form-control" readonly>
             </div>
             <div class="form-group mb-3">
                 <label for="complaint_type">Lý do khiếu nại:</label>
@@ -22,7 +22,6 @@
             <div class="form-group mb-3">
                 <label for="complaint_type">Trạng thái khiếu nại:</label>
                 <input type="text" class="form-control" value="{{ $complaint->status }}" readonly>
-                
             </div>
 
             <div class="form-group mb-3">
@@ -43,15 +42,26 @@
                 <label for="complaint_details">Phản hồi từ chăm sóc khách hàng:</label>
                 <textarea name="complaint_details" class="form-control" rows="5" placeholder="Phản hồi từ phía shop" readonly>{{ $complaint->response}}</textarea>
             </div>
-            <div class="form-actions d-flex justify-content-between align-items-center mt-4">
-                <button type="button" class="btn btn-danger" id="cancel-complaint-btn"
-                data-order-id = "{{ $complaint->order_id }}"    
-                >Hủy khiếu nại</button>
-                <div>
-                    <a href="{{ route('myAccount') }}" class="btn btn-secondary">Quay lại</a>
-                    <button type="submit" class="btn btn-primary">Cập nhật khiếu nại</button>
+            @if ($complaint->status == 'Chờ xử lý')
+                <div class="form-actions d-flex justify-content-between align-items-center mt-4">
+                    
+                        <button type="button" class="btn btn-danger" id="cancel-complaint-btn"
+                        data-order-id = "{{ $complaint->order_id }}"    
+                        >Hủy khiếu nại</button>
+                    
+                    <div>
+                        <a href="{{ route('myAccount') }}" class="btn btn-secondary">Quay lại</a>
+                        <button type="submit" class="btn btn-primary">Cập nhật khiếu nại</button>
+                    </div>
                 </div>
-            </div>            
+            @else
+                <div class="form-actions">
+                    <div class="text-end">
+                        <a href="{{ route('myAccount') }}" class="btn btn-secondary">Quay lại</a>
+                        <button type="submit" class="btn btn-primary">Cập nhật khiếu nại</button>
+                    </div>
+                </div>
+            @endif          
         </form>
         <div class="complaint__footer text-center mt-4 border-top pt-4">
             <p>Email: support@cuahang.com | Hotline: 1900 1234</p>

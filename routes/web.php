@@ -298,6 +298,11 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::put('/update/{id}',[VariantController::class,'update'])->name('admin.variant.update');
         Route::get('/delete/{id}',[VariantController::class,'delete'])->name('admin.variant.delete')->middleware('can:delete,App\Models\ProductVariants');
         Route::post('/productVariant',[VariantController::class,'productVariant'])->name('admin.variant.add');
+
+        Route::get('/deleteAt',[VariantController::class,'deleteAt'])->name('admin.variant.deleteAt');
+        Route::get('/restore/{id}',[VariantController::class,'restore'])->name('admin.variant.restore');
+        Route::get('/forceDeleteVariant/{id}',[VariantController::class,'forceDeleteVariant'])->name('admin.variant.forceDeleteVariant');
+                
     });
 
     Route::prefix('order')->group(function(){
