@@ -297,8 +297,8 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::get('/edit/{id}',[VariantController::class,'edit'])->name('admin.variant.edit')->middleware('can:view,App\Models\ProductVariants');
         Route::put('/update/{id}',[VariantController::class,'update'])->name('admin.variant.update');
         Route::get('/delete/{id}',[VariantController::class,'delete'])->name('admin.variant.delete')->middleware('can:delete,App\Models\ProductVariants');
-        Route::post('/productVariant',[VariantController::class,'productVariant'])->name('admin.variant.add');
-
+        Route::post('/productVariant',[VariantController::class,'productVariant'])->name('admin.variant.add')
+                ->middleware('can:create,App\Models\ProductVariants');
         Route::get('/deleteAt',[VariantController::class,'deleteAt'])->name('admin.variant.deleteAt')
                 ->middleware('can:viewTrashed,App\Models\ProductVariants');
         Route::get('/restore/{id}',[VariantController::class,'restore'])->name('admin.variant.restore')
@@ -335,6 +335,7 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
             ->middleware('can:view,App\Models\Complaints');
         Route::put('/updateComplaints/{id}',[ComplanintsController::class,'updateComplaints'])->name('admin.comlaints.updateComplaints');
 
+        Route::get('/deleteComplaint/{id}',[ComplanintsController::class,'deleteComplaint'])->name('admin.comlaints.deleteComplaint');
         // thiếu xóa
 
     });

@@ -210,5 +210,11 @@ class ComplanintsController extends Controller
         // Chuyển hướng lại với thông báo thành công
         return redirect()->back()->with('success', 'Cập nhật thành công!');
     }
+
+    public function deleteComplaint($id){
+        $complain = Complaints::find($id);
+        $complain->delete();
+        return redirect()->back()->with('success','Xóa thành công');
+    }
     
 }
