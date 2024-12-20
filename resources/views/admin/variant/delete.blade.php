@@ -56,7 +56,13 @@
                             @foreach ($softVariant as $key => $item)
                                 <tr>
                                     <td>{{$key + 1}}</td>
-                                    <td>{{$item->product->name}}</td>
+                                    <td>
+                                        @if ($item->product->name)
+                                            {{$item->product->name}}
+                                        @else 
+                                            Không có tên
+                                        @endif
+                                    </td>
                                     <td>{{$item->size->name}}</td>
                                     <td>{{$item->stock}}</td>
                                     <td>{{$item->price}}</td>
