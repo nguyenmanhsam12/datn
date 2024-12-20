@@ -58,5 +58,22 @@ class RoleController extends Controller
 
     }
 
+    public function delete($id){
+
+        $role = Role::find($id);
+
+        if (!$role) {
+            return redirect()->route('admin.role.index')->with('error', 'Vai trò không tồn tại');
+        }
+    
+        // Xóa tất cả các quyền liên kết với vai trò trước khi xóa vai trò
+        $role->permissions()->detach();
+    
+        // Xóa vai trò
+        $role->delete();
+    
+        return redirect()->route('admin.role.index')->with('success', 'Xóa vai trò thành công');
+    }
+
     
 }
