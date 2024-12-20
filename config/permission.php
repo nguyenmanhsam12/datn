@@ -47,6 +47,9 @@ return [
         'add-variant'=>'variant_variant_add',
         'edit-variant'=>'variant_variant_edit',
         'delete-variant'=>'variant_variant_delete',
+        'listdeleted-variant'=>'variant_variant_listdeleted',
+        'restore-variant'=>'variant_variant_restore',
+        'fordelete-variant'=>'variant_variant_fordelete',
         // 
         'list-coupon'=>'coupon_coupon_list',
         'add-coupon'=>'coupon_coupon_add',

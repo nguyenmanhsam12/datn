@@ -51,16 +51,21 @@ class ProductVariantsPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, ProductVariants $productVariants)
+    public function restore(User $user)
     {
-        //
+        return $user->checkPermissionAccess(config('permission.access.restore-variant'));
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, ProductVariants $productVariants)
+    public function forceDelete(User $user)
     {
-        //
+        return $user->checkPermissionAccess(config('permission.access.fordelete-variant'));
+    }
+
+    public function viewTrashed(User $user)
+    {
+        return $user->checkPermissionAccess(config('permission.access.listdeleted-variant'));
     }
 }

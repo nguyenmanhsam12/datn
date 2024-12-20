@@ -20,7 +20,6 @@ class HomeController extends Controller
     public function index()
     {
         $list_product = Product::whereHas('variants')
-            ->whereHas('category')
             ->orderBy('id', 'desc')
             ->limit(8)
             ->get();
@@ -84,6 +83,7 @@ class HomeController extends Controller
         $relatedProduct = Product::whereHas('category', function ($query) use ($productDetail) {
             $query->whereIn('category.id', $productDetail->category->pluck('id')->toArray());
         })
+        ->where('brand_id',$productDetail->brand_id)
         ->whereHas('variants')
         ->where('id', '!=', $productDetail->id)
         ->take(4)  // Lấy 4 sản phẩm liên quan

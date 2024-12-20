@@ -89,8 +89,8 @@
         <h1>Cảm ơn bạn đã mua hàng!</h1>
         <p>Đơn hàng của bạn đang được xử lý. Chúng tôi sẽ thông báo khi đơn hàng được cập nhật.</p>
         <div class="button-group">
-            <a href="{{ route('home') }}">Quay lại trang chủ</a>
             <a href="{{ route('shop') }}">Tiếp tục mua sắm</a>
+            <a href="{{ route('myAccount') }}">Xem đơn hàng</a>
         </div>
     </div>
 </body>

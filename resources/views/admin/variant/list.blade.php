@@ -23,8 +23,10 @@
         <section class="content">
 
             <!-- Default box -->
-            <a href="{{ route('admin.variant.deleteAt') }}" class="btn btn-secondary mb-3">Thuộc tính đã xóa</a>
-            
+            @can('viewTrashed', App\Models\ProductVariants::class)
+                <a href="{{ route('admin.variant.deleteAt') }}" class="btn btn-secondary mb-3">Thuộc tính đã xóa</a>
+            @endcan
+
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Thuộc tính</h3>

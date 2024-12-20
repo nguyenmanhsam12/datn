@@ -99,7 +99,9 @@ class VariantController extends Controller
             'height.required' => 'Chiều cao bắt buộc phải nhập',
         ]);
 
-        $variant =  ProductVariants::where('product_id',$data['product_id'])->first();
+        $variant =  ProductVariants::where('product_id',$data['product_id'])
+            ->where('size_id',$data['size_id'])
+            ->first();
         if($variant){
             return redirect()->back()->with('error','Thuộc tính này đã tồn tại');
         }
