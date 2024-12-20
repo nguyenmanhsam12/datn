@@ -132,7 +132,8 @@
                 <div class="order-summary">
                     <h3>Thông tin đơn hàng</h3>
                     <p><strong>Mã đơn hàng:</strong> {{ $order->id }}</p>
-                    <p><strong>Tổng giá trị:</strong> {{ number_format($order->total_amount, 0, ',', '.') }} VNĐ</p>
+                    <p><strong>Phí vận chuyển:</strong> {{ number_format($order->shipping_fee, 0, ',', '.') }} VNĐ</p>
+                    <p><strong>Giá tiền giảm:</strong> {{ number_format($order->discount_amount, 0, ',', '.') }} VNĐ</p>
                     <p><strong>Phương thức thanh toán:</strong> {{ optional($order->payment)->name ?? 'Không có thông tin' }}</p>
                 </div>
 
@@ -169,7 +170,11 @@
                     </tbody>
                 </table>
 
-                <p class="total-price">Tổng giá trị đơn hàng: {{ number_format($order->total_amount, 0, ',', '.') }} VNĐ</p>
+                @php
+                    $finalTotal = $order->total_amount + $order->shipping_fee - $order->discount_amount;
+                @endphp
+
+                <p class="total-price">Tổng giá trị đơn hàng: {{ number_format($finalTotal, 0, ',', '.') }} VNĐ</p>
             </td>
         </tr>
 

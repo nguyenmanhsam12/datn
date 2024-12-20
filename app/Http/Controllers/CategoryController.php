@@ -20,9 +20,10 @@ class CategoryController extends Controller
 
     public function store(Request $request){
         $request->validate([
-            'name'=>'required|string|min:2|max:255|unique:brands,name',
+            'name'=>'required|string|min:2|max:255|unique:category,name',
         ],[
             'name.required'=>'Tên danh mục buộc phải nhập',
+            'name.unique'=>'Tên danh mục đã tồn tại',
         ]);
 
         $data = $request->all();

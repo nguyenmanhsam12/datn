@@ -60,10 +60,10 @@
                                     <td>{{ $complain->created_at }}</td>
                                     <td>
                                         @can('view',App\Models\Complaints::class)
-                                        <a href="{{ route('admin.comlaints.detailComplaints', ['id' => $complain->id]) }}"
+                                            <a href="{{ route('admin.comlaints.detailComplaints', ['id' => $complain->id]) }}"
                                             class="btn btn-info"> Xem chi tiết
                                         @endcan
-                                            <a href="" class="btn btn-danger ml-1"> Xóa
+                                            <a href="{{ route('admin.comlaints.deleteComplaint',['id'=>$complain->id]) }}" class="btn btn-danger ml-1" onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))"> Xóa
                                     </td>
                                 </tr>
                             @endforeach

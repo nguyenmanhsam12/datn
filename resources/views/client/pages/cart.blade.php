@@ -691,6 +691,8 @@
                                 })
                                 .then(response => response.json())
                                 .then(data => {
+                                    console.log(data);
+                                    
                                     if (data.success) {
                                         // Cập nhật giao diện: xóa sản phẩm khỏi bảng
                                         this.closest('tr').remove(); // Xóa hàng khỏi bảng
