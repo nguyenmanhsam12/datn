@@ -61,12 +61,14 @@
                                     <td>{{$item->stock}}</td>
                                     <td>{{$item->price}}</td>
                                     <td>
-                                        
+
+                                        @can('restore',App\Models\ProductVariants::class)
                                             <a href="{{route('admin.variant.restore',['id'=>$item->id])}}"class="btn btn-warning">Khôi phục</a>
-                                        
+                                        @endcan
                                        
+                                        @can('forceDelete',App\Models\ProductVariants::class)
                                             <a href="{{route('admin.variant.forceDeleteVariant',['id'=>$item->id])}}"class="btn btn-danger"onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))">Xóa vĩnh viễn</a>
-                                        
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach

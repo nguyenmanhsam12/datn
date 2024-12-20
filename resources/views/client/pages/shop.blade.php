@@ -273,7 +273,7 @@
                                                 <div class="product-img">
                                                     <span class="pro-label new-label">new</span>
                                                     {{-- <a href="#" class="pro-price-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist"><i class="zmdi zmdi-favorite-outline "></i></a> --}}
-                                                    <a href="single-product.html"><img src="{{ asset($pr->image) }}" alt="" /></a>
+                                                    <a href="{{ route('getDetailProduct',['slug'=>$pr->slug]) }}"><img src="{{ asset($pr->image) }}" alt="" /></a>
                                                 </div>
                                                 <div class="product-info">
                                                     <div class="fix">

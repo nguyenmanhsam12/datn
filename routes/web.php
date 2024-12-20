@@ -299,9 +299,12 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::get('/delete/{id}',[VariantController::class,'delete'])->name('admin.variant.delete')->middleware('can:delete,App\Models\ProductVariants');
         Route::post('/productVariant',[VariantController::class,'productVariant'])->name('admin.variant.add');
 
-        Route::get('/deleteAt',[VariantController::class,'deleteAt'])->name('admin.variant.deleteAt');
-        Route::get('/restore/{id}',[VariantController::class,'restore'])->name('admin.variant.restore');
-        Route::get('/forceDeleteVariant/{id}',[VariantController::class,'forceDeleteVariant'])->name('admin.variant.forceDeleteVariant');
+        Route::get('/deleteAt',[VariantController::class,'deleteAt'])->name('admin.variant.deleteAt')
+                ->middleware('can:viewTrashed,App\Models\ProductVariants');
+        Route::get('/restore/{id}',[VariantController::class,'restore'])->name('admin.variant.restore')
+                ->middleware('can:restore,App\Models\ProductVariants');
+        Route::get('/forceDeleteVariant/{id}',[VariantController::class,'forceDeleteVariant'])->name('admin.variant.forceDeleteVariant')
+                ->middleware('can:forceDelete,App\Models\ProductVariants');
                 
     });
 
