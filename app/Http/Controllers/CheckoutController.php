@@ -69,9 +69,18 @@ class CheckoutController extends Controller
 
         
         $cartItems = CartItems::with('variants.product', 'variants.size')->where('cart_id', $cart->id)->get();
+        
 
-        if(!$cartItems){
+        if(empty($cartItems)){
             return redirect()->route('shop')->with('error', 'Vui lòng chọn sản phẩm trước khi thanh toán');
+        }
+
+        // Kiểm tra số lượng tồn kho
+        foreach ($cartItems as $item) {
+            $variant = $item->variants;
+            if ($variant->stock < $item->quantity) {
+                return redirect()->route('cart')->with('error', "Sản phẩm '{$variant->product->name}' chỉ còn lại {$variant->stock} cái. Vui lòng cập nhật lại giỏ hàng.");
+            }
         }
 
         // Tính tổng trọng lượng cho tất cả các sản phẩm trong giỏ hàng

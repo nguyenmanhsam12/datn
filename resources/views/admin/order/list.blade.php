@@ -75,11 +75,11 @@
                                     <a href="{{ route('admin.order.detail', ['id' => $order->id]) }}"
                                         class="btn btn-success btn-sm">Xem Chi Tiết</a>
                                 @endcan
-                                @can('delete',App\Models\Order::class)
+                                {{-- @can('delete',App\Models\Order::class)
                                     <a href="{{ route('admin.order.deleteOrder',['id'=>$order->id]) }}" class="btn btn-danger btn-sm"
                                     onclick="return(confirm('Bạn có chắc chắn muốn xóa không'))"
                                     >Xóa</a>
-                                @endcan
+                                @endcan --}}
                             </td>
                         </tr>
                     @endforeach

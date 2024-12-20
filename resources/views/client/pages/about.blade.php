@@ -12,7 +12,7 @@
 								</div>
 								<div class="breadcumbs pb-15">
 									<ul>
-										<li><a href="index.html">Trang Chủ</a></li>
+										<li><a href="{{ route('home') }}">Trang Chủ</a></li>
 										<li>Về chúng tôi</li>
 									</ul>
 								</div>

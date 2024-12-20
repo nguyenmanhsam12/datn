@@ -24,58 +24,63 @@
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
                 gap: 20px;
+                align-items: stretch; /* Đảm bảo các ô luôn có chiều cao bằng nhau */
+            }
 
-                .voucher-card {
-                    background: #fff;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    padding: 20px;
-                    text-align: center;
-                    transition: transform 0.3s;
+            .voucher-card {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between; /* Duy trì khoảng cách hợp lý giữa các phần */
+                background: #fff;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+                text-align: center;
+                transition: transform 0.3s;
+
+                &:hover {
+                    transform: translateY(-10px);
+                    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+                }
+
+                h2 {
+                    font-size: 1.5rem;
+                    color: #ff4d4d;
+                    margin-bottom: 10px;
+                }
+
+                p {
+                    font-size: 1rem;
+                    color: #333;
+                    margin-bottom: 15px;
+                }
+
+                .voucher-code {
+                    font-size: 1rem;
+                    font-weight: bold;
+                    margin-bottom: 20px;
+
+                    span {
+                        color: #007bff;
+                    }
+                }
+
+                .btn {
+                    background-color: #007bff;
+                    color: #fff;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 1rem;
+                    transition: background-color 0.3s;
 
                     &:hover {
-                        transform: translateY(-10px);
-                        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-                    }
-
-                    h2 {
-                        font-size: 1.5rem;
-                        color: #ff4d4d;
-                        margin-bottom: 10px;
-                    }
-
-                    p {
-                        font-size: 1rem;
-                        color: #333;
-                        margin-bottom: 15px;
-                    }
-
-                    .voucher-code {
-                        font-size: 1rem;
-                        font-weight: bold;
-                        margin-bottom: 20px;
-
-                        span {
-                            color: #007bff;
-                        }
-                    }
-
-                    .btn {
-                        background-color: #007bff;
-                        color: #fff;
-                        border: none;
-                        padding: 10px 20px;
-                        border-radius: 5px;
-                        cursor: pointer;
-                        font-size: 1rem;
-                        transition: background-color 0.3s;
-
-                        &:hover {
-                            background-color: #0056b3;
-                        }
+                        background-color: #0056b3;
                     }
                 }
             }
+
         }
     </style>
 @endpush
@@ -91,14 +96,22 @@
                 <div class="voucher-card">
                     @if ($item->discount_type == 'percentage')
                         <h2>Giảm giá theo phần trăm</h2>
+                        <p>{{ number_format($item->discount_value) }} %</p>
+                        @if($item->maximum_discount)
+                            <p>Tối đa giảm {{ number_format($item->maximum_discount, 0, ',', '.') }} VNĐ</p>
+                        @endif
                     @else
                         <h2>Giảm giá theo giá trị</h2>
+                        <p>{{ number_format($item->discount_value, 0, ',', '.') }} VNĐ</p>
                     @endif
                     
-                    <p>Cho đơn hàng từ {{number_format($item->minimum_order_value,0,',','.')}} VND</p>
-                    <p class="voucher-code">Mã: <span>{{$item->code}}</span></p>
+                    <p>Cho đơn hàng từ {{ number_format($item->minimum_order_value, 0, ',', '.') }} VND</p>
+                    
+                    <p class="voucher-code">Mã: <span>{{ $item->code }}</span></p>
+                
                     <button class="btn btn-copy">Sao chép mã</button>
-                </div>
+                </div>  
+            
             @endforeach
             <!-- Add more vouchers as needed -->
         </div>
