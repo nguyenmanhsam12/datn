@@ -70,8 +70,10 @@ class CheckoutController extends Controller
         
         $cartItems = CartItems::with('variants.product', 'variants.size')->where('cart_id', $cart->id)->get();
         
+       
 
-        if(empty($cartItems)){
+        // Kiểm tra nếu giỏ hàng không có sản phẩm nào
+        if ($cartItems->isEmpty()) {
             return redirect()->route('shop')->with('error', 'Vui lòng chọn sản phẩm trước khi thanh toán');
         }
 

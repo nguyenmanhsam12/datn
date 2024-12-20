@@ -78,10 +78,13 @@
                                         <img src="{{ $pr->image }}" alt="" width="100" height="100">
                                     </td>
                                     <td>{{ $pr->sku }}</td>
+                                    
                                     @if($pr->brand_id)
                                         <td>{{ $pr->brand->name }}</td>
                                     @else
-                                        Không có thương hiệu
+                                        <td>
+                                            Không có thương hiệu
+                                        </td>
                                     @endif
                                     @if($pr->category_id)
                                         <td>{{ $pr->category->name }}</td>
