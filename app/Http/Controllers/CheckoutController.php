@@ -35,20 +35,20 @@ class CheckoutController extends Controller
 
     // Method lấy thông tin đơn hàng từ session
     // hàm tính phí vận chuyển
-    private function calculateShippingFee($total_weight,$totalAmount)
+    private function calculateShippingFee($total_weight, $totalAmount)
     {
         // Xử lý mức phí vận chuyển dựa trên trọng lượng sản phẩm (có thể cứng hóa giá trị trong code)
-        if($totalAmount >= 6000000){
+        if ($totalAmount >= 6000000) {
             return 0; //freeship
         }
 
         if ($total_weight <= 1) {
-            return 15000; 
+            return 15000;
         } elseif ($total_weight <= 2) {
-            return 25000; 
+            return 25000;
         } elseif ($total_weight <= 5) {
-            return 40000; 
-        } else{
+            return 40000;
+        } else {
             return 50000;
         }
     }
@@ -67,10 +67,10 @@ class CheckoutController extends Controller
             return redirect()->route('shop')->with('error', 'Vui lòng chọn sản phẩm trước khi thanh toán');
         }
 
-        
+
         $cartItems = CartItems::with('variants.product', 'variants.size')->where('cart_id', $cart->id)->get();
-        
-       
+
+
 
         // Kiểm tra nếu giỏ hàng không có sản phẩm nào
         if ($cartItems->isEmpty()) {
@@ -93,9 +93,9 @@ class CheckoutController extends Controller
             $product = $variant->product;
 
             // thể tích 
-            $volume = $variant->height * $variant->length * $variant->width/3000;
+            $volume = $variant->height * $variant->length * $variant->width / 3000;
             $total_weight += $volume * $item->quantity;
-            
+
             return [
                 'id' => $item->id,
                 'variant_id' => $variant->id,
@@ -110,13 +110,13 @@ class CheckoutController extends Controller
 
         $province = Province::orderBy('matinh', 'asc')->get();
         $payment = Payment_Methods::all();
-        $list_brand = Brand::orderBy('id','desc')->get();
-        $list_category = Category::orderBy('id','desc')->get();
+        $list_brand = Brand::orderBy('id', 'desc')->get();
+        $list_category = Category::orderBy('id', 'desc')->get();
 
-        
-        $totalAmount = session('totalAmount',0);
 
-        $shipping = $this->calculateShippingFee($total_weight,$totalAmount);
+        $totalAmount = session('totalAmount', 0);
+
+        $shipping = $this->calculateShippingFee($total_weight, $totalAmount);
 
         // lưu phí ship vào trong session
         session(['shipping' => $shipping]);
@@ -127,18 +127,25 @@ class CheckoutController extends Controller
         if ($finalTotal === null) {
             // Nếu không có newTotalCheckout, lấy tổng tiền từ giỏ hàng và cộng phí vận chuyển
             $totalAmount = session('newTotal', 0);
-            if(!$totalAmount){
+            if (!$totalAmount) {
                 $totalAmount = $cartItems->sum('total_price');
-                session(['totalAmount'=>$totalAmount]);
+                session(['totalAmount' => $totalAmount]);
             }
             $finalTotal = $totalAmount + $shipping; // Tổng tiền giỏ hàng + phí ship
         }
 
         // Lưu tổng tiền cuối cùng vào session
         session(['finalTotal' => $totalAmount]);
-    
-        return view('client.pages.checkout', compact('cartItems', 'user', 'province', 'payment', 'shipping', 
-            'list_brand','list_category','finalTotal'
+
+        return view('client.pages.checkout', compact(
+            'cartItems',
+            'user',
+            'province',
+            'payment',
+            'shipping',
+            'list_brand',
+            'list_category',
+            'finalTotal'
         ));
     }
 
@@ -268,14 +275,14 @@ class CheckoutController extends Controller
                 return response()->json(['message' => 'Không tìm thấy đơn hàng hoặc địa chỉ giao hàng.'], 404);
             }
 
-                  
+
             // Gửi email xác nhận đơn hàng
             Mail::to($data['recipient_email'])->queue(new OrderShipped($order, $orderAddress));
 
             session()->forget(['coupon_id', 'discount', 'newTotal', 'totalAmount']);
 
             // Lấy danh sách user có vai trò admin hoặc manager
-            $adminsAndManagers = User::whereHas('roles', function($query) {
+            $adminsAndManagers = User::whereHas('roles', function ($query) {
                 $query->whereIn('name', ['admin', 'manager']);
             })->get();
 
@@ -293,10 +300,10 @@ class CheckoutController extends Controller
 
                 broadcast(new NewOrderEvent($user, $notification)); // Gửi id thông báo cho từng user
             }
-            
+
             if ($data['payment_method'] == 2) { // Giả sử 2 là ID của VNPAY
                 $newTotal = $order->total_amount + $order->shipping_fee - $order->discount_amount;
-                
+
                 // Tạo bản ghi thanh toán trong transactions khi có giao dịch thanh toán
                 Transactions::create([
                     'order_id' => $order->id,
@@ -306,12 +313,12 @@ class CheckoutController extends Controller
                 session(['order_status' => '1', 'order_id' => $order->id]);
 
                 // Gọi hàm xử lý thanh toán VNPAY
-                return $this->vnpayPayment($newTotal,$order->id);
+                return $this->vnpayPayment($newTotal, $order->id);
             }
 
             // if ($data['payment_method'] == 3) { 
             //     $newTotal = $order->total_amount + $order->shipping_fee - $order->discount_amount;
-                
+
             //     // Tạo bản ghi thanh toán trong transactions khi có giao dịch thanh toán
             //     Transactions::create([
             //         'order_id' => $order->id,
@@ -336,13 +343,14 @@ class CheckoutController extends Controller
         }
     }
 
-    public function vnpayPayment($newTotal,$orderId){
-        
+    public function vnpayPayment($newTotal, $orderId)
+    {
+
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
         $vnp_Returnurl = route('vnpayCallback');
-        $vnp_TmnCode = "8BH5Y90V";//Mã website tại VNPAY 
+        $vnp_TmnCode = "8BH5Y90V"; //Mã website tại VNPAY 
         $vnp_HashSecret = "N14KVQSQUB63K18EERWUTT3Z5S1QQXIQ"; //Chuỗi bí mật
-        
+
         $vnp_TxnRef = $orderId; //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này , mã giao dịch
         $vnp_OrderInfo = 'Thanh toán vnpay';   //Thông tin đơn hàng
         $vnp_OrderType = 'billpayment';
@@ -351,7 +359,7 @@ class CheckoutController extends Controller
         $vnp_BankCode = 'NCB';
         $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
 
-   
+
         $inputData = array(
             "vnp_Version" => "2.1.0",
             "vnp_TmnCode" => $vnp_TmnCode,
@@ -366,14 +374,14 @@ class CheckoutController extends Controller
             "vnp_ReturnUrl" => $vnp_Returnurl,
             "vnp_TxnRef" => $vnp_TxnRef,
         );
-        
+
         if (isset($vnp_BankCode) && $vnp_BankCode != "") {
             $inputData['vnp_BankCode'] = $vnp_BankCode;
         }
         if (isset($vnp_Bill_State) && $vnp_Bill_State != "") {
             $inputData['vnp_Bill_State'] = $vnp_Bill_State;
         }
-        
+
         //var_dump($inputData);
         ksort($inputData);
         $query = "";
@@ -388,17 +396,16 @@ class CheckoutController extends Controller
             }
             $query .= urlencode($key) . "=" . urlencode($value) . '&';
         }
-        
+
         $vnp_Url = $vnp_Url . "?" . $query;
         if (isset($vnp_HashSecret)) {
-            $vnpSecureHash =   hash_hmac('sha512', $hashdata, $vnp_HashSecret);//  
+            $vnpSecureHash =   hash_hmac('sha512', $hashdata, $vnp_HashSecret); //  
             $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
         }
 
         return response()->json([
             'vnpay' => $vnp_Url,
         ]);
-
     }
 
     // retrun thông tin khi vnpay thanh toán thành công
@@ -406,13 +413,13 @@ class CheckoutController extends Controller
     {
         try {
             $data = $request->all();
-            
+
             $vnp_TransactionStatus = $data['vnp_TransactionStatus'];
             $vnp_TxnRef = $data['vnp_TxnRef'];  // Mã đơn hàng
-            
+
             // Lấy đơn hàng từ mã giao dịch
             $order = Order::find($vnp_TxnRef);
-            $transaction = Transactions::where('order_id', $order->id)->first();    
+            $transaction = Transactions::where('order_id', $order->id)->first();
 
             // Kiểm tra trạng thái thanh toán của VNPAY
             if ($vnp_TransactionStatus == '00') {
@@ -435,7 +442,7 @@ class CheckoutController extends Controller
                 $order->payment_status = 'pending';
                 $order->status_id = 1;
                 $status = 'pending';  // Trạng thái giao dịch thất bại
-                if($transaction){
+                if ($transaction) {
                     $transaction->status = $status;
                     $transaction->transaction_id = $data['vnp_TransactionNo'];
                     $transaction->payment_date = $data['vnp_PayDate'];
@@ -446,7 +453,7 @@ class CheckoutController extends Controller
                 }
                 $order->save();
 
-                return redirect()->route('myAccount'); 
+                return redirect()->route('myAccount');
             }
 
             // Lưu thay đổi vào đơn hàng
@@ -460,7 +467,8 @@ class CheckoutController extends Controller
     }
 
     // thanh toán lại của vnpay , momo
-    public function retryPayment(Request $request){
+    public function retryPayment(Request $request)
+    {
 
         $order = Order::findOrFail($request->order_id);
 
@@ -469,7 +477,7 @@ class CheckoutController extends Controller
             // tổng đơn hàng
             $newTotal = $order->total_amount + $order->shipping_fee - $order->discount_amount;
             // Tạo liên kết thanh toán VNPAY
-            return $this->vnpayPayment($newTotal,$order->id);
+            return $this->vnpayPayment($newTotal, $order->id);
         }
 
         // if ($order->payment_status === 'pending' && $order->status_id === 1 && $order->payment_method_id === 3) {
@@ -519,7 +527,7 @@ class CheckoutController extends Controller
     //     $extraData = "";
 
 
-        
+
     //         $partnerCode = $partnerCode;
     //         $accessKey = $accessKey;
     //         $serectkey = $secretKey;
@@ -563,7 +571,7 @@ class CheckoutController extends Controller
     //         } else {
     //             throw new \Exception('Không thể tạo liên kết thanh toán MoMo.');
     //         }
-        
+
     // }
 
     // public function momoCallback(Request $request){
@@ -572,7 +580,7 @@ class CheckoutController extends Controller
 
     //         $orderId = $data['orderId'];
     //         $orderId = explode("_",$orderId);
-              
+
     //         // Lấy đơn hàng từ mã giao dịch
     //         $order = Order::find($orderId[0]);
     //         $transaction = Transactions::where('order_id', $order->id)->first();    
