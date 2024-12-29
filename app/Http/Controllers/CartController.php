@@ -576,6 +576,12 @@ class CartController extends Controller
             ]);
         }
 
+        if($coupon->usage_limit <= 0){
+            return response()->json([
+                'error' => 'Mã giảm giá đã hết số lượng sử dụng!'
+            ]);
+        }
+
         // Lấy tổng tiền từ session (đã lưu trước đó khi thêm sản phẩm vào giỏ)
         $totalAmount = session('totalAmount', 0);
 

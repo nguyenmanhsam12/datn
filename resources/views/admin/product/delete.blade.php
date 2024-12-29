@@ -32,8 +32,8 @@
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
-                            <li class="breadcrumb-item active">Sản phẩm</li>
+                            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item active">Sản phẩm đã xóa</li>
                         </ol>
                     </div>
                 </div>
@@ -42,6 +42,9 @@
 
         <!-- Main content -->
         <section class="content">
+
+            <a href="{{ route('admin.product.index') }}" class="btn btn-secondary mb-3">Danh sách sản phẩm</a>
+
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Danh sách sản phẩm đã xóa</h3>

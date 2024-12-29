@@ -16,8 +16,9 @@ use Illuminate\Support\Facades\Log;
 class ProductController extends Controller
 {
     public function index(){
-        $list_product = Product::with('brand','category','user','variants')->orderBy('id','desc')->get();
-
+        $list_product = Product::with('brand','category','user','variants')
+            ->orderBy('id','desc')
+            ->paginate(5);
         // session()->forget('product_attributes');
         $list_size = Size::all();
         return view('admin.product.list',compact('list_product','list_size'));

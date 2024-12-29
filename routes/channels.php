@@ -16,13 +16,27 @@ use Illuminate\Support\Facades\Log;
 |
 */
 
+Broadcast::channel('order-canceled', function (User $user) {
+    return $user->hasRole('admin') || $user->hasRole('manager');
+});
+
+Broadcast::channel('order-confirm', function (User $user) {
+    return $user->hasRole('admin') || $user->hasRole('manager');
+});
+
+
+
 Broadcast::channel('order.{orderId}', function (User $user, $orderId) {
     $order = Order::find($orderId);
-    Log::debug('Checking access to channel', ['user_id' => $user->id, 'order_user_id' => $order->user_id]);
     return $order && $order->user_id === $user->id; // Chỉ người sở hữu đơn hàng mới nhận được thông báo
 });
+
+
 
 Broadcast::channel('new-orders.{userId}', function (User $user, $userId) {
     // Kiểm tra xem người dùng có quyền truy cập kênh hay không
     return $user->id == $userId && ($user->hasRole('admin') || $user->hasRole('manager'));
 });
+
+
+

@@ -28,6 +28,7 @@ class UpdateCouponRequest extends FormRequest
             'minimum_order_value' => 'required|numeric|min:0', // Giá trị tối thiểu của đơn hàng phải là số và không nhỏ hơn 0
             'maximum_discount' => 'required|numeric|min:0',
             'end_date' => 'required|date|after_or_equal:today', // Ngày hết hạn phải là ngày hợp lệ và không nhỏ hơn ngày hiện tại
+            'usage_limit' => 'required',
         ];
     }
 
@@ -47,6 +48,7 @@ class UpdateCouponRequest extends FormRequest
             'end_date.required' => 'Ngày hết hạn là bắt buộc.',
             'end_date.date' => 'Ngày hết hạn phải là một ngày hợp lệ.',
             'end_date.after_or_equal' => 'Ngày hết hạn phải là ngày hôm nay hoặc sau đó.',
+            'usage_limit.required'=>'Số lượng bắt buộc phải nhập',
         ];
     }
 }

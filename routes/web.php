@@ -193,6 +193,8 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
     Route::get('/api/notifications', [NotificationController::class, 'fetchNotifications'])->name('fetchNotifications');
     // dánh dấu đọc thông báo
     Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
+    Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
+
 
 
     Route::get('reviews', [ReviewController::class, 'index'])->name('admin.reviews.index')
@@ -305,6 +307,9 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
                 ->middleware('can:restore,App\Models\ProductVariants');
         Route::get('/forceDeleteVariant/{id}',[VariantController::class,'forceDeleteVariant'])->name('admin.variant.forceDeleteVariant')
                 ->middleware('can:forceDelete,App\Models\ProductVariants');
+
+        Route::post('product/variants', [VariantController::class, 'getVariants'])->name('admin.variant.getVariants');
+
                 
     });
 
@@ -316,6 +321,8 @@ Route::prefix('admin')->middleware('checkadmin')->group(function(){
         Route::put('/admin/orders/update-status', [OrderAdminController::class, 'updateStatus'])->name('admin.order.updateStatus');
         Route::get('/admin/orders/delete-order/{id}', [OrderAdminController::class, 'deleteOrder'])->name('admin.order.deleteOrder')
             ->middleware('can:delete,App\Models\Order');
+        Route::patch('/admin/orders/update-payment/{orderId}', [OrderAdminController::class, 'updatePaymentStatus'])->name('admin.order.updatePaymentStatus');
+
     });
 
     Route::prefix('coupons')->group(function(){

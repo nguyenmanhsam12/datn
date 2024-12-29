@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\OrderConfirm;
 use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -49,6 +50,8 @@ class AutoConfirmOrder implements ShouldQueue
                 'status_id' => 5, // Trạng thái xác nhận tự động
                 'payment_status' => 'paid',
             ]);
+
+            broadcast(new OrderConfirm($order));
 
             Log::info("Order ID {$order->id} auto-confirmed after 5 minutes.");
         }

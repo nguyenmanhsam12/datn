@@ -22,6 +22,9 @@
         <!-- Main content -->
         <section class="content">
 
+            <a href="{{route('admin.coupons.index')}}" class="btn btn-secondary mb-3">Danh sách mã giảm giá</a>
+
+
             <!-- Default box -->
             <div class="card">
                 <div class="card-header">
@@ -76,6 +79,14 @@
                                     <label for="maximum_discount">Giá trị giảm tối đa</label>
                                     <input type="number" class="form-control" id="maximum_discount" name="maximum_discount" value="{{ old('maximum_discount') }}" step="0.01" required>
                                     @error('maximum_discount')
+                                            <div class="text-danger mt-3">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="usage_limit">Số lượng mã giảm</label>
+                                    <input type="number" class="form-control" id="usage_limit" name="usage_limit" value="{{ old('usage_limit') }}" step="0.01" required>
+                                    @error('usage_limit')
                                             <div class="text-danger mt-3">{{ $message }}</div>
                                     @enderror
                                 </div>

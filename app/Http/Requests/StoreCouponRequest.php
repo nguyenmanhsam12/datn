@@ -29,6 +29,7 @@ class StoreCouponRequest extends FormRequest
             'maximum_discount' => 'required|numeric|min:0',
             'end_date' => 'required|date|after_or_equal:today',
             'status' => 'required|in:active,expired',
+            'usage_limit' => 'required',
         ];
     }
 
@@ -56,6 +57,8 @@ class StoreCouponRequest extends FormRequest
             
             'status.required' => 'Trạng thái là bắt buộc.',
             'status.in' => 'Trạng thái phải là "active" hoặc "expired".',
+
+            'usage_limit.required'=>'Số lượng bắt buộc phải nhập'
         ];
     }
 }

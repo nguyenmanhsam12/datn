@@ -50,6 +50,8 @@
                                 <th>Tên mã giảm giá</th>
                                 <th>Loại giảm giá</th>
                                 <th>Giá trị mã</th>
+                                <th>Số lượng mã chưa sử dụng</th>
+                                <th>Số lượng mã đã sử dụng</th>
                                 <th>Giá tiền đơn hàng</th>
                                 <th>Ngày hết hạn</th>
                                 <th>Trạng thái</th>
@@ -65,6 +67,8 @@
                                     <td>{{ $coupon->code }}</td>
                                     <td>{{ $coupon->discount_type }}</td>
                                     <td>{{ $coupon->discount_value }}</td>
+                                    <td>{{ $coupon->usage_limit }}</td>
+                                    <td>{{ $coupon->used_count }}</td>
                                     <td>{{ number_format($coupon->minimum_order_value,0,',','.').' VNĐ' }}</td>
                                     <td>{{ $coupon->end_date }}</td>
                                     <td>{{ $coupon->status  }}</td>
