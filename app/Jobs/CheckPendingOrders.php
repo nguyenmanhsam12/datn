@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\OrderCanceled;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -59,7 +60,23 @@ class CheckPendingOrders implements ShouldQueue
                     Log::info("Không tìm thấy transaction");
                 }
 
+                // Lấy các sản phẩm trong đơn hàng
+                $orderItems = $order->cartItems;
+
+                // Cập nhật lại tồn kho cho mỗi sản phẩm trong đơn hàng
+                foreach ($orderItems as $item) {
+                    $productVariant = $item->productVariant;
+
+                    // Tăng lại số lượng tồn kho
+                    $productVariant->increment('stock', $item->quantity);
+                    $productVariant->selled -= $item->quantity;
+                    $productVariant->save();
+
+                }
+
                 $order->save();
+
+                broadcast(new OrderCanceled($order));
             }
         
             Log::info("CRONJOB COMPLETED");

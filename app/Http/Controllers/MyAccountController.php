@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\OrderCanceled;
+use App\Events\OrderConfirm;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Models\Category;
 use App\Models\Brand;
@@ -78,6 +80,8 @@ class MyAccountController extends Controller
             $order->payment_status = 'paid';
             $order->save();
 
+            broadcast(new OrderConfirm($order));
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Đơn hàng đã được xác nhận.',
@@ -111,23 +115,38 @@ class MyAccountController extends Controller
             ], 400);
         }
 
-        if($order->payment_method_id == 2 && $order->payment_status == 'pending'){
-            $transaction = Transactions::where('order_id',$order->id)->first();
-            if ($transaction) {
-                $transaction->status = 'canceled'; // hoặc 'failed' tùy theo logic
-                $transaction->save();
-            }
+    
+
+        if($order->payment_method_id == 2 ){
+            if($order->payment_status == 'pending'){
+                $transaction = Transactions::where('order_id',$order->id)->first();
+                if ($transaction) {
+                    $transaction->status = 'canceled'; // hoặc 'failed' tùy theo logic
+                    $transaction->save();
+                }
             $order->payment_status = 'canceled'; // Cập nhật trạng thái thanh toán trong đơn hàng
+            $order->note = 'Đơn hàng đã bị hủy trước khi thanh toán hoàn tất.';
+            }else if($order->payment_status == 'paid'){
+                if ($order->payment_status != 'refund_pending' && $order->payment_status != 'refund') {
+                    // Cập nhật trạng thái thanh toán trong đơn hàng
+                    $order->payment_status = 'refund_pending'; // Đánh dấu là đang chờ hoàn tiền
+                    $order->note = 'Đang chờ hoàn tiền do khách hàng hủy đơn hàng.';
+                }
+            }
+           
+        }elseif($order->payment_method_id == 1){
+            $order->payment_status = 'canceled'; // Cập nhật trạng thái thanh toán trong đơn hàng
+            $order->note = 'Đơn hàng đã bị hủy trước khi thanh toán hoàn tất.';           
         }
 
-        if($order->payment_method_id == 3 && $order->payment_status == 'pending'){
-            $transaction = Transactions::where('order_id',$order->id)->first();
-            if ($transaction) {
-                $transaction->status = 'canceled'; // hoặc 'failed' tùy theo logic
-                $transaction->save();
-            }
-            $order->payment_status = 'canceled'; // Cập nhật trạng thái thanh toán trong đơn hàng
-        }
+
+        // cập nhập trạng thái của đơn hàng
+        $order->status_id = 6;
+        $order->save();
+
+        broadcast(new OrderCanceled($order));
+
+        
 
         // Lấy các sản phẩm trong đơn hàng
         $orderItems = $order->cartItems;
@@ -143,16 +162,15 @@ class MyAccountController extends Controller
 
         }
 
-        $order->status_id = 6;
-        $order->payment_status = 'canceled'; // Cập nhật trạng thái thanh toán trong đơn hàng
-        $order->save();
+        
 
         return response()->json([
             'status' => 'success',
             'message' => 'Đơn hàng đã được hủy bỏ.',
             'orderId' => $order->id,
-            'newStatus' => $order->status_id,
-            'statusName' => $order->orderStatus->name,
+            'newStatus' => $order->status_id,   // trạng thái mới
+            'statusName' => $order->orderStatus->name, // tên trạng thái mới
+            'newPaymentStatus' => $order->payment_status  // Thêm thông tin trạng thái thanh toán
         ]);
     }
 

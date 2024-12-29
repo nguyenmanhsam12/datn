@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\VariantUpdated;
 use App\Models\ProductVariants;
+use App\Models\Product;
 use App\Models\Size;
 use Illuminate\Http\Request;
 
@@ -56,7 +57,7 @@ class VariantController extends Controller
 
         broadcast(new VariantUpdated($variant));
 
-        return redirect()->route('admin.variant.index')->with('success','Cập nhập thành công');
+        return redirect()->route('admin.product.index')->with('success','Cập nhập thành công');
 
     }
 
@@ -131,5 +132,15 @@ class VariantController extends Controller
             return redirect()->back()->with('success', 'Thuộc tính đã được xóa vĩnh viễn!');
         }
         return redirect()->back()->with('error', 'Thuộc tính không tồn tại hoặc không bị xóa mềm.');
+    }
+
+    // api lấy ra biến thể dựa theo sản phẩm
+    public function getVariants(Request $request)
+    {
+        $productId = $request->input('product_id');
+        // Tiến hành truy vấn các biến thể của sản phẩm với $productId
+        $variants = ProductVariants::with('size')
+            ->where('product_id', $productId)->get();
+        return response()->json($variants);
     }
 }

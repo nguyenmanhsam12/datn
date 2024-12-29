@@ -12,7 +12,7 @@ class Coupon extends Model
     protected $table = 'coupons';
 
     protected $fillable = ['code','discount_type','discount_value','minimum_order_value','end_date','status',
-        'maximum_discount',
+        'maximum_discount','usage_limit','used_count'
     ];
 
     // Hàm kiểm tra xem mã giảm giá có hết hạn không

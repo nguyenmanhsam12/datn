@@ -23,6 +23,8 @@
         <section class="content">
 
             <!-- Default box -->
+            <a href="{{ route('admin.product.index') }}" class="btn btn-secondary mb-3">Danh sách sản phẩm</a>
+
             <div class="card">
                 <div class="card-header">
                     <div class="card card-gray">

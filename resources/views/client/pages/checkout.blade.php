@@ -553,11 +553,11 @@
                     } else if (data.vnpay) {
                         // Nếu có đường dẫn vnpay, chuyển hướng đến đó
                         window.location.href = data.vnpay;
-                    }  else {
+                    }  else if(data.message) {
                         // Nếu không có lỗi, đặt hàng thành công
                         Swal.fire({
                             title: 'Đặt hàng thành công!',
-                            text: 'Đơn hàng của bạn đã được tạo thành công.',
+                            text: data.message,
                             icon: 'success',
                             confirmButtonText: 'OK'
                         }).then(() => {
@@ -565,12 +565,20 @@
                                 window.location.href = '{{ route('thankyou') }}';
                             }, 1000);
                         });
+                    } else if(data.error){
+                        Swal.fire({
+                            title: 'Đặt hàng thất bại',
+                            text: data.error,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            setTimeout(() => {
+                                window.location.href = '{{ route('checkout') }}';
+                            }, 1000);
+                        });
                     }
-
-            
                 })
                 .catch(error => {
-                    
                         // Xử lý các lỗi khác
                         console.error('Error:', error);
                         Swal.fire({

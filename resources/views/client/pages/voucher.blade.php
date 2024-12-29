@@ -106,6 +106,8 @@
                     @endif
                     
                     <p>Cho đơn hàng từ {{ number_format($item->minimum_order_value, 0, ',', '.') }} VND</p>
+
+                    <p>Số lượng mã còn lại : {{ $item->usage_limit }}</p>
                     
                     <p class="voucher-code">Mã: <span>{{ $item->code }}</span></p>
                 

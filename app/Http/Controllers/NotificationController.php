@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Notification;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
     public function fetchNotifications(){
         $notifications = Notification::where('user_id', auth()->id())
+            ->where('status','unread')
             ->orderBy('created_at', 'desc')
             ->limit(10) // Lấy 10 thông báo mới nhất
             ->get();
@@ -34,5 +36,14 @@ class NotificationController extends Controller
         }
 
         return response()->json(['error' => 'Thông báo không tồn tại'], 404);
+    }
+
+    public function markAllAsRead(){
+        $user = Auth::user();
+        $notification = Notification::where('user_id',$user->id)
+            ->first();
+        $notification->update(['status'=>'read']); //Cập nhập tất cả thông báo
+
+        return response()->json(['message' => 'All notifications marked as read'], 200);
     }
 }

@@ -344,6 +344,12 @@
                                                                             @case('canceled')
                                                                                 <span class="badge bg-danger">Thanh toán bị hủy bỏ</span>
                                                                                 @break
+                                                                            @case('refund_pending')
+                                                                                <span class="badge bg-warning">Chờ hoàn tiền</span>
+                                                                                @break
+                                                                            @case('refund')
+                                                                                <span class="badge bg-success">Đã hoàn tiền</span>
+                                                                                @break
                                                                             @default
                                                                                 <span class="badge bg-secondary">Không rõ trạng thái</span>
                                                                         @endswitch
@@ -683,9 +689,13 @@
                                         const paymentStatusElement = document.querySelector(
                                             `#orderModal${orderId} .payment-status span`);
                                         if (paymentStatusElement) {
-                                            paymentStatusElement.className = 'badge bg-danger';
-                                            paymentStatusElement.textContent =
-                                            'Thanh toán bị hủy bỏ';
+                                            if (data.newPaymentStatus === 'canceled') {
+                                                paymentStatusElement.className = 'badge bg-danger';
+                                                paymentStatusElement.textContent = 'Thanh toán bị hủy bỏ';
+                                            } else if (data.newPaymentStatus === 'refund_pending') {
+                                                paymentStatusElement.className = 'badge bg-warning';
+                                                paymentStatusElement.textContent = 'Chờ hoàn tiền';
+                                            }
                                         }
 
 

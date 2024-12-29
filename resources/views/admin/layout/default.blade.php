@@ -204,6 +204,9 @@
     {{-- lấy thông báo khi lần đầu vào trang quản trị --}}
     <script type="module">
         document.addEventListener("DOMContentLoaded", function () {
+
+          
+
             // Lấy token từ thẻ meta
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -273,11 +276,35 @@
                         </div>
                         <div class="dropdown-divider"></div>
                         ${notificationItems}
-                        <a href="#" class="dropdown-item dropdown-footer">Xem tất cả thông báo</a>
+                        <a href="#" class="dropdown-item dropdown-footer"
+                        onclick="markAllNotificationsAsRead()"
+                        >Xem tất cả thông báo</a>
                     `;
                 }
 
-
+                // Hàm đánh dấu tất cả thông báo là đã đọc
+                function markAllNotificationsAsRead() {
+                    fetch('{{route('markAllAsRead')}}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': token, // Thêm CSRF token vào header
+                        },
+                        body: JSON.stringify({})
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to mark notifications as read');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        window.location.href = '{{route('admin.order.index')}}';
+                    })
+                    .catch(error => {
+                        console.error('Error marking notifications as read:', error);
+                    });
+                }
 
             // Gọi hàm khi trang được load
             fetchNotifications();
@@ -286,9 +313,6 @@
         // hàm xử lí khi nhấn đọc thông báo
         window.handleNotificationClick = function (notificationId) {
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            
-
             // Gửi yêu cầu đánh dấu thông báo là đã đọc
             fetch('{{ route('markAsRead') }}', {
                 method: 'POST',

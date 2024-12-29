@@ -215,7 +215,7 @@
                 </li>
 
                 {{-- thuộc tính --}}
-                <li class="nav-item ">
+                {{-- <li class="nav-item ">
                     <a href="#" class="nav-link ">
                         <i class="nav-icon fas fa-cogs"></i>
                         <p>
@@ -232,7 +232,7 @@
                             </li>
                         @endcan
                     </ul>
-                </li>
+                </li> --}}
 
                 {{-- Đơn Hàng --}}
                 <li class="nav-item ">

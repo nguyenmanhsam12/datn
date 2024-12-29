@@ -25,10 +25,9 @@ class OrderAdminController extends Controller
 
     public function detail($id)
     {
-        $order = Order::with('user', 'payment', 'orderStatus', 'orderAddress', 'cartItems')->find($id);
+        $order = Order::with('user', 'payment', 'orderStatus', 'orderAddress', 'cartItems','transaction')->find($id);
         $finalTotal = $order->total_amount + $order->shipping_fee - $order->discount_amount;
-        $order_status = OrderStatus::all();
-        return view('admin.order.detailOrder', compact('order', 'order_status','finalTotal'));
+        return view('admin.order.detailOrder', compact('order','finalTotal'));
     }
 
     // cập nhật bằng js
@@ -86,5 +85,27 @@ class OrderAdminController extends Controller
         }
 
         return redirect()->back()->with('error','Đơn hàng không tồn tại');
+    }
+
+    public function updatePaymentStatus(Request $request, $orderId)
+    {
+        $order = Order::findOrFail($orderId);
+
+        // Validate the request
+        $request->validate([
+            'payment_status' => 'required|in:pending,paid,canceled,refund_pending,refund',
+        ]);
+
+        if($order->payment_status == 'refund_pending' && $request->input('payment_status') == 'refund'){
+            $order->payment_status = $request->input('payment_status');
+            $order->note = "Đã hoàn tiền vào lúc " . now()->format('d/m/Y H:i:s');
+            $order->save();
+
+            return redirect()->back()
+                    ->with('success', 'Trạng thái thanh toán đã được cập nhật!');
+        }
+    
+        return redirect()->back()
+                    ->with('error', 'Cập nhập trạng thái thanh toán thất bại!');
     }
 }

@@ -29,6 +29,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use App\Notifications\NewOrderNotification;
+use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
@@ -191,6 +192,9 @@ class CheckoutController extends Controller
     public function placeOrder(PlaceOrderRequest $request)
     {
         try {
+
+            DB::beginTransaction(); // Bắt đầu transaction
+
             $data = $request->validated();
 
             // Tạo đơn hàng
@@ -202,6 +206,26 @@ class CheckoutController extends Controller
             $discountAmount = session('discount', 0);
             $shipping = session('shipping', 0);
 
+
+            // hàm lockForupdate dùng để khóa bản ghi 
+            $coupon = Coupon::where('id', $couponId)->lockForUpdate()->first();
+
+            if($coupon){
+                // Kiểm tra nếu mã giảm giá đã hết
+                if ($coupon->usage_limit <= 0) {
+                    session()->forget(['coupon_id', 'discount', 'newTotal', 'totalAmount']);
+                    return response()->json(['error' => 'Mã giảm giá đã hết số lượng,vui lòng chọn mã khác.'], 400);
+                }
+
+                // Giảm số lượng mã giảm giá nếu có
+            
+                $coupon->decrement('usage_limit'); // Giảm số lượng khả dụng
+                $coupon->increment('used_count'); // Tăng số lượng đã sử dụng
+                $coupon->save();  
+
+            }
+
+            
 
             $cartItems = CartItems::with('variants.product', 'variants.size')->where('cart_id', $cart->id)->get();
 
@@ -302,6 +326,8 @@ class CheckoutController extends Controller
                     'order_id' => $order->id,
                 ]);
 
+                DB::commit(); // Commit transaction nếu mọi thứ đều thành công
+
                 // Lưu trạng thái đơn hàng vào session
                 session(['order_status' => '1', 'order_id' => $order->id]);
 
@@ -309,22 +335,7 @@ class CheckoutController extends Controller
                 return $this->vnpayPayment($newTotal,$order->id);
             }
 
-            // if ($data['payment_method'] == 3) { 
-            //     $newTotal = $order->total_amount + $order->shipping_fee - $order->discount_amount;
-                
-            //     // Tạo bản ghi thanh toán trong transactions khi có giao dịch thanh toán
-            //     Transactions::create([
-            //         'order_id' => $order->id,
-            //     ]);
-
-            //     // Gọi hàm xử lý thanh toán momo
-            //     $payUrl = $this->momoPayment($newTotal,$order->id);
-
-            //     return response()->json([
-            //         'message' => 'Liên kết thanh toán đã được tạo thành công.',
-            //         'momo' => $payUrl,
-            //     ]);
-            // }
+            DB::commit(); // Commit transaction nếu mọi thứ đều thành công
 
 
             // Trả về thông báo thành công
@@ -332,6 +343,9 @@ class CheckoutController extends Controller
                 ['message' => 'Đơn hàng đã được tạo thành công.'],
             );
         } catch (\Exception $e) {
+
+            DB::rollBack(); // Rollback nếu có lỗi
+
             return response()->json(['message' => 'Có lỗi xảy ra: ' . $e->getMessage()], 500);
         }
     }
