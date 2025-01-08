@@ -439,7 +439,7 @@ class CheckoutController extends Controller
                     $transaction->status = $status;
                     $transaction->transaction_id = $data['vnp_TransactionNo'];
                     $transaction->payment_date = $data['vnp_PayDate'];
-                    $transaction->amount = $data['vnp_Amount'];
+                    $transaction->amount = $data['vnp_Amount'] / 100;
                     $transaction->bank_code = $data['vnp_BankCode'];
                     $transaction->description = $data['vnp_OrderInfo'];
                     $transaction->save();
