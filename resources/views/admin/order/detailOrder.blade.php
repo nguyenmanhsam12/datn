@@ -217,7 +217,7 @@
                                         @endif
                                     </td>
                                     <td>{{ $order->transaction->payment_date }}</td>
-                                    <td>{{ number_format($order->transaction->amount, 0, ',', '.') }} VNĐ</td>
+                                    <td>{{ number_format($order->transaction->amount,0,',','.') }} VNĐ</td>
                                     <td>{{ $order->transaction->bank_code }}</td>
                                     <td>{{ $order->transaction->description }}</td>
                                     <td>{{ $order->transaction->created_at }}</td>
