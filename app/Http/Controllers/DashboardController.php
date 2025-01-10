@@ -76,12 +76,14 @@ $totalReviewsCount = Review::count();
         ->get();
 
 
-        $sanPham = ProductVariants::whereHas('product',function($query){
-            $query->where('deleted_at','=',null);
+        $sanPham = ProductVariants::whereHas('product', function($query) {
+            $query->where('deleted_at', null);
         }) // Quan hệ với bảng products để lấy tên sản phẩm
         ->select('product_id', DB::raw('SUM(stock) as total_stock')) // Tính tổng số lượng tồn kho cho mỗi sản phẩm
         ->groupBy('product_id') // Nhóm theo product_id để tính tổng tồn kho cho mỗi sản phẩm
+        ->take(5) // Lấy ra 5 sản phẩm
         ->get();
+    
     
 
     
@@ -190,7 +192,7 @@ $totalReviewsCount = Review::count();
         $totals = [];
 
         foreach ($salesData as $sale) {
-            $dates[] = $sale->date;
+            $dates[] = Carbon::parse($sale->date)->format('d/m');
             $totals[] = $sale->total;
         }
 
@@ -200,10 +202,52 @@ $totalReviewsCount = Review::count();
                 'totalOrders' => $totalOrders,
             ]);
         }
+
+
+        // biểu đồ năm
+        $selectedYear = $request->get('year', Carbon::now()->year);
+
+$monthlySalesData = Order::whereYear('created_at', $selectedYear)
+    ->whereHas('orderStatus', function ($query) {
+        $query->where('name', 'Hoàn tất'); // Lọc chỉ lấy đơn hàng Hoàn tất
+    })
+    ->selectRaw('MONTH(created_at) as sales_month, SUM(total_amount - discount_amount + shipping_fee) as monthly_total')
+    ->groupBy('sales_month')
+    ->orderBy('sales_month')
+    ->get();
+
+// Chuyển đổi dữ liệu doanh thu thành định dạng cho Chart.js
+$salesMonths = [];
+$salesTotals = [];
+
+// Duyệt qua dữ liệu doanh thu và tạo mảng tháng và tổng doanh thu
+foreach ($monthlySalesData as $monthlySale) {
+    $salesMonths[] = $monthlySale->sales_month;
+    $salesTotals[] = $monthlySale->monthly_total;
+}
+
+// Nếu cần thêm các tháng không có doanh thu, bạn có thể thêm như sau:
+$allMonthsInYear = range(1, 12);
+$totalsBySalesMonth = array_fill(1, 12, 0); // Khởi tạo doanh thu cho 12 tháng bằng 0
+
+foreach ($monthlySalesData as $monthlySale) {
+    $totalsBySalesMonth[$monthlySale->sales_month] = $monthlySale->monthly_total;
+}
+
+// Tạo mảng cho Chart.js
+// Tạo mảng cho Chart.js
+$salesMonths = array_map(function($month) {
+    return 'Tháng ' . $month; // Định dạng hiển thị là "Tháng 1", "Tháng 2", ...
+}, $allMonthsInYear);
+$salesTotals = array_values($totalsBySalesMonth);
+
+// Kết quả:
+// $salesMonths: [1, 2, 3, ..., 12]
+// $salesTotals: [Doanh thu tháng 1, tháng 2, ..., tháng 12]
         
 
         return view('admin.dashboard.bieudo', compact(
-            'totalOrders',
+            'totalOrders','salesMonths','salesTotals',
             'totalProducts',
             'totalAdmins',
             'dates',
@@ -233,4 +277,6 @@ $totalReviewsCount = Review::count();
             
         ));
     }
+
+
 }
