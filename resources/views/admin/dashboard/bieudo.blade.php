@@ -1,13 +1,202 @@
 @extends('admin.layout.default')
 
 @section('content')
+<style>
+    /* Tùy chỉnh giao diện tổng quan */
+.content-wrapper {
+    background-color: #f9f9f9;
+    padding: 20px;
+}
 
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card h5 {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.card .card-text {
+    font-size: 24px;
+}
+
+.card .btn-group a {
+    margin: 0 5px;
+    border-radius: 50px;
+}
+
+.card .btn-group a.active {
+    background-color: #0275d8;
+    color: white;
+}
+
+/* Màu sắc cho các loại thẻ */
+.card.text-center {
+    transition: all 0.3s;
+}
+
+.card.text-center:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card.bg-primary {
+    background-color: #007bff !important;
+    color: white !important;
+}
+
+.card.bg-success {
+    background-color: #28a745 !important;
+    color: white !important;
+}
+
+.card.bg-warning {
+    background-color: #ffc107 !important;
+    color: black !important;
+}
+
+.card.bg-danger {
+    background-color: #dc3545 !important;
+    color: white !important;
+}
+
+/* Tùy chỉnh biểu đồ */
+.chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+
+canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Giao diện chung cho tiêu đề */
+h1, h3 {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Padding và bố cục */
+.row {
+    margin-bottom: 20px;
+}
+
+.row .col-md-3, .row .col-md-5, .row .col-md-7 {
+    margin-bottom: 15px;
+}
+
+/* Form lọc */
+form#filterForm {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+form#filterForm .form-label {
+    font-weight: bold;
+    color: #555;
+}
+
+form#filterForm .form-control-sm {
+    border-radius: 5px;
+    font-size: 14px;
+}
+canvas {
+    max-width: 100%;
+    max-height: 100%;
+    height: auto; /* Đảm bảo tỷ lệ chiều cao và chiều rộng */
+}
+.container-fluid {
+    margin-top: 20px; /* Khoảng cách từ trên xuống */
+}
+
+.card {
+    border-radius: 10px; /* Bo tròn góc cho thẻ card */
+    overflow: hidden; /* Ẩn phần thừa ra ngoài thẻ card */
+}
+
+.card-body {
+    padding: 20px; /* Khoảng cách bên trong cho card body */
+}
+
+h3 {
+    font-size: 24px; /* Kích thước chữ tiêu đề */
+}
+
+.table {
+    border-collapse: collapse; /* Để loại bỏ khoảng cách giữa các ô */
+}
+
+.table th, .table td {
+    text-align: center; /* Căn giữa nội dung */
+    vertical-align: middle; /* Căn giữa theo chiều dọc */
+    padding: 15px; /* Khoảng cách giữa nội dung và viền ô */
+    font-size: 16px; /* Kích thước chữ cho ô */
+}
+
+.table thead th {
+    font-weight: bold; /* Làm đậm tiêu đề bảng */
+    font-size: 1.1rem; /* Tăng kích thước chữ tiêu đề */
+}
+
+.table tbody tr {
+    transition: background-color 0.3s, transform 0.3s; /* Hiệu ứng chuyển màu cho hàng */
+}
+
+.table tbody tr:hover {
+    background-color: #e8f5e9; /* Màu nền khi hover vào hàng */
+    transform: translateY(-2px); /* Nhấc hàng lên khi hover */
+}
+
+.table img {
+    border-radius: 8px; /* Bo tròn góc ảnh */
+    max-width: 100%; /* Đảm bảo ảnh không vượt quá chiều rộng của ô */
+    height: auto; /* Tự động điều chỉnh chiều cao của ảnh */
+    transition: transform 0.3s; /* Thêm hiệu ứng chuyển động */
+}
+
+.table img:hover {
+    transform: scale(1.1); /* Tăng kích thước ảnh khi hover */
+}
+
+.product-link {
+    color: #4caf50; /* Màu xanh lá cây cho liên kết */
+    text-decoration: none; /* Không có gạch chân */
+    font-weight: bold; /* Làm đậm chữ liên kết */
+    transition: color 0.3s; /* Hiệu ứng chuyển màu */
+}
+
+.product-link:hover {
+    color: #388e3c; /* Màu khi hover vào liên kết */
+    text-decoration: underline; /* Gạch chân khi hover */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .table {
+        font-size: 14px; /* Giảm kích thước chữ trên màn hình nhỏ */
+    }
+    
+    h3 {
+        font-size: 20px; /* Giảm kích thước chữ tiêu đề trên màn hình nhỏ */
+    }
+}
+
+
+</style>
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                <h1 style="font-weight: bold;">Biểu đồ</h1>
+                <h1 style="font-weight: bold;">Thống kê</h1>
                 </div>
             </div>
         </div>
@@ -16,6 +205,7 @@
         <div class="row">
         <!-- Total Orders -->
             <div class="col-md-3">
+                <a href="{{ route('admin.order.index') }}">
                 <div class="card text-center" style="background-color: #4db6ac; color: white;">
                     <div class="card-body">
                         <h5 class="card-title">
@@ -24,10 +214,12 @@
                         <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $sldh }}</p>
                     </div>
                 </div>
+            </a>
             </div>
 
         <!-- Total Products -->
         <div class="col-md-3">
+            <a href="{{ route('admin.product.index') }}">
             <div class="card text-center" style="background-color: #f06292; color: white;">
                 <div class="card-body">
                     <h5 class="card-title">
@@ -35,7 +227,7 @@
                     </h5>
                     <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $totalProducts }}</p>
                 </div>
-            </div>
+            </div></a>
         </div>
 
            <!-- Ratings -->
@@ -52,6 +244,7 @@
 
         <!-- Total Admins -->
         <div class="col-md-3">
+            <a href="{{ route('admin.user.index') }}">
             <div class="card text-center" style="background-color: #64b5f6; color: white;">
                 <div class="card-body">
                     <h5 class="card-title">
@@ -59,9 +252,10 @@
                     </h5>
                     <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $totalAdmins }}</p>
                 </div>
-            </div>
+            </div></a>
         </div>
         <div class="col-md-3">
+            <a href="{{ route('admin.category.index') }}">
             <div class="card text-center" style="background-color: #64b5f6; color: white;">
                 <div class="card-body">
                     <h5 class="card-title">
@@ -69,9 +263,10 @@
                     </h5>
                     <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $totalCategories }}</p>
                 </div>
-            </div>
+            </div></a>
         </div>
         <div class="col-md-3">
+            <a href="{{ route('admin.coupons.index') }}">
             <div class="card text-center" style="background-color: #64b5f6; color: white;">
                 <div class="card-body">
                     <h5 class="card-title">
@@ -79,9 +274,10 @@
                     </h5>
                     <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $activeCouponsCount }}</p>
                 </div>
-            </div>
+            </div></a>
         </div>
         <div class="col-md-3">
+            <a href="{{ route('admin.comlaints.index') }}">
             <div class="card text-center" style="background-color: #64b5f6; color: white;">
                 <div class="card-body">
                     <h5 class="card-title">
@@ -89,9 +285,10 @@
                     </h5>
                     <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $khieuNai }}</p>
                 </div>
-            </div>
+            </div></a>
         </div>
         <div class="col-md-3">
+            <a href="{{ route('admin.reviews.index') }}">
             <div class="card text-center" style="background-color: #64b5f6; color: white;">
                 <div class="card-body">
                     <h5 class="card-title">
@@ -99,13 +296,13 @@
                     </h5>
                     <p class="card-text" style="font-size: 24px; font-weight: bold;">{{ $totalReviewsCount }}</p>
                 </div>
-            </div>
+            </div></a>
         </div>
 
      
     </div>
 </div>
-        <!-- Form lọc -->
+        {{-- <!-- Form lọc -->
     <form id="filterForm" class="mb-4 p-4 shadow-sm rounded bg-light">
         @csrf
             <div class="row">
@@ -153,7 +350,7 @@
                         </select>
                 </div>
                     <div class="col-md-4 mb-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary w-100">Lọc</button>
+                        <button type="submit" id="filter-button" class="btn btn-primary w-100">Lọc</button>
                     </div>
                 </div>
 
@@ -173,9 +370,9 @@
                 <p id="totalOrders" class="stat-value">{{ $totalOrders }}</p>
             </div>
         </div>
-    </div>
+    </div> --}}
 
-            {{-- Xử lý ajax --}}
+            {{-- Xử lý ajax
             <script>
                 $(document).ready(function() {
                     $('#filterForm').on('submit', function(e) {
@@ -196,67 +393,103 @@
                         });
                     });
                 });
-            </script>
-
+            </script> --}}
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                <h1 style="font-weight: bold;">Biểu đồ</h1>
+                </div>
+            </div>
             <!-- Biểu đồ (Chart Containers) -->
-            <div class="row">
-                <div class="col-md-7" >
-                    <!-- Biểu đồ doanh thu -->
+            <div class="row mt-4">
+                <div class="col-md-7">
                     <div class="card p-4 border" style="height: 450px;">
-                        <h3 class="text-center">Biểu đồ doanh thu theo ngày trong tháng</h3>
-                        <canvas id="revenueChart" width="650" height="350"></canvas>
+                        <div class="card-header-action">
+                            <div class="btn-group">
+                                <a href="#" class="btn btn-primary" id="show-week">Ngày</a>
+                                <a href="#" class="btn" id="show-month">Tháng</a>
+                            </div>
+                        </div>
+                        <h3 class="text-center">Biểu đồ doanh thu</h3>
+                        <canvas id="revenueChart" width="1350" height="650"></canvas>
                     </div>
                 </div>
-                <div class="col-md-5 d-flex justify-content-center">
-                        <!-- Biểu đồ trạng thái đơn hàng -->
-                    <div class="card p-4 border" style="height: 450px; width: 100%;">
+                <div class="col-md-5">
+                    <div class="card p-4 border" style="height: 450px;">
                         <h3 class="text-center">Biểu đồ trạng thái đơn hàng</h3>
                         <div class="chart-container d-flex justify-content-center" style="width: 100%; height: 100%; overflow: hidden;">
                             <canvas id="orderStatusChart" width="700" height="600" style="max-width: 100%; max-height: 100%;"></canvas>
                         </div>
                     </div>
                 </div>
-                <!-- Biểu đồ tồn kho -->
-<!-- <div class="row mt-4">
-    <div class="col-md-12">
-        <div class="card p-4 border" style="height: 450px;">
-            <!-- <h3 class="text-center">Biểu đồ tồn kho theo sản phẩm biến thể</h3> -->
-            <!-- <canvas id="inventoryChart" width="650" height="350"></canvas>
-        </div>
-    </div>
-</div> --> 
-<!-- <div class="row mt-4">
-    <div class="col-md-12">
-        <div class="card p-4 border" style="height: 450px;">
-            <h3 class="text-center">Doanh thu sản phẩm</h3>
-            <canvas id="huhu" width="650" height="350"></canvas>
-        </div>
-    </div>
-</div> -->
-<div class="row mt-4" >
-    <div class="col-md-12">
-        <div class="card p-4 border" style="height: 550px; max-width: 100%; margin-left: 150px;">
-            <h3 class="text-center">Doanh thu sản phẩm theo các tỉnh</h3>
-            <canvas id="revenueSalesChart" style="width: 100%; height: 450px;"></canvas>
-        </div>
-    </div>
-</div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card p-4 border" style="max-width: 100%;">
+                        <h3 class="text-center">Doanh thu sản phẩm theo các tỉnh</h3>
+                        <div class="chart-container" style="height: 450px;">
+                            <canvas id="revenueSalesChart" style="width: 100%; height: 100%;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+                
 
             {{-- Script for charts --}}
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script>
-                // Revenue Chart Data
-                var dates = @json($dates);
-                var totals = @json($totals);
+                // biểu đồ ngày 
+               
+            
+              
+                var abc = document.getElementById('revenueChart').getContext('2d');
 
-                var ctx = document.getElementById('revenueChart').getContext('2d');
-                var revenueChart = new Chart(ctx, {
+                
+                var revenueChart = new Chart(abc, {
                     type: 'line',
                     data: {
-                        labels: dates,
+                        labels: @json($dates),
                         datasets: [{
                             label: 'Doanh thu (VND)',
-                            data: totals,
+                            data: @json($totals),
+                            tension: 0.4,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            barThickness: 10,
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                                    }
+                                }
+                            }
+                        },
+                        responsive: true,
+                    }
+                });
+                var revenueChart2 = null; 
+                document.getElementById('show-week').addEventListener('click', function(e) {
+                    e.preventDefault();
+                      // Hủy biểu đồ tháng nếu tồn tại
+                        if (revenueChart2) {
+                            revenueChart2.destroy();
+                            revenueChart2 = null;
+                        }
+                        if (!revenueChart) {
+                            var revenueChart = new Chart(abc, {
+                    type: 'line',
+                    data: {
+                        labels: @json($dates),
+                        datasets: [{
+                            label: 'Doanh thu (VND)',
+                            data: @json($totals),
                             tension: 0.4,
                             borderColor: 'rgba(75, 192, 192, 1)',
                             backgroundColor: 'rgba(75, 192, 192, 0.2)',
@@ -277,8 +510,53 @@
                         responsive: true,
                     }
                 });
+                        }
+                        this.classList.add('btn-primary');
+    document.getElementById('show-month').classList.remove('btn-primary');
+                });
+                document.getElementById('show-month').addEventListener('click', function(e) {
+                    e.preventDefault();
+                      // Hủy biểu đồ tuần nếu tồn tại
+    if (revenueChart) {
+        revenueChart.destroy();
+        revenueChart = null;
+    }
+    if (!revenueChart2) {
+        var revenueChart2 = new Chart(abc, {
+                    type: 'line',
+                    data: {
+                        labels: @json($salesMonths),
+                        datasets: [{
+                            label: 'Doanh thu (VND)',
+                            data: @json($salesTotals),
+                            tension: 0.4,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                                    }
+                                }
+                            }
+                        },
+                        responsive: true,
+                    }
+                });
+    }
+    this.classList.add('btn-primary');
+    document.getElementById('show-week').classList.remove('btn-primary');
+                });
+   
+         // end doanh thu
 
-                // Order Status Chart Data
+                // biểu đồ trạng thái
                 var statuses = @json($statuses);
                 var statusCounts = @json($orderStatusCounts);
 
@@ -338,102 +616,9 @@
                 });
 
 
+      
 
-
-//bieu do
-                var productNames = @json($inventoryData->pluck('product_name'));
-
-// Cắt ngắn tên sản phẩm nếu tên quá dài (Ví dụ cắt dài hơn 20 ký tự)
-// productNames = productNames.map(function(name) {
-//     return name.length > 20 ? name.substring(0, 0) + '...' : name;
-// });
-    // var stockQuantities = @json($inventoryData->pluck('stock'));
-
-    // var ctx = document.getElementById('inventoryChart').getContext('2d');
-    // var inventoryChart = new Chart(ctx, {
-    //     type: 'line',
-    //     data: {
-    //         labels: productNames,  // Tên sản phẩm
-    //         datasets: [{
-    //             label: 'Số lượng tồn kho',
-    //             data: stockQuantities,  // Số lượng tồn kho
-    //             backgroundColor: [
-    //             // 'rgba(75, 192, 192, 0.5)',  // Màu cột đầu tiên
-    //             'rgba(255 106 106)',  // Màu cột thứ hai
-    //             'rgba(153, 190, 255, 0.5)',  // Màu cột thứ ba
-    //             // 'rgba(255, 159, 64, 0.5)',   // Màu cột thứ tư
-    //             // Thêm màu cho các cột tiếp theo nếu cần
-    //         ],
-            
-    //             borderColor: 'rgba(255 255 0)',  // Màu viền
-    //             borderWidth: 2,
-    //             pointBackgroundColor: 'rgba(255 106 106)',  // Màu nền của dấu chấm
-    //         pointRadius: 4,  // Kích thước của dấu chấm
-    //         pointBorderWidth: 3,  // Độ dày viền của dấu chấm
-    //         }],
-    //     },
-        
-    //     options: {
-    //         responsive: true,
-    //         scales: {
-    //             x: {
-    //             display: false,  // Ẩn trục X (không hiển thị tên sản phẩm)
-    //         },
-                
-    //             y: {
-    //                 beginAtZero: true
-    //             }
-    //         }
-    //     }
-    // });
-
-//bieu do
- // Dữ liệu từ controller
-//  var productNames = @json($productNames);  // Tên sản phẩm
-//     var quantities = @json($quantities);      // Số lượng sản phẩm đã bán
-//     var revenues = @json($revenues);          // Doanh thu từ sản phẩm
-
-//     var ctx = document.getElementById('huhu').getContext('2d');
-//     var revenueChart = new Chart(ctx, {
-//         type: 'bar', // Biểu đồ cột
-//         data: {
-//             labels: productNames, // Tên sản phẩm
-//             datasets: [{
-//                 label: 'Số lượng đã bán',
-//                 data: quantities, // Số lượng sản phẩm bán được
-//                 backgroundColor: 'rgba(75, 192, 192, 0.6)',  // Màu sắc cột Số lượng đã bán
-//                 borderColor: 'rgba(75, 192, 192, 1)',        // Màu viền cột Số lượng đã bán
-//                 borderWidth: 1
-//             }, {
-//                 label: 'Doanh thu (VND)', 
-//                 data: revenues,   // Doanh thu từ các sản phẩm
-//                 backgroundColor: 'rgba(255, 159, 64, 0.6)',  // Màu sắc cột Doanh thu
-//                 borderColor: 'rgba(255, 159, 64, 1)',        // Màu viền cột Doanh thu
-//                 borderWidth: 1
-//             }]
-//         },
-//         options: {
-//             responsive: true,
-//             scales: {
-//                 x: {
-//                 display: false,  // Ẩn trục X (không hiển thị tên sản phẩm)
-//             },
-//                 y: {
-//                     beginAtZero: true,
-//                     ticks: {
-//                         callback: function(value) {
-//                             // Định dạng số liệu theo kiểu VND
-//                             return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     });
-
-
-
-    //tỉnh
+    // biểutỉnh
       // Lấy dữ liệu từ server (dữ liệu đã được truyền qua Blade)
       var provinces = @json($revenueAndSalesData->pluck('province'));  // Tỉnh/thành phố
     var salesData = @json($revenueAndSalesData->pluck('total_sales'));  // Số lượng bán
@@ -451,8 +636,10 @@
                 backgroundColor: 'rgba(255, 99, 132, 0.5)',  // Màu nền của cột
                 borderColor: 'rgba(255, 99, 132, 1)',  // Màu viền cột
                 borderWidth: 1,
+                barThickness: 50,
                 // Tùy chọn này để cột không bị đè lên nhau khi có cả đường
                 yAxisID: 'y1'  // Sử dụng trục y thứ hai cho cột
+
             },
             {
                 label: 'Doanh thu',  // Chú thích cho biểu đồ đường
@@ -600,28 +787,33 @@
             <div class="card shadow-md" style="background-color: #ffffff;">
                 <div class="card-body">
            
-                    <table class="table table-bordered table-hover">
+                    <table class="table table-bordered table-hover table-striped">
                         <thead style="background-color: #4caf50; color: white;">
                             <tr>
+                                <th>Ảnh sản phẩm</th>
                                 <th>Tên sản phẩm</th>
-                      
-
                                 <th>Tồn kho</th>
-                           
-                               
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($sanPham as $item)
                             <tr>
-                              <td>  <a href="{{ route('getDetailProduct', ['slug' => $item->product->slug]) }}" style="color:black">
-                                    {{ $item->product->name }}
-                                </a></td>
-                                <td>{{ $item->total_stock }}</td> <!-- Hiển thị tổng tồn kho -->
+                                <td>
+                                    <a href="{{ route('getDetailProduct', ['slug' => $item->product->slug]) }}" > 
+                                        <img src="{{$item->product->image}}" alt="" style="height:150px; border-radius: 8px; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ route('getDetailProduct', ['slug' => $item->product->slug]) }}" style="color:black; text-decoration: none;">
+                                        {{ $item->product->name }}
+                                    </a>
+                                </td>
+                                <td>{{ $item->total_stock }}</td>
                             </tr>
-                        @endforeach
+                            @endforeach
                         </tbody>
                     </table>
+                    
                 </div>
             </div>
         </div>

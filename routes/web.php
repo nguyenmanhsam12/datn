@@ -190,6 +190,7 @@ Route::get('/wishlist/{id}', [WishlistController::class, 'delWishlist'])->name('
 Route::prefix('admin')->middleware('checkadmin')->group(function(){
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    
     Route::get('/api/notifications', [NotificationController::class, 'fetchNotifications'])->name('fetchNotifications');
     // dánh dấu đọc thông báo
     Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
