@@ -23,7 +23,7 @@
         <section class="content">
 
             <!-- Default box -->
-            <a href="{{ route('admin.variant.deleteAt') }}" class="btn btn-secondary mb-3">Thuộc tính đã xóa</a>
+            <a href="{{ route('admin.variant.index') }}" class="btn btn-secondary mb-3">Danh sách thuộc tính</a>
             
             <div class="card">
                 <div class="card-header">

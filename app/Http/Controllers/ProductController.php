@@ -15,14 +15,30 @@ use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
-    public function index(){
-        $list_product = Product::with('brand','category','user','variants')
-            ->orderBy('id','desc')
-            ->paginate(5);
-        // session()->forget('product_attributes');
-        $list_size = Size::all();
-        return view('admin.product.list',compact('list_product','list_size'));
+    public function index(Request $request)
+{
+    // Lấy giá trị từ input tìm kiếm
+    $search = $request->input('search-product');
+
+    // Tạo query cơ bản
+    $query = Product::with('brand', 'category', 'user', 'variants')
+        ->orderBy('id', 'desc');
+
+    // Nếu có từ khóa tìm kiếm, thêm điều kiện tìm kiếm
+    if (!empty($search)) {
+        $query->where('name', 'like', '%' . $search . '%'); // Tìm theo tên sản phẩm
     }
+
+    // Lấy danh sách sản phẩm và phân trang
+    $list_product = $query->paginate(5)->withQueryString();
+
+    // Lấy danh sách size
+    $list_size = Size::all();
+
+    // Trả dữ liệu về view
+    return view('admin.product.list', compact('list_product', 'list_size', 'search'));
+}
+
 
     public function create(){
         $allCategory = Category::all();

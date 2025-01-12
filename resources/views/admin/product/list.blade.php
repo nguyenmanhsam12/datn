@@ -70,14 +70,44 @@
         }
 
         /* Style cho nút Sửa */
-        .btn-edit-variant {
+        /* Đặt hai nút ngang hàng và căn chỉnh đẹp */
+        .btn-edit-variant,
+        .btn-delete-variant {
+            display: inline-block;
+            margin: 0 5px; /* Thêm khoảng cách giữa các nút */
             padding: 6px 12px;
-            background-color: #ffc107;
-            color: white;
-            border: none;
+            font-size: 14px;
+            font-weight: bold;
             border-radius: 4px;
             cursor: pointer;
+            text-decoration: none; /* Loại bỏ gạch chân */
+            text-align: center;
+            transition: all 0.3s ease;
         }
+
+        /* Style nút Sửa */
+        .btn-edit-variant {
+            background-color: #ffc107; /* Màu vàng */
+            color: #fff;
+            border: none;
+        }
+
+        .btn-edit-variant:hover {
+            background-color: #e0a800; /* Màu đậm hơn khi hover */
+        }
+
+        /* Style nút Xóa */
+        .btn-delete-variant {
+            background-color: #dc3545; /* Màu đỏ */
+            color: #fff;
+            border: none;
+        }
+
+        .btn-delete-variant:hover {
+            background-color: #c82333; /* Màu đậm hơn khi hover */
+            color: #fff;
+        }
+
 
         .btn-edit-variant:hover {
             background-color: #e0a800;
@@ -90,8 +120,10 @@
             background-color: #f8f9fa; /* Đảm bảo nền của các dòng biến thể không bị mất */
         }
 
-          /* CSS cho phân trang */
-          .pagination {
+        
+
+        /* CSS cho phân trang */
+        .pagination {
             display: flex;
             justify-content: center;
             padding: 15px 0;
@@ -122,6 +154,20 @@
             background-color: #fff;
             border-color: #ddd;
         }
+
+        .search-form form {
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .search-form input {
+            border-radius: 4px;
+        }
+
+        .search-form button {
+            white-space: nowrap;
+        }
+
     </style>
 @endpush
 @section('content')
@@ -147,12 +193,28 @@
         <section class="content">
 
             <!-- Default box -->
-            @can('create', App\Models\Product::class)
-                <a href="{{ route('admin.product.create') }}" class="btn btn-success mb-3">Thêm mới</a>
-            @endcan
-            @can('viewTrashed', App\Models\Product::class)
-                <a href="{{ route('admin.product.deleteAt') }}" class="btn btn-secondary mb-3">Sản phẩm đã xóa</a>
-            @endcan
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <div>
+                    @can('create', App\Models\Product::class)
+                        <a href="{{ route('admin.product.create') }}" class="btn btn-success">Thêm mới</a>
+                    @endcan
+                    @can('viewTrashed', App\Models\Product::class)
+                        <a href="{{ route('admin.product.deleteAt') }}" class="btn btn-secondary">Sản phẩm đã xóa</a>
+                    @endcan
+                </div>
+            
+                <div class="search-form">
+                    <form action="" class="d-flex align-items-center">
+                        <input type="text" name="search-product" class="form-control me-2" placeholder="Tìm kiếm sản phẩm">
+                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                    </form>
+                </div>
+            
+            </div>
+            
+
+            
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Sản phẩm</h3>
@@ -418,9 +480,26 @@
                                         <td>${variant.width}</td>
                                         <td>${variant.height}</td>
                                         <td>${variant.price}</td>
-                                        <td><a href="/admin/variant/edit/${variant.id}" class="btn-edit-variant">Sửa</a></td>
+                                        <td>
+                                            <a href="/admin/variant/edit/${variant.id}" class="btn-edit-variant">Sửa</a>
+                                            <a href="/admin/variant/delete/${variant.id}" class="btn-delete-variant">Xóa</a>
+                                        </td>
+
                                     `;
                                     tbody.appendChild(row);
+                                });
+
+                                // Thêm sự kiện xác nhận xóa vào các nút "Xóa"
+                                const deleteButtons = tbody.querySelectorAll('.btn-delete-variant');
+                                deleteButtons.forEach(deleteButton => {
+                                    deleteButton.addEventListener('click', function (event) {
+                                        event.preventDefault(); // Ngăn chặn hành động mặc định
+                                        const confirmDelete = confirm('Bạn có chắc chắn muốn xóa biến thể này không?');
+                                        if (confirmDelete) {
+                                            // Điều hướng đến URL để xóa
+                                            window.location.href = this.href;
+                                        }
+                                    });
                                 });
                             } else {
                                 const noVariantsRow = document.createElement('tr');
