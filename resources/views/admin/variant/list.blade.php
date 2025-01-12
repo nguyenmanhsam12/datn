@@ -27,6 +27,9 @@
                 <a href="{{ route('admin.variant.deleteAt') }}" class="btn btn-secondary mb-3">Thuộc tính đã xóa</a>
             @endcan
 
+            <a href="{{ route('admin.product.index') }}" class="btn btn-info mb-3">Danh sách sản phẩm</a>
+
+
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Thuộc tính</h3>
