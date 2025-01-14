@@ -260,9 +260,9 @@ class ProductController extends Controller
         $product = Product::onlyTrashed()->find($id); // Lấy bản ghi bị xóa mềm
         if ($product) {
 
-            if ($product->image && file_exists(public_path($product->image))) {
-                unlink(public_path($product->image)); // Xóa ảnh chính
-            }
+            // if ($product->image && file_exists(public_path($product->image))) {
+            //     unlink(public_path($product->image)); // Xóa ảnh chính
+            // }
     
             // Thêm các ảnh trong gallery vào danh sách xóa
             if ($product->gallary) {

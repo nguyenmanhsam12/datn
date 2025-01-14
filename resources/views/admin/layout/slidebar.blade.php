@@ -60,12 +60,14 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('admin.user.index') }}" class="nav-link">
+                        @can('viewAny', App\Models\User::class)
+                            <li class="nav-item">
+                                <a href="{{ route('admin.user.index') }}" class="nav-link">
 
-                                <p>Danh sách Tài Khoản</p>
-                            </a>
-                        </li>
+                                    <p>Danh sách Tài Khoản</p>
+                                </a>
+                            </li>
+                        @endcan
                         @can('create', App\Models\User::class)
                             <li class="nav-item">
                                 <a href="{{ route('admin.user.create') }}" class="nav-link">
