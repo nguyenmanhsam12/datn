@@ -111,15 +111,26 @@
 @push('script')
     {{-- cập nhật trạng thái đơn hàng --}}
     <script>
+
+        // Biến toàn cục để lưu trạng thái hiện tại của tất cả đơn hàng
+        const orderStatuses = {};
+
         document.addEventListener('DOMContentLoaded', () => {
             const statusDropdowns = document.querySelectorAll('.update-status');
 
             statusDropdowns.forEach(function(dropdown) {
 
-                let previousSelectedStatus = dropdown.value; // Lưu lại trạng thái đã chọn trước đó
+                const orderId = dropdown.getAttribute('data-order-id');
+                orderStatuses[orderId] = dropdown.value; // Lưu trạng thái ban đầu
 
+                console.log(orderStatuses);
+                
 
                 dropdown.addEventListener('change', function() {
+
+                    console.log(orderStatuses);
+
+
                     const orderId = this.getAttribute('data-order-id');
                     const newStatus = this.value;
                     const csrfToken = document.querySelector('meta[name="csrf-token"]')
@@ -143,7 +154,7 @@
                                 if (data.message) {
                                     alert(data.message); // Hiển thị thông báo thành công
 
-                                    previousSelectedStatus = newStatus;
+                                    orderStatuses[orderId] = newStatus; // Cập nhật trạng thái trong biến toàn cục
 
                                     dropdown.querySelectorAll('option').forEach(option => {
                                         option.disabled = parseInt(option.value) <
@@ -153,8 +164,7 @@
                                 }
                                 if (data.error) {
                                     alert(data.error);
-                                    dropdown.value =
-                                    previousSelectedStatus; // Quay về trạng thái đã chọn ban đầu
+                                    dropdown.value = orderStatuses[orderId]; // Quay về trạng thái trước đó
                                 }
                             } else {
                                 alert('Cập nhật thất bại: ' + result.message); // Thông báo lỗi
@@ -223,6 +233,9 @@
                             statusDropdown.querySelectorAll('option').forEach(option => {
                                 option.disabled = parseInt(option.value) < parseInt(event.order.status_id);
                             });
+
+                            // Cập nhật giá trị trong biến toàn cục
+                            orderStatuses[orderId] = event.order.status_id;
                         }
 
                         // Hiển thị thông báo hoặc thay đổi giao diện nếu cần
@@ -265,10 +278,17 @@
                                 }
                             });
 
+                
                             // Vô hiệu hóa các trạng thái trước đó
                             statusDropdown.querySelectorAll('option').forEach(option => {
                                 option.disabled = parseInt(option.value) < parseInt(event.order.status_id);
                             });
+
+                            // Cập nhật giá trị trong biến toàn cục
+                            orderStatuses[orderId] = event.order.status_id;
+                            console.log('object',orderStatuses);
+                            
+                            
                         }
 
                         // Hiển thị thông báo hoặc thay đổi giao diện nếu cần

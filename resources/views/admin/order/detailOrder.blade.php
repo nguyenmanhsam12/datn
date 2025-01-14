@@ -157,6 +157,7 @@
                                 <th>Hình ảnh</th>
                                 <th>Sản phẩm</th>
                                 <th>Số lượng</th>
+                                <th>Size</th>
                                 <th>Giá</th>
                                 <th>Thành tiền</th>
                             </tr>
@@ -169,6 +170,7 @@
                                     </td>
                                     <td>{{ $sp->product_name }}</td>
                                     <td>{{ $sp->quantity }}</td>
+                                    <td>{{ $sp->size }}</td>
                                     <td>{{ number_format($sp->price,0,',','.') }} VNĐ</td>
                                     <td>{{ number_format($sp->price * $sp->quantity, 0, ',', '.') . ' VNĐ' }}</td>
                                 </tr>
