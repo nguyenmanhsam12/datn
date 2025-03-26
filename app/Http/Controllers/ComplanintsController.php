@@ -164,11 +164,21 @@ class ComplanintsController extends Controller
         $statusesRequireResponse = ['Giải quyết thành công', 'Đã hủy'];
 
         // Kiểm tra điều kiện chuyển đổi trạng thái
-        if ($currentStatus === 'Chờ xử lý' && $newStatus === 'Đang xử lý') {
+        if ($currentStatus === 'Chờ xử lý' && $newStatus === 'Đang xử lý' || $newStatus === 'Đã hủy') {
             // Cho phép cập nhật trạng thái, phản hồi không bắt buộc
 
             if(empty($data['response'])){
                 return redirect()->back()->with('error', 'Vui lòng nhập phản hồi trước khi cập nhật trạng thái này.');
+            }
+
+            if($newStatus == 'Đã hủy'){
+                $complaint->status = $newStatus;
+                $complaint->response = $response;
+                $order->status_id = 5;
+                $order->payment_status = 'paid';
+                $order->save();
+                $complaint->save();
+                return redirect()->back()->with('success', 'Cập nhật thành công!');
             }
 
             $complaint->status = $newStatus;
