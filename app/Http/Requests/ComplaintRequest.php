@@ -24,7 +24,7 @@ class ComplaintRequest extends FormRequest
         return [
             'order_id' => 'required|exists:orders,id', // Mã đơn hàng phải tồn tại trong bảng orders
             'complaint_details' => 'required|string|min:2|max:500', // Chi tiết khiếu nại (10-500 ký tự)
-            'complaint_type' => 'required|in:Hàng bị lỗi,Giao hàng muộn,Sản phẩm không đúng mô tả', // Lý do phải nằm trong danh sách được định nghĩa
+            'complaint_type' => 'required|in:Hàng bị lỗi,Sản phẩm không đúng mô tả,Thiếu hàng trong đơn,Khác', // Lý do phải nằm trong danh sách được định nghĩa
             'attachments.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf|max:2048', // Tệp đính kèm (nếu có), hỗ trợ hình ảnh và PDF, mỗi tệp tối đa 2MB
         ];
         
